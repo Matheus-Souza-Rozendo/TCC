@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tarefas do TCC</title>
+<style>
+  :root {
+    --bg: #f6f5f1; --card: #ffffff; --ink: #24231f; --muted: #6d6a62;
+    --line: #e3e0d8; --accent: #c2412d; --accent-soft: #fbe9e5;
+    --ok: #3d7a4a; --ok-soft: #e6f2e8; --water: #2f6fa3; --water-soft: #e4eef7;
+    --coffee: #8a5a2b; --coffee-soft: #f4ebe1;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1b1a18; --card: #252421; --ink: #ece9e2; --muted: #a29e94;
+      --line: #3a3833; --accent: #e8735f; --accent-soft: #3a2420;
+      --ok: #7cc28a; --ok-soft: #22322530; --water: #7fb4e0; --water-soft: #1e2a36;
+      --coffee: #d3a57a; --coffee-soft: #33281e;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 24px 16px 80px; }
+  h1 { font-size: 1.6rem; margin: 0 0 4px; }
+  .sub { color: var(--muted); margin: 0 0 20px; }
+  .bar { height: 12px; background: var(--line); border-radius: 99px; overflow: hidden; }
+  .bar > div { height: 100%; background: var(--ok); width: 0; transition: width .4s; }
+  .stats { display: flex; justify-content: space-between; color: var(--muted);
+    font-size: .9rem; margin: 6px 0 20px; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 18px; }
+  .tabs button { flex: 1; padding: 10px; border: 1px solid var(--line); background: var(--card);
+    color: var(--ink); border-radius: 10px; font: inherit; cursor: pointer; }
+  .tabs button.on { border-color: var(--accent); background: var(--accent-soft); font-weight: 600; }
+
+  /* Modo foco */
+  .focus { background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+    padding: 28px 22px; text-align: center; }
+  .focus .where { color: var(--muted); font-size: .9rem; }
+  .focus .task { font-size: 1.45rem; font-weight: 600; margin: 14px 0 24px; }
+  .focus.brk-water { background: var(--water-soft); border-color: var(--water); }
+  .focus.brk-coffee { background: var(--coffee-soft); border-color: var(--coffee); }
+  .btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .btn { padding: 12px 22px; border-radius: 10px; border: 1px solid var(--line);
+    background: var(--card); color: var(--ink); font: inherit; cursor: pointer; }
+  .btn.main { background: var(--ok); border-color: var(--ok); color: #fff; font-weight: 600; }
+  .msg { min-height: 1.5em; margin-top: 16px; color: var(--ok); font-weight: 500; }
+  .tip { color: var(--muted); font-size: .9rem; margin-top: 18px; }
+
+  /* Mapa: 3 camadas */
+  details.mod { background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    margin-bottom: 10px; }
+  details.mod > summary { padding: 14px 16px; cursor: pointer; font-weight: 600;
+    display: flex; justify-content: space-between; gap: 10px; list-style: none; }
+  details.mod > summary::-webkit-details-marker { display: none; }
+  details.mod > summary .cnt { color: var(--muted); font-weight: 400; font-size: .9rem; white-space: nowrap; }
+  .comp { padding: 0 16px 10px; }
+  .comp h3 { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--accent); margin: 12px 0 6px; }
+  label.item { display: flex; gap: 10px; align-items: flex-start; padding: 7px 8px;
+    border-radius: 8px; cursor: pointer; }
+  label.item:hover { background: var(--bg); }
+  label.item input { margin-top: 4px; width: 18px; height: 18px; accent-color: var(--ok); flex: none; }
+  label.item.done span { text-decoration: line-through; color: var(--muted); }
+  .num { color: var(--muted); font-size: .8rem; min-width: 2.2em; margin-top: 2px; }
+  label.item.brk { margin: 4px 0; }
+  label.item.brk.water { background: var(--water-soft); color: var(--water); }
+  label.item.brk.coffee { background: var(--coffee-soft); color: var(--coffee); }
+  .layers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px;
+    font-size: .85rem; text-align: center; }
+  .layers div { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 8px; }
+  .layers b { display: block; }
+  .reset { margin-top: 24px; text-align: center; }
+  .reset button { background: none; border: none; color: var(--muted); text-decoration: underline;
+    cursor: pointer; font: inherit; font-size: .85rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Tarefas do TCC 🍅</h1>
+  <p class="sub">Uma coisa de cada vez. Cada tarefa leva entre 5 e 30 minutos.</p>
+
+  <div class="bar"><div id="fill"></div></div>
+  <div class="stats"><span id="done-txt"></span><span id="pct"></span></div>
+
+  <div class="tabs">
+    <button id="t-focus" class="on">🎯 Só a próxima</button>
+    <button id="t-map">🗺️ Mapa completo</button>
+  </div>
+
+  <section id="v-focus"></section>
+  <section id="v-map" hidden></section>
+
+  <div class="reset"><button id="reset">Apagar progresso</button></div>
+</div>
+
+<script>
+const DATA = [
+  { m: "1. Planejamento", comps: [
+    { c: "Definir as classes", t: [
+      "Abrir o Cronograma.md e ler só a seção 1",
+      "Achar 1 artigo sobre classificação de tomate e salvar o PDF",
+      "Escrever num papel as classes de cor (ex.: verde → vermelho)",
+      "Escrever num papel as classes de defeito",
+      "Mandar a lista de classes para o orientador",
+    ]},
+  ]},
+  { m: "2. Bancada", comps: [
+    { c: "Montagem física", t: [
+      "Escolher o lugar da bancada",
+      "Ligar a câmera no PC e ver se a imagem aparece",
+      "Colocar um fundo neutro (cartolina preta ou branca)",
+      "Prender a câmera num suporte, apontada para baixo",
+      "Medir e anotar a altura da câmera",
+      "Montar a luz difusa (luz + papel vegetal ou caixa)",
+    ]},
+    { c: "Configuração da câmera", t: [
+      "Travar o foco da câmera",
+      "Travar a exposição e o balanço de branco",
+      "Tirar 1 foto de teste e salvar",
+      "Tirar 1 foto da bancada para usar no TCC",
+    ]},
+  ]},
+  { m: "3. Calibração pixel → mm", comps: [
+    { c: "Foto da grade", t: [
+      "Colocar o papel milimetrado no lugar dos tomates",
+      "Tirar a foto do papel milimetrado",
+      "Desenhar no papel como a imagem fica dividida em 3×3 regiões",
+    ]},
+    { c: "Cálculo", t: [
+      "Criar o arquivo calibracao.py vazio",
+      "Escrever a função que abre a foto da grade",
+      "Medir quantos pixels têm 10 mm na região do centro",
+      "Medir as outras 8 regiões",
+      "Salvar a tabela px/mm num arquivo JSON",
+      "Escrever a função mm_por_pixel(x, y)",
+    ]},
+    { c: "Validação", t: [
+      "Fotografar uma moeda em 3 regiões diferentes",
+      "Comparar com a medida real e anotar o erro",
+    ]},
+  ]},
+  { m: "4. Dataset", comps: [
+    { c: "Base pública", t: [
+      "Escolher 1 dataset público de tomates",
+      "Baixar o dataset",
+      "Contar quantas imagens tem por classe",
+      "Criar as pastas: dataset/treino, dataset/val, dataset/teste",
+    ]},
+    { c: "Fotos próprias", t: [
+      "Comprar 1 bandeja de tomates cereja",
+      "Criar a planilha: id_tomate, foto, cor, rachado, podre, dano, mancha, diâmetro",
+      "Fotografar 10 tomates (sessão curta)",
+      "Fotografar mais 10 tomates (repetir até ter ~100 por classe)",
+      "Separar tomates que vão ser SÓ de teste",
+      "Medir os tomates de teste com paquímetro e anotar",
+    ]},
+    { c: "Rotulagem e divisão", t: [
+      "Rotular 20 fotos na planilha (repetir em outros dias)",
+      "Escrever o script que divide por id_tomate (70/15/15)",
+      "Conferir que nenhum tomate está em 2 conjuntos",
+      "Fazer backup do dataset (pendrive ou nuvem)",
+    ]},
+  ]},
+  { m: "5. GUI de treinamento", comps: [
+    { c: "Base da janela", t: [
+      "Escolher a biblioteca (Tkinter ou PyQt)",
+      "Abrir uma janela vazia",
+      "Botão “Abrir imagem” que mostra a foto",
+    ]},
+    { c: "Parte da LUT", t: [
+      "Clicar num pixel e mostrar a cor dele",
+      "Menu para escolher a classe de cor",
+      "Guardar os pixels marcados de cada classe",
+      "Botão “Gerar LUT” que salva o arquivo",
+    ]},
+    { c: "Parte da CNN", t: [
+      "Listar as imagens de uma pasta",
+      "Botão para dar um rótulo à imagem",
+      "Botão “Treinar” que chama o script de treino",
+      "Mostrar o gráfico de loss no fim do treino",
+    ]},
+  ]},
+  { m: "6. Segmentação e tamanho", comps: [
+    { c: "Achar o tomate", t: [
+      "Converter a imagem para HSV",
+      "Fazer o limiar que separa o tomate do fundo",
+      "Limpar a máscara (abertura e fechamento)",
+      "Encontrar os contornos",
+      "Ignorar contornos muito pequenos",
+    ]},
+    { c: "Medir", t: [
+      "Calcular o diâmetro em pixels (círculo mínimo)",
+      "Converter pixels em mm com a tabela de calibração",
+      "Comparar com o paquímetro em 10 tomates",
+    ]},
+  ]},
+  { m: "7. Cor por LUT", comps: [
+    { c: "LUT", t: [
+      "Decidir o espaço de cor (HSV ou Lab)",
+      "Gerar a LUT com os pixels marcados na GUI",
+      "Função que aplica a LUT nos pixels da máscara",
+      "Voto da maioria → classe de cor do tomate",
+    ]},
+    { c: "Avaliação", t: [
+      "Testar em 20 imagens de validação",
+      "Calcular a acurácia e anotar",
+    ]},
+  ]},
+  { m: "8. CNN de defeitos", comps: [
+    { c: "Preparação", t: [
+      "Escolher o modelo pré-treinado (ex.: MobileNetV2)",
+      "Carregar o dataset no código",
+      "Definir o aumento de dados (girar, espelhar, brilho)",
+      "Trocar a última camada por 4 saídas sigmoid (multilabel)",
+    ]},
+    { c: "Treino", t: [
+      "Treinar só 1 época para ver se roda",
+      "Treinar completo e salvar o modelo",
+    ]},
+    { c: "Avaliação", t: [
+      "Gerar a matriz de confusão na validação",
+      "Anotar o F1 de cada classe",
+    ]},
+  ]},
+  { m: "9. Integração e IHM", comps: [
+    { c: "Lógica", t: [
+      "Função classificar(imagem) que junta cor + defeito + tamanho",
+      "Escrever a regra da classe final",
+    ]},
+    { c: "Tela", t: [
+      "Tela da IHM mostrando a imagem",
+      "Mostrar os resultados ao lado da imagem",
+      "Adicionar os contadores por classe",
+      "Botão “Exportar CSV”",
+    ]},
+  ]},
+  { m: "10. Teste de efetividade", comps: [
+    { c: "Rodar e medir", t: [
+      "Rodar o sistema no conjunto de teste",
+      "Matriz de confusão da cor",
+      "Matriz de confusão dos defeitos",
+      "Calcular o erro médio do tamanho (mm)",
+      "Medir o tempo por tomate",
+      "Juntar tudo numa tabela para o TCC",
+    ]},
+  ]},
+  { m: "11. Esteira (prova de conceito)", comps: [
+    { c: "Viabilidade", t: [
+      "Medir quantos quadros por segundo o sistema faz",
+      "Calcular quantos tomates por segundo isso dá",
+      "Listar 3 melhorias possíveis",
+    ]},
+  ]},
+  { m: "12. Escrita do TCC", comps: [
+    { c: "Texto", t: [
+      "Criar o arquivo do TCC no modelo da faculdade",
+      "Escrever um título provisório",
+      "Introdução: escrever 1 parágrafo",
+      "Fundamentação: 1 página sobre LUT",
+      "Fundamentação: 1 página sobre CNN",
+      "Metodologia: bancada e calibração",
+      "Metodologia: dataset",
+      "Resultados: colar as tabelas",
+      "Conclusão e trabalhos futuros",
+      "Revisar as referências",
+    ]},
+    { c: "Apresentação", t: [
+      "Fazer os slides",
+      "Ensaiar a apresentação 1 vez",
+    ]},
+  ]},
+];
+
+const MSGS = ["Boa! Uma a menos. 💪", "Feito é melhor que perfeito.", "Isso aí, um passo de cada vez.",
+  "Mais uma pronta. 🍅", "Você está andando. Isso conta."];
+
+/* Lista linear com pausas a cada 5 tarefas */
+const ITEMS = []; let n = 0, b = 0;
+DATA.forEach((mod, mi) => mod.comps.forEach((comp, ci) => comp.t.forEach((txt, ti) => {
+  n++;
+  ITEMS.push({ id: `t${mi}-${ci}-${ti}`, txt, mod: mod.m, comp: comp.c, mi, ci, num: n });
+  if (n % 5 === 0) {
+    b++;
+    const water = b % 2 === 1;
+    ITEMS.push({ id: `b${n}`, brk: water ? "water" : "coffee",
+      txt: water ? "💧 Pausa: tomar um copo d'água" : "☕ Pausa: tomar um café (ou água)",
+      mod: mod.m, comp: comp.c, mi, ci });
+  }
+})));
+const TASKS = ITEMS.filter(i => !i.brk);
+
+let state = {};
+try { state = JSON.parse(localStorage.getItem("tcc-tomate") || "{}"); } catch (e) {}
+const save = () => { try { localStorage.setItem("tcc-tomate", JSON.stringify(state)); } catch (e) {} };
+
+let skipped = new Set(), lastMsg = "";
+
+function progress() {
+  const d = TASKS.filter(t => state[t.id]).length;
+  document.getElementById("fill").style.width = (d / TASKS.length * 100) + "%";
+  document.getElementById("done-txt").textContent = `${d} de ${TASKS.length} tarefas`;
+  document.getElementById("pct").textContent = Math.round(d / TASKS.length * 100) + "%";
+}
+
+function renderFocus() {
+  const el = document.getElementById("v-focus");
+  let next = ITEMS.find(i => !state[i.id] && !skipped.has(i.id));
+  if (!next) { skipped.clear(); next = ITEMS.find(i => !state[i.id]); }
+  if (!next) {
+    el.innerHTML = `<div class="focus"><div class="task">🎉 Tudo feito!</div>
+      <p>Você terminou todas as tarefas. Que orgulho.</p></div>`;
+    return;
+  }
+  const cls = next.brk ? ` brk-${next.brk}` : "";
+  el.innerHTML = `<div class="focus${cls}">
+    <div class="where">${next.mod} › ${next.comp}${next.num ? ` · tarefa ${next.num}` : ""}</div>
+    <div class="task">${next.txt}</div>
+    <div class="btns">
+      <button class="btn main" id="f-done">${next.brk ? "Tomei ✓" : "Feito ✓"}</button>
+      <button class="btn" id="f-skip">Pular por agora</button>
+    </div>
+    <div class="msg">${lastMsg}</div>
+    <p class="tip">Não precisa ver o resto. Só esta.</p>
+  </div>`;
+  document.getElementById("f-done").onclick = () => {
+    state[next.id] = true; save();
+    lastMsg = next.brk ? "Hidratado. Bora pra próxima." : MSGS[Math.floor(Math.random() * MSGS.length)];
+    renderAll();
+  };
+  document.getElementById("f-skip").onclick = () => { skipped.add(next.id); lastMsg = ""; renderFocus(); };
+}
+
+function renderMap() {
+  const el = document.getElementById("v-map");
+  let html = `<div class="layers">
+    <div><b>Camada 1</b>Módulos</div><div><b>Camada 2</b>Componentes</div><div><b>Camada 3</b>Tarefas</div></div>`;
+  DATA.forEach((mod, mi) => {
+    const mt = TASKS.filter(t => t.mi === mi), md = mt.filter(t => state[t.id]).length;
+    const open = md < mt.length && md > 0 ? " open" : "";
+    html += `<details class="mod" data-mi="${mi}"${open}><summary>${mod.m}<span class="cnt">${md}/${mt.length}</span></summary>`;
+    mod.comps.forEach((comp, ci) => {
+      html += `<div class="comp"><h3>${comp.c}</h3>`;
+      ITEMS.filter(i => i.mi === mi && i.ci === ci).forEach(i => {
+        const done = state[i.id] ? " checked" : "";
+        const cls = `item${state[i.id] ? " done" : ""}${i.brk ? " brk " + i.brk : ""}`;
+        html += `<label class="${cls}"><input type="checkbox" data-id="${i.id}"${done}>
+          <span class="num">${i.num ?? ""}</span><span>${i.txt}</span></label>`;
+      });
+      html += `</div>`;
+    });
+    html += `</details>`;
+  });
+  el.innerHTML = html;
+  el.querySelectorAll("input[type=checkbox]").forEach(cb => cb.onchange = () => {
+    state[cb.dataset.id] = cb.checked; save(); renderAll(true);
+  });
+}
+
+function renderAll(keepOpen) {
+  const openMods = [...document.querySelectorAll("details.mod[open]")].map(d => d.dataset.mi);
+  progress(); renderFocus(); renderMap();
+  if (keepOpen) openMods.forEach(mi => {
+    const d = document.querySelector(`details.mod[data-mi="${mi}"]`); if (d) d.open = true;
+  });
+}
+
+const tf = document.getElementById("t-focus"), tm = document.getElementById("t-map");
+tf.onclick = () => { tf.classList.add("on"); tm.classList.remove("on");
+  document.getElementById("v-focus").hidden = false; document.getElementById("v-map").hidden = true; };
+tm.onclick = () => { tm.classList.add("on"); tf.classList.remove("on");
+  document.getElementById("v-focus").hidden = true; document.getElementById("v-map").hidden = false; };
+document.getElementById("reset").onclick = () => {
+  if (confirm("Apagar todo o progresso?")) { state = {}; save(); lastMsg = ""; renderAll(); }
+};
+renderAll();
+</script>
+</body>
+</html>
