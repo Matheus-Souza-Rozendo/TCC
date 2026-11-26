@@ -3,12 +3,12 @@ import sys
 from pathlib import Path
 from typing import List
 
-from . import preview
 from .camera import FrameSource, OpenCvCameraAdapter, parse_camera_address
 from .calibrator import WhiteBalanceCalibrator
 from .errors import CalibrationError
 from .gain_file import CalibrationResult, GainFileWriter
 from .gain_strategies import GainStrategyFactory
+from .preview import DEFAULT_DISPLAY_WIDTH, CalibrationPreview
 from .region import RegionOfInterest
 from .sampling import SamplingSettings, WhiteReferenceSampler
 
@@ -25,7 +25,8 @@ def main(arguments: List[str] = None) -> int:
 
 
 def _run_calibration(camera: FrameSource, options: argparse.Namespace) -> None:
-    region = _choose_region(camera, options.regiao)
+    preview = CalibrationPreview(options.largura_janela)
+    region = RegionOfInterest.from_text(options.regiao) if options.regiao else _select_region_on_screen(preview, camera)
     calibrator = WhiteBalanceCalibrator(
         WhiteReferenceSampler(camera, SamplingSettings(frames_to_average=options.quadros)),
         GainStrategyFactory.create(options.estrategia),
@@ -38,9 +39,7 @@ def _run_calibration(camera: FrameSource, options: argparse.Namespace) -> None:
         preview.show_corrected_comparison(camera, result.gains)
 
 
-def _choose_region(camera: FrameSource, region_text: str) -> RegionOfInterest:
-    if region_text:
-        return RegionOfInterest.from_text(region_text)
+def _select_region_on_screen(preview: CalibrationPreview, camera: FrameSource) -> RegionOfInterest:
     frame = preview.wait_for_operator_ready(camera)
     return preview.select_region(frame)
 
@@ -67,6 +66,8 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--regiao", default="",
                         help="Região fixa do gabarito 'x,y,largura,altura'. Sem ela, você seleciona com o mouse.")
     parser.add_argument("--quadros", type=_positive_integer, default=30, help="Quadros usados na média.")
+    parser.add_argument("--largura-janela", type=_positive_integer, default=DEFAULT_DISPLAY_WIDTH,
+                        help="Largura em pixels das janelas na tela (a altura segue a proporção). Não afeta a medição.")
     parser.add_argument("--sem-conferencia", action="store_true",
                         help="Não abre a janela de comparação original x corrigido no final.")
     return parser

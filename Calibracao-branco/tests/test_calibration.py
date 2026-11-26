@@ -68,6 +68,19 @@ class WhiteReferenceValidationTests(unittest.TestCase):
             RegionOfInterest(30, 20, 20, 20).crop(np.zeros((30, 40, 3), dtype=np.uint8))
 
 
+class RegionScalingTests(unittest.TestCase):
+    def test_region_selected_on_reduced_screen_maps_back_to_original(self):
+        on_screen = RegionOfInterest(100, 50, 200, 150)
+        self.assertEqual(on_screen.scaled(2.0), RegionOfInterest(200, 100, 400, 300))
+
+    def test_scaled_region_stays_inside_original_frame(self):
+        screen_scale = 960 / 1920
+        whole_screen = RegionOfInterest(0, 0, 960, 540)
+        original_frame = np.zeros((1080, 1920, 3), dtype=np.uint8)
+        cropped = whole_screen.scaled(1 / screen_scale).crop(original_frame)
+        self.assertEqual(cropped.shape[:2], (1080, 1920))
+
+
 class GainFileTests(unittest.TestCase):
     def test_written_gains_are_read_back(self):
         result = calibrate_solid_color((200, 160, 120))

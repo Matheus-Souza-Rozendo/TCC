@@ -37,5 +37,17 @@ class RegionOfInterest:
             raise ValueError(f"A região {self.to_text()} sai do quadro {frame_width}x{frame_height}.")
         return frame[self.y:self.y + self.height, self.x:self.x + self.width]
 
+    def scaled(self, factor: float) -> "RegionOfInterest":
+        """Converte entre a imagem da tela e a original.
+
+        Arredonda para baixo para a região convertida nunca sair do quadro.
+        """
+        return RegionOfInterest(
+            x=int(self.x * factor),
+            y=int(self.y * factor),
+            width=max(1, int(self.width * factor)),
+            height=max(1, int(self.height * factor)),
+        )
+
     def to_text(self) -> str:
         return f"{self.x},{self.y},{self.width},{self.height}"

@@ -53,6 +53,7 @@ python -m calibracao_branco --camera 1 --saida bancada.gain
 | `--estrategia` | `referencia_verde` | `referencia_verde`: só corrige a cor. `nivel_alvo`: leva o branco a 230 (cor e brilho) |
 | `--regiao` | (mouse) | Região fixa `x,y,largura,altura`. Use o valor `regiao_gabarito` do último `.gain` para repetir a mesma região |
 | `--quadros` | `30` | Quadros na média |
+| `--largura-janela` | `960` | Largura das janelas na tela; a altura segue a proporção. Só muda a exibição: a medição usa a resolução original |
 | `--sem-conferencia` | | Não abre a janela de comparação no final |
 
 O programa **para com erro** se o gabarito estiver estourado (≥ 250) ou escuro demais (< 60).
