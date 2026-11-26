@@ -1,5 +1,5 @@
 class CalibrationError(Exception):
-    """Falha que impede gerar um arquivo de ganho confiável."""
+    """Falha que impede gerar um arquivo de calibração confiável."""
 
 
 class CameraUnavailableError(CalibrationError):
@@ -18,5 +18,13 @@ class CalibrationCancelledError(CalibrationError):
     pass
 
 
-class GainFileFormatError(CalibrationError):
+class CalibrationFileFormatError(CalibrationError):
+    pass
+
+
+class ChessboardNotFoundError(CalibrationError):
+    pass
+
+
+class IncompleteRegionCoverageError(CalibrationError):
     pass

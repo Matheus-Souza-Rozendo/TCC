@@ -49,6 +49,14 @@ class OpenCvCameraAdapter:
         self.close()
 
 
+def average_frames(frame_source: FrameSource, frame_count: int) -> np.ndarray:
+    """Média de vários quadros de uma cena parada: reduz o ruído do sensor."""
+    accumulated = frame_source.read_frame().astype(np.float64)
+    for _ in range(frame_count - 1):
+        accumulated += frame_source.read_frame()
+    return np.round(accumulated / frame_count).astype(np.uint8)
+
+
 def open_working_capture(address: CameraAddress) -> cv2.VideoCapture:
     """Tenta cada backend do OpenCV e fica com o primeiro que entrega imagem de verdade.
 

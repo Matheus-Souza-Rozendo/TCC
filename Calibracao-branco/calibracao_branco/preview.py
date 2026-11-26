@@ -29,12 +29,12 @@ class CalibrationPreview:
             raise ValueError("A largura da janela precisa ser maior que zero.")
         self._display_width = display_width
 
-    def wait_for_operator_ready(self, frame_source: FrameSource) -> np.ndarray:
-        """Mostra a câmera ao vivo até o operador posicionar o gabarito e apertar ENTER."""
+    def wait_for_operator_ready(self, frame_source: FrameSource, instruction: str) -> np.ndarray:
+        """Mostra a câmera ao vivo até o operador posicionar o alvo e apertar ENTER."""
         try:
             while True:
                 frame = frame_source.read_frame()
-                self._show(frame, "Posicione o gabarito branco. ENTER = continuar, ESC = sair")
+                self._show(frame, f"{instruction} ENTER = continuar, ESC = sair")
                 key = cv2.waitKey(1) & 0xFF
                 if key in KEYS_CONFIRM:
                     return frame
@@ -56,6 +56,13 @@ class CalibrationPreview:
         try:
             while cv2.waitKey(1) & 0xFF != KEY_ESCAPE:
                 self._show(build_comparison(frame_source.read_frame(), gains), "ESC = sair")
+        finally:
+            cv2.destroyAllWindows()
+
+    def show_until_key(self, image: np.ndarray, caption: str) -> None:
+        try:
+            self._show(image, f"{caption} (qualquer tecla = fechar)")
+            cv2.waitKey(0)
         finally:
             cv2.destroyAllWindows()
 

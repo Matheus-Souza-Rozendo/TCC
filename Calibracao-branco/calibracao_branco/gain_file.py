@@ -1,16 +1,18 @@
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List
+from typing import List
 
 import numpy as np
 
 from .channels import ChannelValues
-from .errors import GainFileFormatError
+from .calibration_sections import SCALE_REGION_KEY, CalibrationFileSections, read_sections, write_sections
+from .key_value_file import read_entries, require_entry
 from .region import RegionOfInterest
 from .sampling import WhiteReferenceSample
 
 GAIN_KEYS = {"red": "ganho_r", "green": "ganho_g", "blue": "ganho_b"}
+REGION_KEY = "regiao_gabarito"
 
 
 @dataclass(frozen=True)
@@ -23,29 +25,38 @@ class CalibrationResult:
 
 
 class GainFileWriter:
-    """Grava o arquivo .gain: texto 'chave=valor', fácil de ler em qualquer linguagem."""
+    """Grava a seção de branco do .gain: texto 'chave=valor', fácil de ler em qualquer linguagem."""
 
     def write(self, result: CalibrationResult, destination: Path) -> None:
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_text("\n".join(_format_lines(result)) + "\n", encoding="utf-8")
+        """Preserva a escala pixel -> mm só se ela foi medida na mesma região;
+        com outra região, a escala antiga deixa de valer e é descartada."""
+        scale_lines = read_sections(destination).scale_lines
+        if not _scale_belongs_to(scale_lines, result.region):
+            scale_lines = []
+        write_sections(CalibrationFileSections(_format_lines(result), scale_lines), destination)
 
 
 class GainFileReader:
     def read_gains(self, source: Path) -> ChannelValues:
-        entries = _parse_entries(source.read_text(encoding="utf-8"))
-        missing_keys = [key for key in GAIN_KEYS.values() if key not in entries]
-        if missing_keys:
-            raise GainFileFormatError(f"Arquivo '{source}' sem as chaves: {', '.join(missing_keys)}.")
+        entries = read_entries(source)
         return ChannelValues(
-            red=float(entries[GAIN_KEYS["red"]]),
-            green=float(entries[GAIN_KEYS["green"]]),
-            blue=float(entries[GAIN_KEYS["blue"]]),
+            red=float(require_entry(entries, GAIN_KEYS["red"])),
+            green=float(require_entry(entries, GAIN_KEYS["green"])),
+            blue=float(require_entry(entries, GAIN_KEYS["blue"])),
         )
+
+    def read_region(self, source: Path) -> RegionOfInterest:
+        """Região onde o gabarito branco foi medido, reaproveitada como região de interesse."""
+        return RegionOfInterest.from_text(require_entry(read_entries(source), REGION_KEY))
 
 
 def apply_gains(bgr_frame: np.ndarray, gains: ChannelValues) -> np.ndarray:
     corrected = bgr_frame.astype(np.float32) * gains.to_bgr_array().astype(np.float32)
     return np.clip(corrected, 0, 255).astype(np.uint8)
+
+
+def _scale_belongs_to(scale_lines: List[str], region: RegionOfInterest) -> bool:
+    return f"{SCALE_REGION_KEY}={region.to_text()}" in scale_lines
 
 
 def _format_lines(result: CalibrationResult) -> List[str]:
@@ -58,7 +69,7 @@ def _format_lines(result: CalibrationResult) -> List[str]:
         f"data={result.created_at.isoformat(timespec='seconds')}",
         f"estrategia={result.strategy_name}",
         f"quadros_media={result.sample.frames_averaged}",
-        f"regiao_gabarito={result.region.to_text()}",
+        f"{REGION_KEY}={result.region.to_text()}",
         f"media_r={means.red:.3f}",
         f"media_g={means.green:.3f}",
         f"media_b={means.blue:.3f}",
@@ -71,16 +82,3 @@ def _format_lines(result: CalibrationResult) -> List[str]:
     ]
     lines += [f"# AVISO: {warning}" for warning in result.sample.warnings]
     return lines
-
-
-def _parse_entries(text: str) -> Dict[str, str]:
-    entries = {}
-    for line in text.splitlines():
-        line = line.strip()
-        if not line or line.startswith("#"):
-            continue
-        key, separator, value = line.partition("=")
-        if not separator:
-            raise GainFileFormatError(f"Linha inválida no arquivo de ganho: '{line}'.")
-        entries[key.strip()] = value.strip()
-    return entries

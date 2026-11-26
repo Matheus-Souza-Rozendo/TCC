@@ -7,7 +7,8 @@ import numpy as np
 
 from calibracao_branco.calibrator import WhiteBalanceCalibrator
 from calibracao_branco.channels import ChannelValues
-from calibracao_branco.comparison import build_comparison, save_image
+from calibracao_branco.comparison import build_comparison
+from calibracao_branco.image_files import save_image
 from calibracao_branco.errors import WhiteReferenceSaturatedError, WhiteReferenceTooDarkError
 from calibracao_branco.gain_file import GainFileReader, GainFileWriter, apply_gains
 from calibracao_branco.gain_strategies import GreenReferenceGainStrategy, TargetLevelGainStrategy

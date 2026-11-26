@@ -6,8 +6,10 @@ from typing import List
 import numpy as np
 
 from .camera import FrameSource, OpenCvCameraAdapter, parse_camera_address
+from .calibration_sections import read_sections
 from .calibrator import WhiteBalanceCalibrator
-from .comparison import build_comparison, save_image
+from .comparison import build_comparison
+from .image_files import save_image
 from .errors import CalibrationError
 from .gain_file import CalibrationResult, GainFileWriter
 from .gain_strategies import GainStrategyFactory
@@ -36,12 +38,20 @@ def _run_calibration(camera: FrameSource, options: argparse.Namespace) -> None:
     )
     print(f"Medindo o gabarito na região {region.to_text()} ({options.quadros} quadros)...")
     result = calibrator.calibrate(region)
-    GainFileWriter().write(result, Path(options.saida))
+    _write_gain_file(result, Path(options.saida))
     _print_summary(result, options.saida)
     if options.foto_comparacao:
         _save_comparison_photo(build_comparison(camera.read_frame(), result.gains), Path(options.foto_comparacao))
     if not options.sem_conferencia:
         preview.show_corrected_comparison(camera, result.gains)
+
+
+def _write_gain_file(result: CalibrationResult, destination: Path) -> None:
+    had_scale = bool(read_sections(destination).scale_lines)
+    GainFileWriter().write(result, destination)
+    if had_scale and not read_sections(destination).scale_lines:
+        print("AVISO: a região do gabarito mudou, então a escala pixel -> mm antiga foi apagada. "
+              "Rode o calibrar_escala.bat de novo.")
 
 
 def _save_comparison_photo(comparison: np.ndarray, destination: Path) -> None:
@@ -50,7 +60,7 @@ def _save_comparison_photo(comparison: np.ndarray, destination: Path) -> None:
 
 
 def _select_region_on_screen(preview: CalibrationPreview, camera: FrameSource) -> RegionOfInterest:
-    frame = preview.wait_for_operator_ready(camera)
+    frame = preview.wait_for_operator_ready(camera, "Posicione o gabarito branco.")
     return preview.select_region(frame)
 
 

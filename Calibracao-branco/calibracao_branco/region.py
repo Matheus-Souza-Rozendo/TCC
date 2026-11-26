@@ -37,6 +37,10 @@ class RegionOfInterest:
             raise ValueError(f"A região {self.to_text()} sai do quadro {frame_width}x{frame_height}.")
         return frame[self.y:self.y + self.height, self.x:self.x + self.width]
 
+    def contains(self, x: float, y: float) -> bool:
+        """Intervalo semiaberto: um ponto na divisa entre duas regiões vizinhas fica em só uma delas."""
+        return self.x <= x < self.x + self.width and self.y <= y < self.y + self.height
+
     def scaled(self, factor: float) -> "RegionOfInterest":
         """Converte entre a imagem da tela e a original.
 
