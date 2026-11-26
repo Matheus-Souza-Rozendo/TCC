@@ -1,6 +1,6 @@
 @echo off
 rem Abre a calibracao de branco. Argumentos extras sao repassados ao programa
-rem (ex.: calibrar.bat --estrategia nivel_alvo --regiao 200,150,240,180).
+rem (ex.: calibrar.bat --regiao 200,150,240,180 --largura-janela 1280).
 cd /d "%~dp0"
 
 set "CAMERA=0"
@@ -9,7 +9,26 @@ set /p "CAMERA=Indice da camera do DroidCam (0, 1, 2...) ou URL http://IP:4747/v
 set "SAIDA=bancada.gain"
 set /p "SAIDA=Arquivo de saida [bancada.gain]: "
 
-python -m calibracao_branco --camera "%CAMERA%" --saida "%SAIDA%" %*
+:escolher_estrategia
+echo.
+echo Estrategia de calculo do ganho:
+echo   1 - referencia_verde : verde fica com ganho 1; so corrige a cor, nao muda o brilho
+echo   2 - nivel_alvo       : leva o branco a 230 nos tres canais; corrige cor e brilho
+set "OPCAO=1"
+set /p "OPCAO=Escolha 1 ou 2 [1]: "
+
+if "%OPCAO%"=="1" (
+    set "ESTRATEGIA=referencia_verde"
+) else if "%OPCAO%"=="2" (
+    set "ESTRATEGIA=nivel_alvo"
+) else (
+    echo Opcao invalida: "%OPCAO%". Digite 1 ou 2.
+    goto escolher_estrategia
+)
+echo Usando: %ESTRATEGIA%
+echo.
+
+python -m calibracao_branco --camera "%CAMERA%" --saida "%SAIDA%" --estrategia %ESTRATEGIA% %*
 if errorlevel 1 (
     echo.
     echo A calibracao falhou. Leia a mensagem de erro acima.

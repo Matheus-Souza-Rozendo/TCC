@@ -7,7 +7,7 @@ Mede o gabarito branco pela câmera (DroidCam) e gera um arquivo `.gain` com o g
 | Arquivo | O que faz |
 |---|---|
 | `instalar.bat` | Instala as dependências (rode uma vez) |
-| `calibrar.bat` | Pergunta a câmera e o arquivo de saída e abre a calibração |
+| `calibrar.bat` | Pergunta a câmera, o arquivo de saída e a estratégia de ganho (1 = `referencia_verde`, 2 = `nivel_alvo`) e abre a calibração |
 | `atualizar.bat` | Puxa as últimas alterações do GitHub (`git pull`) |
 | `diagnosticar_camera.bat` | Testa os índices 0 a 5 (e a URL do Wi-Fi, se informada) e mostra quais entregam imagem |
 
