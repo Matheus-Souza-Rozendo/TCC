@@ -1,0 +1,29 @@
+% ----------------------------------------------------------
+\chapter{Introdução}
+% ----------------------------------------------------------
+
+
+\section{Justificativa}
+
+O agronegócio representa um dos pilares fundamentais da economia brasileira, desempenhando um papel estratégico no desenvolvimento regional. Contudo, a eficiência do setor é frequentemente comprometida pelo elevado índice de desperdício na cadeia de suprimentos de produtos perecíveis. Segundo estudos recentes sobre o fluxo de hortifrúti \cite{ciagro2020}, o Brasil, apesar de ser um dos maiores produtores mundiais, enfrenta gargalos severos podendo somar 50\% de desperdício em toda cadeia logística.
+
+Esse cenário gera um impacto econômico direto no custo do produto. O transporte de vegetais, como o tomate-cereja e o pepino, sem uma triagem prévia adequada, resulta na movimentação de mercadorias fora dos padrões de comercialização. Transportar itens que serão inevitavelmente descartados eleva desnecessariamente os gastos com frete, embalagens e mão de obra, reduzindo a rentabilidade do produtor e a competitividade do setor. Portanto, a automação do processo de classificação na origem torna-se uma solução indispensável para otimizar a cadeia produtiva e garantir que apenas produtos aptos ao consumo sejam transportados.
+
+Apesar da eficácia dos sistemas de visão computacional na triagem de alimentos, as soluções industriais disponíveis no mercado possuem custos elevados, tornando-as inacessíveis para pequenos e médios produtores. O desenvolvimento de uma máquina de baixo custo justifica-se pela necessidade de democratizar o acesso a tecnologias de ponta no campo. Ao focar inicialmente no tomate-cereja, com flexibilidade para expansão a outras culturas como o pepino, este projeto busca oferecer uma alternativa viável e escalável que contribua diretamente para a redução do desperdício e a modernização da agricultura familiar e de pequena escala.
+% ----------------------------------------------------------
+\section{Objetivos}
+% ----------------------------------------------------------
+
+Nesta seção, apresentam-se o objetivo geral e os objetivos específicos que norteiam o desenvolvimento deste trabalho.
+
+\subsection{Objetivo Geral}
+
+Desenvolver um protótipo de máquina de seleção óptica de baixo custo para tomates-cereja, visando automatizar o processo de triagem e classificação para pequenos e médios produtores rurais.
+
+\begin{itemize}
+	\item Desenvolver um modelo unificado de detecção multitarefa baseado na arquitetura \textit{YOLO}, utilizando técnicas de \textit{Transfer Learning} para identificar simultaneamente o estado de maturação e a presença de patologias (mofo, podridão apical e rachaduras);
+	\item Estruturar um \textit{dataset} com amostras coletadas localmente, realizando o treinamento e a otimização dos pesos em ambiente de computação em nuvem (\textit{Google Colab});
+	\item Implementar rotinas de visão computacional para a estimativa do diâmetro horizontal dos frutos através da conversão de \textit{pixels} para milímetros, visando a classificação por calibre comercial (entre 15 mm e 35 mm);
+	\item Projetar e integrar uma arquitetura de processamento local (\textit{Edge Computing}) baseada em computador pessoal com interface microcontrolada, garantindo a execução do modelo com baixa latência e o acionamento sincronizado dos atuadores para a separação física dos frutos;
+	\item Avaliar o desempenho global do protótipo, analisando métricas de acurácia, tempo de inferência e a eficiência do descarte mecânico, com foco na meta referencial de 90\% de assertividade.
+\end{itemize}

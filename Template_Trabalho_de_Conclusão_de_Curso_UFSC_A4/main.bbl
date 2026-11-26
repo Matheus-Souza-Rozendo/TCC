@@ -1,0 +1,225 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nty/global//global/global/global}
+    \entry{NBR14724:2011}{manual}{}{}
+      \name{shortauthor}{1}{}{%
+        {{un=0,uniquepart=base,hash=25e485c3f2fbdf1b897e6899dd1f8bef}{%
+           family={ABNT},
+           familyi={A\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Rio de Janeiro}%
+      }
+      \list{organization}{1}{%
+        {Associação Brasileira de Normas Técnicas}%
+      }
+      \strng{namehash}{25e485c3f2fbdf1b897e6899dd1f8bef}
+      \strng{bibnamehash}{25e485c3f2fbdf1b897e6899dd1f8bef}
+      \strng{shortauthorbibnamehash}{25e485c3f2fbdf1b897e6899dd1f8bef}
+      \strng{shortauthornamehash}{25e485c3f2fbdf1b897e6899dd1f8bef}
+      \strng{shortauthorfullhash}{25e485c3f2fbdf1b897e6899dd1f8bef}
+      \strng{shortauthorfullhashraw}{25e485c3f2fbdf1b897e6899dd1f8bef}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{shortauthor}
+      \field{labeltitlesource}{title}
+      \field{month}{03}
+      \field{subtitle}{Informação e documentação --- Trabalhos acadêmicos --- Apresentação}
+      \field{title}{{NBR} 14724}
+      \field{year}{2011}
+    \endentry
+    \entry{FAO2011}{book}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=264d9adc36dcc763205708230a469e23}{%
+           family={{Food and Agriculture Organization of the United Nations}},
+           familyi={F\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Rome}%
+      }
+      \list{publisher}{1}{%
+        {FAO}%
+      }
+      \strng{namehash}{264d9adc36dcc763205708230a469e23}
+      \strng{fullhash}{264d9adc36dcc763205708230a469e23}
+      \strng{fullhashraw}{264d9adc36dcc763205708230a469e23}
+      \strng{bibnamehash}{264d9adc36dcc763205708230a469e23}
+      \strng{authorbibnamehash}{264d9adc36dcc763205708230a469e23}
+      \strng{authornamehash}{264d9adc36dcc763205708230a469e23}
+      \strng{authorfullhash}{264d9adc36dcc763205708230a469e23}
+      \strng{authorfullhashraw}{264d9adc36dcc763205708230a469e23}
+      \field{sortinit}{F}
+      \field{sortinithash}{2638baaa20439f1b5a8f80c6c08a13b4}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Global Food Losses and Food Waste: Extent, Causes and Prevention}
+      \field{year}{2011}
+    \endentry
+    \entry{ibge2016}{book}{}{}
+      \name{author}{1}{}{%
+        {{hash=3898f1ceb6fdd56f963db7f9326130e4}{%
+           family={IBGE},
+           familyi={I\bibinitperiod}}}%
+      }
+      \name{shortauthor}{1}{}{%
+        {{un=0,uniquepart=base,hash=3898f1ceb6fdd56f963db7f9326130e4}{%
+           family={IBGE},
+           familyi={I\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Rio de Janeiro}%
+      }
+      \list{organization}{1}{%
+        {Instituto Brasileiro de Geografia e Estatística}%
+      }
+      \strng{namehash}{3898f1ceb6fdd56f963db7f9326130e4}
+      \strng{fullhash}{3898f1ceb6fdd56f963db7f9326130e4}
+      \strng{fullhashraw}{3898f1ceb6fdd56f963db7f9326130e4}
+      \strng{bibnamehash}{3898f1ceb6fdd56f963db7f9326130e4}
+      \strng{authorbibnamehash}{3898f1ceb6fdd56f963db7f9326130e4}
+      \strng{authornamehash}{3898f1ceb6fdd56f963db7f9326130e4}
+      \strng{authorfullhash}{3898f1ceb6fdd56f963db7f9326130e4}
+      \strng{authorfullhashraw}{3898f1ceb6fdd56f963db7f9326130e4}
+      \strng{shortauthorbibnamehash}{3898f1ceb6fdd56f963db7f9326130e4}
+      \strng{shortauthornamehash}{3898f1ceb6fdd56f963db7f9326130e4}
+      \strng{shortauthorfullhash}{3898f1ceb6fdd56f963db7f9326130e4}
+      \strng{shortauthorfullhashraw}{3898f1ceb6fdd56f963db7f9326130e4}
+      \field{extraname}{1}
+      \field{sortinit}{I}
+      \field{sortinithash}{8d291c51ee89b6cd86bf5379f0b151d8}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{shortauthor}
+      \field{labeltitlesource}{title}
+      \field{edition}{2}
+      \field{title}{Arranjos populacionais e concentrações urbanas no Brasil}
+      \field{urlday}{16}
+      \field{urlmonth}{8}
+      \field{urlyear}{2019}
+      \field{year}{2016}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://biblioteca.ibge.gov.br/visualizacao/livros/liv99700.pdf
+      \endverb
+      \verb{url}
+      \verb https://biblioteca.ibge.gov.br/visualizacao/livros/liv99700.pdf
+      \endverb
+    \endentry
+    \entry{ibge1993}{book}{}{}
+      \name{author}{1}{}{%
+        {{hash=3898f1ceb6fdd56f963db7f9326130e4}{%
+           family={IBGE},
+           familyi={I\bibinitperiod}}}%
+      }
+      \name{shortauthor}{1}{}{%
+        {{un=0,uniquepart=base,hash=3898f1ceb6fdd56f963db7f9326130e4}{%
+           family={IBGE},
+           familyi={I\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Rio de Janeiro}%
+      }
+      \list{organization}{1}{%
+        {Fundação Instituto Brasileiro de Geografia e Estatística}%
+      }
+      \list{publisher}{1}{%
+        {Centro de Documentação e Disseminação de Informações.}%
+      }
+      \strng{namehash}{3898f1ceb6fdd56f963db7f9326130e4}
+      \strng{fullhash}{3898f1ceb6fdd56f963db7f9326130e4}
+      \strng{fullhashraw}{3898f1ceb6fdd56f963db7f9326130e4}
+      \strng{bibnamehash}{3898f1ceb6fdd56f963db7f9326130e4}
+      \strng{authorbibnamehash}{3898f1ceb6fdd56f963db7f9326130e4}
+      \strng{authornamehash}{3898f1ceb6fdd56f963db7f9326130e4}
+      \strng{authorfullhash}{3898f1ceb6fdd56f963db7f9326130e4}
+      \strng{authorfullhashraw}{3898f1ceb6fdd56f963db7f9326130e4}
+      \strng{shortauthorbibnamehash}{3898f1ceb6fdd56f963db7f9326130e4}
+      \strng{shortauthornamehash}{3898f1ceb6fdd56f963db7f9326130e4}
+      \strng{shortauthorfullhash}{3898f1ceb6fdd56f963db7f9326130e4}
+      \strng{shortauthorfullhashraw}{3898f1ceb6fdd56f963db7f9326130e4}
+      \field{extraname}{2}
+      \field{sortinit}{I}
+      \field{sortinithash}{8d291c51ee89b6cd86bf5379f0b151d8}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{shortauthor}
+      \field{labeltitlesource}{title}
+      \field{edition}{3}
+      \field{title}{Normas de apresentação tabular}
+      \field{urlday}{16}
+      \field{urlmonth}{8}
+      \field{urlyear}{2019}
+      \field{year}{1993}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb http://biblioteca.ibge.gov.br/visualizacao/livros/liv23907.pdf
+      \endverb
+      \verb{url}
+      \verb http://biblioteca.ibge.gov.br/visualizacao/livros/liv23907.pdf
+      \endverb
+    \endentry
+    \entry{ciagro2020}{inproceedings}{}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=5cae904a329f6fe9cc72e0600a290c32}{%
+           family={Santos},
+           familyi={S\bibinitperiod},
+           given={A.\bibnamedelimi S.},
+           giveni={A\bibinitperiod\bibinitdelim S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=8ef41e8d39d1b6a340317ee8dfbbbcce}{%
+           family={Silva},
+           familyi={S\bibinitperiod},
+           given={J.\bibnamedelimi B.},
+           giveni={J\bibinitperiod\bibinitdelim B\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {Instituto Internacional Despertando Vocações}%
+      }
+      \strng{namehash}{18a19f3746b5099e89091644450bdf05}
+      \strng{fullhash}{18a19f3746b5099e89091644450bdf05}
+      \strng{fullhashraw}{18a19f3746b5099e89091644450bdf05}
+      \strng{bibnamehash}{18a19f3746b5099e89091644450bdf05}
+      \strng{authorbibnamehash}{18a19f3746b5099e89091644450bdf05}
+      \strng{authornamehash}{18a19f3746b5099e89091644450bdf05}
+      \strng{authorfullhash}{18a19f3746b5099e89091644450bdf05}
+      \strng{authorfullhashraw}{18a19f3746b5099e89091644450bdf05}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Anais do I Congresso Internacional da Agroindústria (CIAGRO)}
+      \field{title}{Diagnóstico sobre perdas pós-colheita de frutas e hortaliças no {CEASA} de {Juazeiro-BA}}
+      \field{year}{2020}
+      \verb{doi}
+      \verb 10.31692/ICIAGRO.2020.0297
+      \endverb
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

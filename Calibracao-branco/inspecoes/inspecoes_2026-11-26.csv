@@ -1,0 +1,5 @@
+﻿data_hora;classificacao;tomate;destino;maturacao;pct_colorido;pct_vermelho;defeito;prob_defeito;diametro_mm;comprimento_mm;largura_mm;circularidade
+2026-11-26T19:45:41;1;1;Descarte;maduro;100,0;100,0;com defeito;0,941;23,20;26,12;22,81;0,705
+2026-11-26T19:46:31;2;1;Maduro;maduro;100,0;100,0;sadio;0,357;28,25;35,20;22,84;0,767
+2026-11-26T19:47:25;3;1;Descarte;imaturo;0,0;0,0;com defeito;0,984;24,49;33,57;16,85;0,716
+2026-11-26T19:48:01;4;1;Descarte;maduro;100,0;100,0;com defeito;0,976;28,14;37,63;20,53;0,671
