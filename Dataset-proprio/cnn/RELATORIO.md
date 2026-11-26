@@ -7,8 +7,8 @@ Divisão sempre **por tomate**: fotos do mesmo tomate nunca ficam em treino e va
 
 | Classe | Fotos | Tomates |
 |---|---|---|
-| sadio | 109 | 17 |
-| com_defeito | 67 | 11 |
+| sadio | 102 | 16 |
+| com_defeito | 74 | 12 |
 
 ## Validação cruzada (5 dobras por tomate)
 
@@ -16,26 +16,26 @@ Cada dobra treina uma rede nova e valida em tomates que ela nunca viu. A média 
 
 | Dobra | Fotos | Melhor época | Acurácia | Acurácia balanceada | Sensibilidade (acha defeito) | Especificidade (passa sadio) | F1 |
 |---|---|---|---|---|---|---|---|
-| 1 | 35 | 30 | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
-| 2 | 37 | 20 | 78.4% | 83.3% | 100.0% | 66.7% | 76.5% |
-| 3 | 35 | 21 | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
-| 4 | 38 | 18 | 94.7% | 94.3% | 92.9% | 95.8% | 92.9% |
-| 5 | 31 | 12 | 77.4% | 77.0% | 75.0% | 78.9% | 72.0% |
-| **Média** | | | **90.1%** | **90.9%** | **93.6%** | **88.3%** | **88.3%** |
-| Desvio padrão | | | 10.2% | 9.3% | 9.7% | 13.3% | 11.8% |
+| 1 | 32 | 20 | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| 2 | 37 | 10 | 94.6% | 94.1% | 92.3% | 95.8% | 92.3% |
+| 3 | 37 | 12 | 97.3% | 97.2% | 94.4% | 100.0% | 97.1% |
+| 4 | 31 | 10 | 90.3% | 90.6% | 92.3% | 88.9% | 88.9% |
+| 5 | 39 | 3 | 92.3% | 90.6% | 81.2% | 100.0% | 89.7% |
+| **Média** | | | **94.9%** | **94.5%** | **92.1%** | **96.9%** | **93.6%** |
+| Desvio padrão | | | 3.5% | 3.7% | 6.1% | 4.3% | 4.3% |
 
 Matriz de confusão somando as dobras (cada foto aparece uma vez, como validação):
 
 | Real \ CNN | sadio | com_defeito |
 |---|---|---|
-| sadio | 96 | 13 |
-| com_defeito | 4 | 63 |
+| sadio | 99 | 3 |
+| com_defeito | 6 | 68 |
 
 Curvas de aprendizado: `curva_dobra_N.png` (e `historico_dobra_N.csv`). Recortes errados: `erros_validacao/` (p = probabilidade de defeito dada pela CNN).
 
 ## Modelo final (`cnn_defeito.onnx`, usado na IHM)
 
-Treinado com **todos** os tomates por 20 épocas (mediana da melhor época das dobras, de no máximo 30). Com poucos tomates com defeito, separar alguns só para escolher a época tiraria exemplos que fazem falta; o desempenho esperado é o da validação cruzada acima.
+Treinado com **todos** os tomates por 10 épocas (mediana da melhor época das dobras, de no máximo 30). Com poucos tomates com defeito, separar alguns só para escolher a época tiraria exemplos que fazem falta; o desempenho esperado é o da validação cruzada acima.
 
 > O resultado definitivo é o do conjunto de teste (2º lote), avaliado uma única vez.
 
