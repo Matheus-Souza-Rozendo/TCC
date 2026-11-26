@@ -8,19 +8,18 @@ import csv
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import FrozenSet, List, Optional
+from typing import Callable, FrozenSet, List, Optional
 
 import cv2
 import numpy as np
 
 from .errors import CalibrationError
 
-DEFECT_CODES = {"r": "rachado", "p": "podre", "d": "dano_mecanico", "m": "mancha"}
-MATURITY_CODES = {"1": "imaturo", "2": "intermediario", "3": "maduro"}
+DEFECTS = ("rachado", "podre", "dano_mecanico", "mancha")
+MATURITIES = ("imaturo", "intermediario", "maduro")
 JPEG_QUALITY = 95
 CSV_DELIMITER = ";"  # o Excel em português abre direto com ";"
-CSV_COLUMNS = ["arquivo", "tomate", "foto", "data_hora", *DEFECT_CODES.values(), "sadio",
-               "maturacao", "diametro_paquimetro_mm"]
+CSV_COLUMNS = ["arquivo", "tomate", "foto", "data_hora", *DEFECTS, "sadio", "maturacao", "diametro_paquimetro_mm"]
 
 
 @dataclass(frozen=True)
@@ -34,37 +33,16 @@ class TomatoLabels:
         """Sadio = nenhum defeito. Não é um rótulo marcado à parte, para não contradizer os defeitos."""
         return not self.defects
 
-    def describe(self) -> str:
-        defects = ", ".join(sorted(self.defects)) if self.defects else "sadio"
-        maturity = self.maturity or "nao informada"
-        diameter = f"{self.caliper_diameter_mm:.2f} mm" if self.caliper_diameter_mm is not None else "nao informado"
-        return f"tomate {self.tomato_id} | defeitos: {defects} | maturacao: {maturity} | paquimetro: {diameter}"
-
-
-def parse_defects(text: str) -> FrozenSet[str]:
-    """Letras juntas, em qualquer ordem: 'rp' = rachado e podre. Vazio = sadio."""
-    letters = set(text.strip().lower().replace(" ", "").replace(",", ""))
-    unknown = letters - set(DEFECT_CODES)
-    if unknown:
-        raise ValueError(f"Letra(s) de defeito invalida(s): {', '.join(sorted(unknown))}. Use r, p, d, m.")
-    return frozenset(DEFECT_CODES[letter] for letter in letters)
-
-
-def parse_maturity(text: str) -> Optional[str]:
-    code = text.strip()
-    if not code:
-        return None
-    if code not in MATURITY_CODES:
-        raise ValueError("Maturacao invalida. Use 1, 2, 3 ou ENTER para nao informar.")
-    return MATURITY_CODES[code]
-
 
 def parse_optional_diameter(text: str) -> Optional[float]:
     if not text.strip():
         return None
-    value = float(text.strip().replace(",", "."))
+    try:
+        value = float(text.strip().replace(",", "."))
+    except ValueError:
+        raise ValueError(f"Diâmetro inválido: '{text.strip()}'. Use um número em mm, ex.: 24,5.") from None
     if not 5 <= value <= 80:
-        raise ValueError("Diametro fora da faixa esperada para tomate (5 a 80 mm).")
+        raise ValueError("Diâmetro fora da faixa esperada para tomate (5 a 80 mm).")
     return value
 
 
@@ -76,12 +54,20 @@ class LabeledPhoto:
     healthy: bool
 
 
-class LabeledPhotoStore:
-    """Grava as fotos em <pasta>/fotos/ e uma linha por foto em <pasta>/rotulos.csv."""
+def _no_subfolder(labels: TomatoLabels) -> str:
+    return ""
 
-    def __init__(self, root: Path):
+
+class LabeledPhotoStore:
+    """Grava as fotos em <pasta>/fotos/<subpasta>/ e uma linha por foto em <pasta>/rotulos.csv.
+
+    A subpasta vem de uma regra (ex.: a maturação), para as fotos já ficarem separadas por classe.
+    """
+
+    def __init__(self, root: Path, subfolder_rule: Callable[[TomatoLabels], str] = _no_subfolder):
         self._photos_folder = root / "fotos"
         self._labels_file = root / "rotulos.csv"
+        self._subfolder_rule = subfolder_rule
 
     def labeled_photos(self) -> List[LabeledPhoto]:
         return [
@@ -103,12 +89,12 @@ class LabeledPhotoStore:
 
     def save(self, frame: np.ndarray, labels: TomatoLabels) -> Path:
         photo_number = self.photo_count(labels.tomato_id) + 1
-        destination = self._photos_folder / f"tomate_{labels.tomato_id:04d}_foto_{photo_number:02d}.jpg"
-        _write_jpeg(frame, destination)
-        self._append_row(_csv_row(destination.name, labels, photo_number))
-        return destination
+        relative_path = Path(self._subfolder_rule(labels)) / f"tomate_{labels.tomato_id:04d}_foto_{photo_number:02d}.jpg"
+        _write_jpeg(frame, self._photos_folder / relative_path)
+        self._append_row(_csv_row(relative_path.as_posix(), labels, photo_number))
+        return self._photos_folder / relative_path
 
-    def _read_rows(self):
+    def _read_rows(self) -> List[dict]:
         if not self._labels_file.is_file():
             return []
         with self._labels_file.open(encoding="utf-8-sig", newline="") as file:
@@ -125,9 +111,9 @@ class LabeledPhotoStore:
             writer.writerow(row)
 
 
-def _csv_row(file_name: str, labels: TomatoLabels, photo_number: int) -> dict:
+def _csv_row(relative_path: str, labels: TomatoLabels, photo_number: int) -> dict:
     row = {
-        "arquivo": file_name,
+        "arquivo": relative_path,
         "tomate": labels.tomato_id,
         "foto": photo_number,
         "data_hora": datetime.now().isoformat(timespec="seconds"),
@@ -137,13 +123,13 @@ def _csv_row(file_name: str, labels: TomatoLabels, photo_number: int) -> dict:
         "diametro_paquimetro_mm": "" if labels.caliper_diameter_mm is None
         else f"{labels.caliper_diameter_mm:.2f}".replace(".", ","),
     }
-    row.update({defect: int(defect in labels.defects) for defect in DEFECT_CODES.values()})
+    row.update({defect: int(defect in labels.defects) for defect in DEFECTS})
     return row
 
 
 def _write_jpeg(frame: np.ndarray, destination: Path) -> None:
     encoded_successfully, encoded = cv2.imencode(".jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, JPEG_QUALITY])
     if not encoded_successfully:
-        raise CalibrationError(f"Nao foi possivel gerar o JPG de '{destination.name}'.")
+        raise CalibrationError(f"Não foi possível gerar o JPG de '{destination.name}'.")
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_bytes(encoded.tobytes())

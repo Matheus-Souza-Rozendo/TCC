@@ -17,7 +17,7 @@ Depois, o `testar_medicao.bat` mede objetos circulares (ex.: moeda) para conferi
 | `calibrar.bat` | Pergunta a câmera, o arquivo de saída, a estratégia de ganho (1 = `referencia_verde`, 2 = `nivel_alvo`) e se salva a foto antes × depois; depois abre a calibração |
 | `calibrar_escala.bat` | Pergunta a **câmera** (sugere a gravada no `.gain`; ENTER aceita) e o **lado do quadrado em mm**. A região vem do `bancada.gain` e os cantos são detectados sozinhos; grava a escala no mesmo `.gain` e salva `bancada_escala.png`. Para outro `.gain`, arraste o arquivo em cima do `.bat` |
 | `testar_medicao.bat` | Captura pela câmera (ou mede uma imagem arrastada em cima do `.bat`), segmenta objetos claros sobre o fundo preto e mede o diâmetro sem e com a correção por região. Pergunta o diâmetro real (opcional) para mostrar o erro. Salva em `medicoes\` |
-| `capturar_dataset.bat` | Fotos com rótulos (defeitos, maturação, diâmetro do paquímetro). Pergunta o destino: 1 = defeitos (`Dataset-proprio`), 2 = cor/LUT (`Dataset-cor`), 3 = teste do 2º lote (`Dataset-teste`) |
+| `capturar_dataset.bat` | Abre a **janela de captura**: escolha o destino (Cor, Defeitos ou Teste), marque os rótulos e clique em **Tirar foto**. As pastas são criadas sozinhas e separadas por classe |
 | `gerar_lut.bat` | Gera a LUT de cor (`lut_cor.npz`) com as fotos de `Dataset-cor`: agrupa os pixels por cor, você nomeia os grupos, treina a MLP e confere a maturação de cada foto |
 | `atualizar.bat` | Puxa as últimas alterações do GitHub (`git pull`) |
 | `enviar.bat` | Envia ao GitHub tudo o que mudou neste PC (ex.: `bancada.gain`, fotos, `medicoes\`). Mostra os arquivos, pede uma descrição, baixa o que o outro PC enviou antes e faz o push. Se faltar internet, o commit fica guardado e sobe no próximo envio |
@@ -137,26 +137,39 @@ Se o objeto não for redondo (circularidade < 0,85), a imagem avisa `NAO circula
 | `--largura-janela` | `960` | Largura das janelas na tela |
 | `--sem-conferencia` | | Não abre a janela com o resultado |
 
-## Captura do dataset próprio
+## Captura do dataset próprio (janela)
 
 ```bash
-python -m calibracao_branco.labeled_capture_cli --gain bancada.gain
+python -m calibracao_branco.capture_gui --gain bancada.gain --raiz ..
 ```
 
-Para cada tomate:
-1. **No terminal**, os rótulos:
-   - **defeitos**: letras juntas, em qualquer ordem: `r` = rachado, `p` = podre, `d` = dano mecânico, `m` = mancha (ex.: `rp`). ENTER = sadio. `sair` encerra a sessão;
-   - **maturação** (opcional): `1` = imaturo, `2` = intermediário, `3` = maduro;
-   - **diâmetro no paquímetro** em mm (opcional; aceita vírgula).
-2. **Na janela da câmera**: ESPAÇO tira uma foto (gire o tomate entre as fotos), ENTER passa para o próximo tomate, ESC encerra.
+Câmera ao vivo à esquerda (com a região de interesse em amarelo). À direita:
 
-O número do tomate é automático (continua do último do CSV). Numere fisicamente cada tomate com esse número, para conferir depois.
+| Campo | Uso |
+|---|---|
+| **Destino das fotos** | **Cor (LUT)** → `Dataset-cor`, **Defeitos (CNN)** → `Dataset-proprio`, **Teste (2º lote)** → `Dataset-teste` |
+| **Tomate nº** | Automático, continua do último tomate **daquele** dataset. Numere fisicamente o tomate com ele |
+| **Maturação** | Não informar / Imaturo (verde) / Intermediário (de vez) / Maduro. **Obrigatória** em Cor e Teste |
+| **Defeitos** | Rachado, Podre / mofado, Dano mecânico, Mancha (vários ao mesmo tempo). Nenhum marcado = sadio |
+| **Diâmetro no paquímetro** | Opcional, em mm (aceita vírgula) |
+| **📷 Tirar foto** | Ou a barra de espaço. Gire o tomate entre as fotos |
+| **Novo tomate** | Libera os rótulos e passa para o próximo número |
 
-Saída em `../Dataset-proprio/` (vai para o GitHub pelo `enviar.bat`):
-- `fotos/tomate_0001_foto_01.jpg`: imagem limpa da câmera (média de 3 quadros, sem a marcação amarela, sem o ganho do branco aplicado), JPG qualidade 95;
-- `rotulos.csv`: uma linha por foto, com `;` e vírgula decimal (abre direto no Excel). Colunas: `arquivo; tomate; foto; data_hora; rachado; podre; dano_mecanico; mancha; sadio; maturacao; diametro_paquimetro_mm`. Cada defeito é 0 ou 1 (multirrótulo); `sadio` = 1 quando não há nenhum defeito.
+**Rótulos travados:** depois da primeira foto de um tomate, o destino e os rótulos ficam bloqueados até "Novo tomate". Assim todas as fotos do mesmo tomate saem com os mesmos rótulos.
 
-**Divisão train/val/test: sempre por tomate**, usando a coluna `tomate`. Fotos do mesmo tomate em conjuntos diferentes vazam informação para o teste.
+**Pastas criadas sozinhas, separadas por classe** (formato "uma pasta por classe", que o PyTorch `ImageFolder` e o Keras leem direto):
+
+```text
+Dataset-cor/fotos/imaturo/   intermediario/   maduro/
+Dataset-proprio/fotos/sadio/   com_defeito/
+Dataset-teste/fotos/                (sem subpastas: o teste avalia cor, defeito e tamanho juntos)
+```
+
+Cada dataset tem o seu `rotulos.csv` (`;` e vírgula decimal, abre no Excel): `arquivo` (caminho relativo, ex.: `maduro/tomate_0001_foto_01.jpg`), `tomate`, `foto`, `data_hora`, uma coluna 0/1 por defeito, `sadio`, `maturacao`, `diametro_paquimetro_mm`.
+
+A foto é a imagem limpa da câmera (média de 3 quadros, sem a marcação amarela e sem o ganho do branco), em JPG de qualidade 95.
+
+**Divisão train/val/test: sempre por tomate** (coluna `tomate`), nunca por foto.
 
 ## LUT de cor (MLP)
 
@@ -164,7 +177,7 @@ Saída em `../Dataset-proprio/` (vai para o GitHub pelo `enviar.bat`):
 python -m calibracao_branco.lut_cli --gain bancada.gain --pasta ../Dataset-cor --saida lut_cor.npz
 ```
 
-**Antes:** fotografe tomates verdes, "de vez" e maduros com o `capturar_dataset.bat`, opção 2, **informando a maturação** (1, 2 ou 3). Use pelo menos 3 tomates de cada estádio, para ter validação separada, e 3 ou 4 fotos por tomate.
+**Antes:** fotografe tomates verdes, "de vez" e maduros com o `capturar_dataset.bat`, destino **Cor (LUT)** (a maturação é obrigatória nele). Use pelo menos 3 tomates de cada estádio, para ter validação separada, e 3 ou 4 fotos por tomate.
 
 **O que acontece:**
 1. Aplica os ganhos do branco, segmenta os tomates e sorteia até 4.000 pixels por foto, de dentro da máscara um pouco encolhida (a borda mistura tomate e fundo). Pixels de fora da máscara viram a classe **fundo**.
@@ -299,7 +312,9 @@ python -m unittest discover -s tests -t .
 | `measurement_overlay.py` | Imagem de resultado da medição |
 | `measurement_cli.py` | Linha de comando do teste de medição |
 | `labeled_capture.py` | Rótulos do dataset próprio, nomes das fotos e o `rotulos.csv` |
-| `labeled_capture_cli.py` | Linha de comando da captura rotulada (`TomatoPhotoSession`) |
+| `capture_destinations.py` | Destinos das fotos (Strategy): pasta, subpasta por classe e rótulos obrigatórios |
+| `capture_controller.py` | Regras da captura sem interface: número do tomate, trava dos rótulos, validação |
+| `capture_gui.py` | Janela de captura (Tkinter): vídeo, rótulos e botão Tirar foto |
 | `color_classes.py` | Classes de pixel e a regra de maturação do RF02 (% colorido) |
 | `color_samples.py` | Segmentação das fotos rotuladas e amostra de pixels do tomate e do fundo |
 | `color_groups.py` | k-means em Lab, nomes dos grupos e o painel para nomear |

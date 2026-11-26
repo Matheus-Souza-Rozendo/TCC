@@ -1,5 +1,5 @@
 @echo off
-rem Gera a LUT de cor (MLP) a partir das fotos de ..\Dataset-cor (capturar_dataset.bat, opcao 2).
+rem Gera a LUT de cor (MLP) a partir das fotos de ..\Dataset-cor (capturar_dataset.bat, destino Cor).
 rem 1. Segmenta os tomates e agrupa os pixels por cor.
 rem 2. Abre um painel com os grupos: voce diz o que e cada grupo (verde, amarelado, rosado, vermelho, calice).
 rem 3. Treina a MLP, gera lut_cor.npz e confere a maturacao de cada foto.
@@ -11,7 +11,7 @@ if not exist "bancada.gain" (
     goto fim
 )
 if not exist "..\Dataset-cor\rotulos.csv" (
-    echo ERRO: sem fotos em ..\Dataset-cor. Rode o capturar_dataset.bat e escolha a opcao 2.
+    echo ERRO: sem fotos em ..\Dataset-cor. Rode o capturar_dataset.bat com o destino Cor.
     goto fim
 )
 
