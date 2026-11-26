@@ -107,16 +107,27 @@ A moeda varia **4%** em pixels de cima para baixo, mas o tabuleiro variou só **
 |---|---|---|
 | A segmentação corta a borda da moeda | Perfil de brilho radial nas fotos `_original`: borda a meia altura em r = 65,4 px; contorno segmentado em r = 66,1 px | **Descartada.** O contorno fica 0,7 px *por fora* da borda, ou seja, tenderia a aumentar a moeda, não diminuir. A borda é nítida (transição de ~4 px), então o foco está bom. |
 | Espessura da moeda (≈ 2 mm mais perto da câmera) | Conta: 303 / (303 − 2) = +0,7% | **Descartada como causa.** Deixaria a moeda ~0,17 mm *maior*. O viés real é o contrário e ainda maior. |
-| **Quadrado impresso diferente de 15,000 mm** | Não dá para testar pelos arquivos | **Possível.** Um quadrado real de ~15,2 a 15,3 mm (impressão em escala > 100%) explicaria um viés de −1% a −2%. **Medir com paquímetro.** |
-| **Papel e moeda em planos diferentes** (altura ou inclinação) | Comparação do degradê de pixels (tabela acima) | **Provável.** Se o papel estava ~3 a 6 mm mais alto que a moeda (por exemplo, sobre uma prancheta, ou por cima de um tecido fofo onde a moeda afunda) ou inclinado diferente, a escala fica menor e o degradê diferente, que é o que se vê. |
+| Quadrado impresso diferente de 15,000 mm | Conferido pelo autor: cada quadrado mede 15 mm | **Descartada.** |
+| **Papel e moeda em planos diferentes** (altura ou inclinação) | Comparação do degradê de pixels (tabela acima) | **Causa mais provável** (as outras foram descartadas). Se o papel estava ~3 a 6 mm mais alto que a moeda (por exemplo, sobre uma prancheta, ou por cima de um tecido fofo onde a moeda afunda) ou inclinado diferente, a escala fica menor e o degradê diferente, que é o que se vê. |
 | Câmera não perpendicular | Degradê linear de cima para baixo nas duas medidas | **Provável, e soma com a anterior.** Não causa viés sozinho se papel e moeda estão no mesmo plano, mas aumenta a variação dentro de cada célula. |
 | Valor real da moeda ≠ 27,00 mm | Não medido | Moedas gastas variam alguns centésimos de mm. Não explica 0,5 mm, mas **medir com paquímetro** para usar o valor certo. |
 
-## Próximos passos
+## Decisão (26/11/2026)
+
+O tabuleiro foi conferido (15 mm por quadrado). Por causa do prazo de entrega, **a calibração e as medições ficaram como estão** para o TCC.
+Os resultados atendem o RF04 (erro médio absoluto de 0,46 mm ≤ 1 mm) e o RF05 (erro máximo de 0,46 mm ≤ 0,5 mm). O viés de −0,5 mm fica registrado como **limitação** e como **trabalho futuro**.
+
+**Como apresentar no texto:**
+- Reportar os números das duas linhas "1 média por posição" (10 posições). As repetições no mesmo lugar entram só como repetibilidade (desvio de 0,01 a 0,03 mm).
+- Destacar que a correção por região reduziu a diferença entre posições de 1,08 para 0,56 mm.
+- Explicar o viés com o diagnóstico da seção 4: segmentação e tamanho do tabuleiro descartados; causa provável é a diferença de plano/inclinação entre o papel de calibração e o objeto.
+- **Não** aplicar um fator de correção calculado com estas mesmas medições da moeda: seria validar o sistema com os mesmos dados usados para ajustá-lo (resultado circular).
+
+## Próximos passos (depois da entrega)
 
 **Antes de coletar mais dados** (sem isso, mais amostras só repetem o mesmo viés):
 
-1. **Medir o tabuleiro impresso** com paquímetro ou régua: 10 quadrados devem dar 150,0 mm. Se der outro valor, refazer o `calibrar_escala.bat` com o tamanho medido (ex.: 15,25).
+1. ~~Medir o tabuleiro impresso~~: feito, 15 mm por quadrado.
 2. **Papel no mesmo plano da moeda:** o papel tem que ficar **diretamente sobre o tecido**, esticado e plano, no lugar dos tomates. Nada de prancheta ou papelão por baixo, a não ser que os objetos também fiquem em cima deles. Se o tecido é fofo, esticar bem ou usar uma base rígida sob o tecido.
 3. **Nivelar a câmera:** usar um nível de bolha no celular e no fundo. A linha de baixo não deveria dar 3,6% diferente da linha de cima.
 4. **Tabuleiro maior que a região**, sobrando pelo menos 1 quadrado em cada borda. Hoje há só 10 a 12 trechos nas células dos cantos.
