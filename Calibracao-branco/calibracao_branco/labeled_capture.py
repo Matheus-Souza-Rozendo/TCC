@@ -8,7 +8,7 @@ import csv
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import FrozenSet, Optional
+from typing import FrozenSet, List, Optional
 
 import cv2
 import numpy as np
@@ -68,12 +68,31 @@ def parse_optional_diameter(text: str) -> Optional[float]:
     return value
 
 
+@dataclass(frozen=True)
+class LabeledPhoto:
+    path: Path
+    tomato_id: int
+    maturity: Optional[str]
+    healthy: bool
+
+
 class LabeledPhotoStore:
     """Grava as fotos em <pasta>/fotos/ e uma linha por foto em <pasta>/rotulos.csv."""
 
     def __init__(self, root: Path):
         self._photos_folder = root / "fotos"
         self._labels_file = root / "rotulos.csv"
+
+    def labeled_photos(self) -> List[LabeledPhoto]:
+        return [
+            LabeledPhoto(
+                path=self._photos_folder / row["arquivo"],
+                tomato_id=int(row["tomate"]),
+                maturity=row["maturacao"] or None,
+                healthy=row["sadio"] == "1",
+            )
+            for row in self._read_rows()
+        ]
 
     def next_tomato_id(self) -> int:
         tomato_ids = [int(row["tomate"]) for row in self._read_rows()]

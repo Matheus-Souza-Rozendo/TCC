@@ -17,7 +17,8 @@ Depois, o `testar_medicao.bat` mede objetos circulares (ex.: moeda) para conferi
 | `calibrar.bat` | Pergunta a câmera, o arquivo de saída, a estratégia de ganho (1 = `referencia_verde`, 2 = `nivel_alvo`) e se salva a foto antes × depois; depois abre a calibração |
 | `calibrar_escala.bat` | Pergunta a **câmera** (sugere a gravada no `.gain`; ENTER aceita) e o **lado do quadrado em mm**. A região vem do `bancada.gain` e os cantos são detectados sozinhos; grava a escala no mesmo `.gain` e salva `bancada_escala.png`. Para outro `.gain`, arraste o arquivo em cima do `.bat` |
 | `testar_medicao.bat` | Captura pela câmera (ou mede uma imagem arrastada em cima do `.bat`), segmenta objetos claros sobre o fundo preto e mede o diâmetro sem e com a correção por região. Pergunta o diâmetro real (opcional) para mostrar o erro. Salva em `medicoes\` |
-| `capturar_dataset.bat` | Fotos do dataset próprio com rótulos: para cada tomate pergunta defeitos, maturação e diâmetro do paquímetro; ESPAÇO tira foto. Grava em `..\Dataset-proprio\` |
+| `capturar_dataset.bat` | Fotos com rótulos (defeitos, maturação, diâmetro do paquímetro). Pergunta o destino: 1 = defeitos (`Dataset-proprio`), 2 = cor/LUT (`Dataset-cor`), 3 = teste do 2º lote (`Dataset-teste`) |
+| `gerar_lut.bat` | Gera a LUT de cor (`lut_cor.npz`) com as fotos de `Dataset-cor`: agrupa os pixels por cor, você nomeia os grupos, treina a MLP e confere a maturação de cada foto |
 | `atualizar.bat` | Puxa as últimas alterações do GitHub (`git pull`) |
 | `enviar.bat` | Envia ao GitHub tudo o que mudou neste PC (ex.: `bancada.gain`, fotos, `medicoes\`). Mostra os arquivos, pede uma descrição, baixa o que o outro PC enviou antes e faz o push. Se faltar internet, o commit fica guardado e sobe no próximo envio |
 | `diagnosticar_camera.bat` | Testa os índices 0 a 5 (e a URL do Wi-Fi, se informada) e mostra quais entregam imagem |
@@ -157,6 +158,35 @@ Saída em `../Dataset-proprio/` (vai para o GitHub pelo `enviar.bat`):
 
 **Divisão train/val/test: sempre por tomate**, usando a coluna `tomate`. Fotos do mesmo tomate em conjuntos diferentes vazam informação para o teste.
 
+## LUT de cor (MLP)
+
+```bash
+python -m calibracao_branco.lut_cli --gain bancada.gain --pasta ../Dataset-cor --saida lut_cor.npz
+```
+
+**Antes:** fotografe tomates verdes, "de vez" e maduros com o `capturar_dataset.bat`, opção 2, **informando a maturação** (1, 2 ou 3). Use pelo menos 3 tomates de cada estádio, para ter validação separada, e 3 ou 4 fotos por tomate.
+
+**O que acontece:**
+1. Aplica os ganhos do branco, segmenta os tomates e sorteia até 4.000 pixels por foto, de dentro da máscara um pouco encolhida (a borda mistura tomate e fundo). Pixels de fora da máscara viram a classe **fundo**.
+2. **Agrupa** os pixels do tomate por cor (k-means em Lab, 8 grupos, ordenados do mais verde para o mais vermelho) e abre `lut/grupos.png`: cada grupo com a cor média, a % dos pixels e o tomate onde ele mais aparece, com só aquele grupo aceso.
+3. **Você diz o que é cada grupo** no terminal: `1` verde, `2` amarelado, `3` rosado, `4` vermelho, `5` cálice, `0` descartar (reflexo de luz, cor estranha). Os nomes ficam em `lut/grupos.json` e são reaproveitados nas próximas vezes; o `.bat` pergunta se quer refazer.
+4. **Treina a MLP** (scikit-learn, 2 camadas ocultas de 32, entrada em Lab), com o mesmo número de pixels por classe. Cerca de 20% dos tomates de cada estádio ficam de fora para validação, **separados por tomate**.
+5. **Gera a LUT**: a MLP é avaliada nas 256³ cores e o resultado vai para `lut_cor.npz` (tabela `[azul, verde, vermelho] → classe`). Na operação só a tabela é usada.
+6. **Confere** cada foto: aplica a LUT, calcula o % colorido (regra do RF02) e compara a maturação calculada com a informada. Resultado em `lut/RELATORIO.md`, separando validação e treino, e imagens `lut/conferencia/` (foto | classes).
+
+Usar a LUT no resto do projeto:
+
+```python
+from calibracao_branco.color_lut import load_lut, apply_lut
+from calibracao_branco.color_classes import colored_fraction, maturity_from_fraction
+
+lut = load_lut(Path("lut_cor.npz"))
+class_map = apply_lut(lut, balanced_image)          # imagem já com os ganhos do branco
+maturity = maturity_from_fraction(colored_fraction(class_map, tomato_mask))
+```
+
+**Limitação conhecida:** a LUT dá uma classe para toda cor, inclusive o reflexo de luz (que é descartado no treino). Com luz difusa o reflexo é pequeno, mas ele pode contar como pixel colorido.
+
 ## Formato do `.gain`
 
 ```text
@@ -270,3 +300,8 @@ python -m unittest discover -s tests -t .
 | `measurement_cli.py` | Linha de comando do teste de medição |
 | `labeled_capture.py` | Rótulos do dataset próprio, nomes das fotos e o `rotulos.csv` |
 | `labeled_capture_cli.py` | Linha de comando da captura rotulada (`TomatoPhotoSession`) |
+| `color_classes.py` | Classes de pixel e a regra de maturação do RF02 (% colorido) |
+| `color_samples.py` | Segmentação das fotos rotuladas e amostra de pixels do tomate e do fundo |
+| `color_groups.py` | k-means em Lab, nomes dos grupos e o painel para nomear |
+| `color_lut.py` | MLP de cor de pixel, geração, gravação e aplicação da LUT |
+| `lut_cli.py` | Linha de comando da geração da LUT (`LutConference` faz a conferência) |
