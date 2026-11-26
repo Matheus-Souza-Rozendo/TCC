@@ -3,8 +3,11 @@ import sys
 from pathlib import Path
 from typing import List
 
+import numpy as np
+
 from .camera import FrameSource, OpenCvCameraAdapter, parse_camera_address
 from .calibrator import WhiteBalanceCalibrator
+from .comparison import build_comparison, save_image
 from .errors import CalibrationError
 from .gain_file import CalibrationResult, GainFileWriter
 from .gain_strategies import GainStrategyFactory
@@ -35,8 +38,15 @@ def _run_calibration(camera: FrameSource, options: argparse.Namespace) -> None:
     result = calibrator.calibrate(region)
     GainFileWriter().write(result, Path(options.saida))
     _print_summary(result, options.saida)
+    if options.foto_comparacao:
+        _save_comparison_photo(build_comparison(camera.read_frame(), result.gains), Path(options.foto_comparacao))
     if not options.sem_conferencia:
         preview.show_corrected_comparison(camera, result.gains)
+
+
+def _save_comparison_photo(comparison: np.ndarray, destination: Path) -> None:
+    save_image(comparison, destination)
+    print(f"Foto antes x depois salva em: {destination.resolve()}")
 
 
 def _select_region_on_screen(preview: CalibrationPreview, camera: FrameSource) -> RegionOfInterest:
@@ -68,6 +78,8 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--quadros", type=_positive_integer, default=30, help="Quadros usados na média.")
     parser.add_argument("--largura-janela", type=_positive_integer, default=DEFAULT_DISPLAY_WIDTH,
                         help="Largura em pixels das janelas na tela (a altura segue a proporção). Não afeta a medição.")
+    parser.add_argument("--foto-comparacao", default="",
+                        help="Salva uma foto antes x depois (resolução original) neste caminho .png ou .jpg.")
     parser.add_argument("--sem-conferencia", action="store_true",
                         help="Não abre a janela de comparação original x corrigido no final.")
     return parser

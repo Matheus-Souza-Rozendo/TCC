@@ -6,7 +6,7 @@ import numpy as np
 from .camera import FrameSource
 from .channels import ChannelValues
 from .errors import CalibrationCancelledError
-from .gain_file import apply_gains
+from .comparison import build_comparison
 from .region import RegionOfInterest
 
 WINDOW_NAME = "Calibracao de branco"
@@ -55,9 +55,7 @@ class CalibrationPreview:
         """Mostra original e corrigido lado a lado para conferir o resultado no olho."""
         try:
             while cv2.waitKey(1) & 0xFF != KEY_ESCAPE:
-                original = frame_source.read_frame()
-                self._show(np.hstack([original, apply_gains(original, gains)]),
-                           "Esquerda: original | Direita: corrigido | ESC = sair")
+                self._show(build_comparison(frame_source.read_frame(), gains), "ESC = sair")
         finally:
             cv2.destroyAllWindows()
 

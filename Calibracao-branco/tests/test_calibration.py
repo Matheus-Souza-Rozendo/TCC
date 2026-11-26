@@ -7,6 +7,7 @@ import numpy as np
 
 from calibracao_branco.calibrator import WhiteBalanceCalibrator
 from calibracao_branco.channels import ChannelValues
+from calibracao_branco.comparison import build_comparison, save_image
 from calibracao_branco.errors import WhiteReferenceSaturatedError, WhiteReferenceTooDarkError
 from calibracao_branco.gain_file import GainFileReader, GainFileWriter, apply_gains
 from calibracao_branco.gain_strategies import GreenReferenceGainStrategy, TargetLevelGainStrategy
@@ -79,6 +80,20 @@ class RegionScalingTests(unittest.TestCase):
         original_frame = np.zeros((1080, 1920, 3), dtype=np.uint8)
         cropped = whole_screen.scaled(1 / screen_scale).crop(original_frame)
         self.assertEqual(cropped.shape[:2], (1080, 1920))
+
+
+class ComparisonPhotoTests(unittest.TestCase):
+    def test_comparison_has_before_and_after_side_by_side(self):
+        original = np.full((30, 40, 3), (200, 160, 120), dtype=np.uint8)
+        comparison = build_comparison(original, ChannelValues(red=160 / 120, green=1.0, blue=0.8))
+        self.assertEqual(comparison.shape, (30, 80, 3))
+        self.assertTrue(np.all(np.abs(comparison[-1, -1].astype(int) - 160) <= 1))
+
+    def test_photo_is_saved_even_with_accents_in_path(self):
+        with tempfile.TemporaryDirectory() as folder:
+            destination = Path(folder) / "calibração" / "comparação.png"
+            save_image(np.zeros((10, 20, 3), dtype=np.uint8), destination)
+            self.assertGreater(destination.stat().st_size, 0)
 
 
 class GainFileTests(unittest.TestCase):

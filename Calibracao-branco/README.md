@@ -7,7 +7,7 @@ Mede o gabarito branco pela câmera (DroidCam) e gera um arquivo `.gain` com o g
 | Arquivo | O que faz |
 |---|---|
 | `instalar.bat` | Instala as dependências (rode uma vez) |
-| `calibrar.bat` | Pergunta a câmera, o arquivo de saída e a estratégia de ganho (1 = `referencia_verde`, 2 = `nivel_alvo`) e abre a calibração |
+| `calibrar.bat` | Pergunta a câmera, o arquivo de saída, a estratégia de ganho (1 = `referencia_verde`, 2 = `nivel_alvo`) e se salva a foto antes × depois; depois abre a calibração |
 | `atualizar.bat` | Puxa as últimas alterações do GitHub (`git pull`) |
 | `diagnosticar_camera.bat` | Testa os índices 0 a 5 (e a URL do Wi-Fi, se informada) e mostra quais entregam imagem |
 
@@ -54,6 +54,7 @@ python -m calibracao_branco --camera 1 --saida bancada.gain
 | `--regiao` | (mouse) | Região fixa `x,y,largura,altura`. Use o valor `regiao_gabarito` do último `.gain` para repetir a mesma região |
 | `--quadros` | `30` | Quadros na média |
 | `--largura-janela` | `960` | Largura das janelas na tela; a altura segue a proporção. Só muda a exibição: a medição usa a resolução original |
+| `--foto-comparacao` | (não salva) | Salva uma foto antes × depois, na resolução original, no caminho `.png`/`.jpg` informado. O `calibrar.bat` salva como `<nome do .gain>_comparacao.png` |
 | `--sem-conferencia` | | Não abre a janela de comparação no final |
 
 O programa **para com erro** se o gabarito estiver estourado (≥ 250) ou escuro demais (< 60).

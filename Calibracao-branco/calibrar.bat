@@ -28,7 +28,13 @@ if "%OPCAO%"=="1" (
 echo Usando: %ESTRATEGIA%
 echo.
 
-python -m calibracao_branco --camera "%CAMERA%" --saida "%SAIDA%" --estrategia %ESTRATEGIA% %*
+set "SALVAR_FOTO=S"
+set /p "SALVAR_FOTO=Salvar foto de comparacao antes x depois? (S/N) [S]: "
+set "FOTO_ARG="
+if /i "%SALVAR_FOTO%"=="S" for %%F in ("%SAIDA%") do set FOTO_ARG=--foto-comparacao "%%~dpnF_comparacao.png"
+echo.
+
+python -m calibracao_branco --camera "%CAMERA%" --saida "%SAIDA%" --estrategia %ESTRATEGIA% %FOTO_ARG% %*
 if errorlevel 1 (
     echo.
     echo A calibracao falhou. Leia a mensagem de erro acima.
