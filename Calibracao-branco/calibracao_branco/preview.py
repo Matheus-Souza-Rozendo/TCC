@@ -59,6 +59,14 @@ class CalibrationPreview:
         finally:
             cv2.destroyAllWindows()
 
+    def show_and_read_key(self, image: np.ndarray, caption: str) -> int:
+        """Mostra um quadro e devolve a tecla apertada (-1 se nenhuma). Para laços ao vivo."""
+        self._show(image, caption)
+        return cv2.waitKey(1) & 0xFF
+
+    def close_windows(self) -> None:
+        cv2.destroyAllWindows()
+
     def show_until_key(self, image: np.ndarray, caption: str) -> None:
         try:
             self._show(image, f"{caption} (qualquer tecla = fechar)")

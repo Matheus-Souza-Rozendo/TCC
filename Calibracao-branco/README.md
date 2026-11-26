@@ -17,6 +17,7 @@ Depois, o `testar_medicao.bat` mede objetos circulares (ex.: moeda) para conferi
 | `calibrar.bat` | Pergunta a câmera, o arquivo de saída, a estratégia de ganho (1 = `referencia_verde`, 2 = `nivel_alvo`) e se salva a foto antes × depois; depois abre a calibração |
 | `calibrar_escala.bat` | Pergunta a **câmera** (sugere a gravada no `.gain`; ENTER aceita) e o **lado do quadrado em mm**. A região vem do `bancada.gain` e os cantos são detectados sozinhos; grava a escala no mesmo `.gain` e salva `bancada_escala.png`. Para outro `.gain`, arraste o arquivo em cima do `.bat` |
 | `testar_medicao.bat` | Captura pela câmera (ou mede uma imagem arrastada em cima do `.bat`), segmenta objetos claros sobre o fundo preto e mede o diâmetro sem e com a correção por região. Pergunta o diâmetro real (opcional) para mostrar o erro. Salva em `medicoes\` |
+| `capturar_dataset.bat` | Fotos do dataset próprio com rótulos: para cada tomate pergunta defeitos, maturação e diâmetro do paquímetro; ESPAÇO tira foto. Grava em `..\Dataset-proprio\` |
 | `atualizar.bat` | Puxa as últimas alterações do GitHub (`git pull`) |
 | `enviar.bat` | Envia ao GitHub tudo o que mudou neste PC (ex.: `bancada.gain`, fotos, `medicoes\`). Mostra os arquivos, pede uma descrição, baixa o que o outro PC enviou antes e faz o push. Se faltar internet, o commit fica guardado e sobe no próximo envio |
 | `diagnosticar_camera.bat` | Testa os índices 0 a 5 (e a URL do Wi-Fi, se informada) e mostra quais entregam imagem |
@@ -135,6 +136,27 @@ Se o objeto não for redondo (circularidade < 0,85), a imagem avisa `NAO circula
 | `--largura-janela` | `960` | Largura das janelas na tela |
 | `--sem-conferencia` | | Não abre a janela com o resultado |
 
+## Captura do dataset próprio
+
+```bash
+python -m calibracao_branco.labeled_capture_cli --gain bancada.gain
+```
+
+Para cada tomate:
+1. **No terminal**, os rótulos:
+   - **defeitos**: letras juntas, em qualquer ordem: `r` = rachado, `p` = podre, `d` = dano mecânico, `m` = mancha (ex.: `rp`). ENTER = sadio. `sair` encerra a sessão;
+   - **maturação** (opcional): `1` = imaturo, `2` = intermediário, `3` = maduro;
+   - **diâmetro no paquímetro** em mm (opcional; aceita vírgula).
+2. **Na janela da câmera**: ESPAÇO tira uma foto (gire o tomate entre as fotos), ENTER passa para o próximo tomate, ESC encerra.
+
+O número do tomate é automático (continua do último do CSV). Numere fisicamente cada tomate com esse número, para conferir depois.
+
+Saída em `../Dataset-proprio/` (vai para o GitHub pelo `enviar.bat`):
+- `fotos/tomate_0001_foto_01.jpg`: imagem limpa da câmera (média de 3 quadros, sem a marcação amarela, sem o ganho do branco aplicado), JPG qualidade 95;
+- `rotulos.csv`: uma linha por foto, com `;` e vírgula decimal (abre direto no Excel). Colunas: `arquivo; tomate; foto; data_hora; rachado; podre; dano_mecanico; mancha; sadio; maturacao; diametro_paquimetro_mm`. Cada defeito é 0 ou 1 (multirrótulo); `sadio` = 1 quando não há nenhum defeito.
+
+**Divisão train/val/test: sempre por tomate**, usando a coluna `tomate`. Fotos do mesmo tomate em conjuntos diferentes vazam informação para o teste.
+
 ## Formato do `.gain`
 
 ```text
@@ -246,3 +268,5 @@ python -m unittest discover -s tests -t .
 | `object_measurement.py` | `CircularObjectMeasurer`: diâmetro em px, sem correção e com correção por região, circularidade |
 | `measurement_overlay.py` | Imagem de resultado da medição |
 | `measurement_cli.py` | Linha de comando do teste de medição |
+| `labeled_capture.py` | Rótulos do dataset próprio, nomes das fotos e o `rotulos.csv` |
+| `labeled_capture_cli.py` | Linha de comando da captura rotulada (`TomatoPhotoSession`) |
