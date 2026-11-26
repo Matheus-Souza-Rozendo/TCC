@@ -13,7 +13,7 @@ Rode sempre nessa ordem: a escala usa a região gravada pela calibração de bra
 |---|---|
 | `instalar.bat` | Instala as dependências (rode uma vez) |
 | `calibrar.bat` | Pergunta a câmera, o arquivo de saída, a estratégia de ganho (1 = `referencia_verde`, 2 = `nivel_alvo`) e se salva a foto antes × depois; depois abre a calibração |
-| `calibrar_escala.bat` | Pergunta **só o lado do quadrado em mm**. Região e câmera vêm do `bancada.gain`, os cantos são detectados sozinhos; grava a escala no mesmo `.gain` e salva `bancada_escala.png`. Para outro `.gain`, arraste o arquivo em cima do `.bat` |
+| `calibrar_escala.bat` | Pergunta a **câmera** (sugere a gravada no `.gain`; ENTER aceita) e o **lado do quadrado em mm**. A região vem do `bancada.gain` e os cantos são detectados sozinhos; grava a escala no mesmo `.gain` e salva `bancada_escala.png`. Para outro `.gain`, arraste o arquivo em cima do `.bat` |
 | `atualizar.bat` | Puxa as últimas alterações do GitHub (`git pull`) |
 | `diagnosticar_camera.bat` | Testa os índices 0 a 5 (e a URL do Wi-Fi, se informada) e mostra quais entregam imagem |
 
