@@ -1,5 +1,5 @@
 class CalibrationError(Exception):
-    """Falha que impede gerar um arquivo de calibração confiável."""
+    """Falha que impede calibrar ou medir com confiança."""
 
 
 class CameraUnavailableError(CalibrationError):
@@ -27,4 +27,12 @@ class ChessboardNotFoundError(CalibrationError):
 
 
 class IncompleteRegionCoverageError(CalibrationError):
+    pass
+
+
+class NoObjectFoundError(CalibrationError):
+    pass
+
+
+class ObjectTouchesRegionBorderError(CalibrationError):
     pass

@@ -37,6 +37,10 @@ class ScaleSectionWriter:
 class ScaleSectionReader:
     def read(self, gain_file: Path) -> PixelScaleMap:
         entries = read_entries(gain_file)
+        if SCALE_REGION_KEY not in entries:
+            raise CalibrationFileFormatError(
+                f"'{gain_file}' ainda não tem a escala pixel -> mm. Rode o calibrar_escala.bat antes."
+            )
         grid = RegionGrid(
             RegionOfInterest.from_text(require_entry(entries, SCALE_REGION_KEY)),
             GridSize.from_text(require_entry(entries, "escala_grade")),

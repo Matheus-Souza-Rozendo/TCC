@@ -2,11 +2,11 @@ import cv2
 import numpy as np
 
 from .channels import ChannelValues
+from .drawing import size_factor
 from .gain_file import apply_gains
 
 LABEL_COLOR = (0, 255, 255)
 LABEL_OUTLINE_COLOR = (0, 0, 0)
-REFERENCE_WIDTH_FOR_LABEL = 640
 
 
 def build_comparison(original: np.ndarray, gains: ChannelValues) -> np.ndarray:
@@ -20,7 +20,7 @@ def build_comparison(original: np.ndarray, gains: ChannelValues) -> np.ndarray:
 def draw_label(frame: np.ndarray, label: str) -> np.ndarray:
     labeled = frame.copy()
     # Escala o texto pela largura para ficar legível tanto em 640 px quanto em 1920 px.
-    font_scale = frame.shape[1] / REFERENCE_WIDTH_FOR_LABEL
+    font_scale = size_factor(frame)
     position = (int(10 * font_scale), int(35 * font_scale))
     for color, thickness in ((LABEL_OUTLINE_COLOR, 5), (LABEL_COLOR, 2)):
         cv2.putText(labeled, label, position, cv2.FONT_HERSHEY_SIMPLEX, font_scale,

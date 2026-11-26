@@ -7,6 +7,8 @@ Duas calibrações, gravadas no mesmo arquivo `.gain`:
 
 Rode sempre nessa ordem: a escala usa a região gravada pela calibração de branco.
 
+Depois, o `testar_medicao.bat` mede objetos circulares (ex.: moeda) para conferir as duas calibrações.
+
 ## Atalhos (.bat)
 
 | Arquivo | O que faz |
@@ -14,6 +16,7 @@ Rode sempre nessa ordem: a escala usa a região gravada pela calibração de bra
 | `instalar.bat` | Instala as dependências (rode uma vez) |
 | `calibrar.bat` | Pergunta a câmera, o arquivo de saída, a estratégia de ganho (1 = `referencia_verde`, 2 = `nivel_alvo`) e se salva a foto antes × depois; depois abre a calibração |
 | `calibrar_escala.bat` | Pergunta a **câmera** (sugere a gravada no `.gain`; ENTER aceita) e o **lado do quadrado em mm**. A região vem do `bancada.gain` e os cantos são detectados sozinhos; grava a escala no mesmo `.gain` e salva `bancada_escala.png`. Para outro `.gain`, arraste o arquivo em cima do `.bat` |
+| `testar_medicao.bat` | Captura pela câmera (ou mede uma imagem arrastada em cima do `.bat`), segmenta objetos claros sobre o fundo preto e mede o diâmetro sem e com a correção por região. Pergunta o diâmetro real (opcional) para mostrar o erro. Salva em `medicoes\` |
 | `atualizar.bat` | Puxa as últimas alterações do GitHub (`git pull`) |
 | `diagnosticar_camera.bat` | Testa os índices 0 a 5 (e a URL do Wi-Fi, se informada) e mostra quais entregam imagem |
 
@@ -101,6 +104,36 @@ Nesse caso, use quadrados menores ou uma grade com menos células.
 
 **Se refizer a calibração de branco:** com a mesma região, a escala é mantida. Com outra região, a escala antiga é apagada (ela deixa de valer) e o programa avisa para rodar o `calibrar_escala.bat` de novo.
 
+## Teste de medição
+
+```bash
+python -m calibracao_branco.measurement_cli --gain bancada.gain --diametro-real-mm 27
+python -m calibracao_branco.measurement_cli --imagem medicoes/medicao_20261126_140000_original.png
+```
+
+**Como funciona:**
+1. Captura a imagem (média de 5 quadros) com a região de interesse em amarelo, ou lê a imagem de `--imagem`.
+2. Aplica os ganhos do branco.
+3. **Segmenta** só dentro da região: objeto claro sobre fundo preto, com limiar automático (Otsu), limpeza morfológica e buracos internos preenchidos (reflexo escuro na moeda não reduz a área). Exige contraste mínimo com o fundo, para não medir manchas do tecido.
+4. **Diâmetro sem correção:** diâmetro do círculo de mesma área, em pixels × mm/pixel médio da região (uma escala só).
+5. **Diâmetro com correção por região:** cada pixel do objeto vale `(mm/pixel da célula dele)²` em mm². A soma dá a área real, e dela sai o diâmetro.
+   Por isso o objeto pode cair em **uma ou mais células**: cada parte usa a escala da sua célula. A imagem mostra quanto do objeto ficou em cada célula.
+6. Salva `medicoes\medicao_<data_hora>.png` com o contorno, o círculo equivalente e os tamanhos.
+   Quando captura pela câmera, salva também `_original.png`. Assim dá para repetir a medição depois com `--imagem` (os ganhos são aplicados de novo).
+
+O programa **para com erro** se não achar objeto claro, ou se algum objeto encostar na borda da região (seria medido cortado).
+Se o objeto não for redondo (circularidade < 0,85), a imagem avisa `NAO circular`.
+
+| Opção | Padrão | Uso |
+|---|---|---|
+| `--gain` | `bancada.gain` | Precisa ter as duas calibrações |
+| `--camera` | (a do `.gain`) | Índice ou URL |
+| `--imagem` | (câmera) | Mede uma imagem salva em vez de capturar |
+| `--diametro-real-mm` | (não informa) | Diâmetro real para calcular o erro. Moedas: 5¢ = 22, 10¢ = 20, 25¢ = 25, 50¢ = 23, R$ 1 = 27 mm |
+| `--pasta-saida` | `medicoes` | Pasta das imagens de resultado |
+| `--largura-janela` | `960` | Largura das janelas na tela |
+| `--sem-conferencia` | | Não abre a janela com o resultado |
+
 ## Formato do `.gain`
 
 ```text
@@ -166,6 +199,21 @@ diameter_mm = diameter_px * scale_map.mm_per_pixel_at(center_x, center_y)
 
 `mm_per_pixel_at` dá erro se o ponto estiver fora da região calibrada.
 
+## Como medir no resto do projeto
+
+```python
+from pathlib import Path
+from calibracao_branco import (CircularObjectMeasurer, DarkBackgroundSegmenter, GainFileReader,
+                               ScaleSectionReader, apply_gains)
+
+gain_file = Path("bancada.gain")
+scale_map = ScaleSectionReader().read(gain_file)
+frame = apply_gains(frame_bgr, GainFileReader().read_gains(gain_file))
+measurer = CircularObjectMeasurer(scale_map)
+for segment in DarkBackgroundSegmenter().segment(frame, scale_map.grid.region):
+    print(measurer.measure(segment).diameter_mm_region_corrected)
+```
+
 ## Testes
 
 ```bash
@@ -191,4 +239,9 @@ python -m unittest discover -s tests -t .
 | `scale_file.py` | Grava/lê a seção de escala no `.gain` e a tolerância do RF05 |
 | `scale_overlay.py` | Desenho da região, dos cantos e das células; `RegionOverlayFrameSourceDecorator` (Decorator) |
 | `pixel_scale_cli.py` | Linha de comando da calibração de escala |
-| `comparison.py` / `image_files.py` | Foto antes × depois e gravação de imagens |
+| `comparison.py` / `image_files.py` | Foto antes × depois; leitura e gravação de imagens (aceitam acento no caminho) |
+| `drawing.py` | Retângulos e caixas de texto proporcionais à resolução |
+| `segmentation.py` | `ObjectSegmenter` (interface) e `DarkBackgroundSegmenter`: objetos claros sobre fundo preto |
+| `object_measurement.py` | `CircularObjectMeasurer`: diâmetro em px, sem correção e com correção por região, circularidade |
+| `measurement_overlay.py` | Imagem de resultado da medição |
+| `measurement_cli.py` | Linha de comando do teste de medição |
