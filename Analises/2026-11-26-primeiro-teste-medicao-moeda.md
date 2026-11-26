@@ -101,6 +101,43 @@ A linha "1 média por posição" é a mais justa: as repetições no mesmo lugar
 
 A moeda varia **4%** em pixels de cima para baixo, mas o tabuleiro variou só **2,4%**. Se os dois estivessem no mesmo plano, essas variações seriam iguais.
 
+## 3b. Segunda coleta: 64 medições em todas as células (14:18 a 14:27)
+
+Commit `36110a7`: mais 40 medições, todas com a foto `_original`. Os números dessas 42 fotos (40 novas mais as 2 da primeira coleta) foram
+**recalculados direto das fotos** com o mesmo código e a mesma calibração. As 22 da primeira coleta sem `_original` usam os valores lidos das imagens.
+Moeda de R$ 1 (27,00 mm) em todas. Em 14:27:10 e 14:27:15 o diâmetro real não foi digitado; é a mesma moeda e posição, então foi considerado 27,00 mm.
+
+Erro = medido − 27,00 mm. "Divisas" = medições com menos de 90% do objeto numa só célula; as outras entram na célula onde está a maior parte do objeto.
+
+### Erro por região (com correção por região)
+
+| Região | n | Erro médio (mm) | Desvio padrão (mm) | Erro médio absoluto (mm) |
+|---|---|---|---|---|
+| 0_0 | 4 | −0,62 | 0,11 | 0,62 |
+| 0_1 | 9 | −0,70 | 0,07 | 0,70 |
+| 0_2 | 4 | −0,34 | 0,02 | 0,34 |
+| 1_0 | 6 | −0,36 | 0,01 | 0,36 |
+| 1_1 | 11 | −0,41 | 0,03 | 0,41 |
+| 1_2 | 9 | −0,24 | 0,02 | 0,24 |
+| 2_0 | 4 | −0,49 | 0,04 | 0,49 |
+| 2_1 | 4 | −0,56 | 0,02 | 0,56 |
+| 2_2 | 7 | −0,32 | 0,03 | 0,32 |
+| Divisas | 6 | −0,54 | 0,22 | 0,54 |
+
+### Total (64 medições)
+
+| | Erro médio (mm) | Desvio padrão (mm) | Erro médio absoluto (mm) | RMSE (mm) | Faixa do erro (mm) |
+|---|---|---|---|---|---|
+| **Com correção por região** | **−0,45** | **0,17** | 0,45 | 0,48 | −0,82 a −0,21 |
+| Sem correção (escala única) | −0,48 | 0,32 | 0,49 | 0,57 | −1,16 a +0,11 |
+
+**Leitura:**
+- A correção por região **reduziu o desvio padrão quase pela metade** (0,32 → 0,17 mm): o erro passa a depender menos de onde o objeto cai.
+- O erro médio quase não muda (−0,48 → −0,45 mm): é o viés sistemático da calibração de escala (seção 4), que a correção por região não remove.
+- RF04 atendido: erro médio absoluto de 0,45 mm ≤ 1 mm, em todas as regiões (pior célula: 0_1, com 0,70 mm).
+- O desvio padrão **dentro** de cada célula (0,01 a 0,11 mm) mede principalmente a repetibilidade: as medições de uma célula foram feitas com a moeda quase na mesma posição.
+  O erro entre células (−0,24 a −0,70 mm) mostra o que sobra da variação de escala dentro da região.
+
 ## 4. Diagnóstico do viés
 
 | Hipótese | Teste feito | Conclusão |
