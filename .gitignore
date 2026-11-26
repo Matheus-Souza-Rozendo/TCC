@@ -3,3 +3,6 @@
 
 # Python
 __pycache__/
+
+# Dataset (imagens grandes, baixadas por script; nao versionar)
+Dataset/
