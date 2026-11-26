@@ -9,12 +9,24 @@ Mede o gabarito branco pela câmera (DroidCam) e gera um arquivo `.gain` com o g
 | `instalar.bat` | Instala as dependências (rode uma vez) |
 | `calibrar.bat` | Pergunta a câmera e o arquivo de saída e abre a calibração |
 | `atualizar.bat` | Puxa as últimas alterações do GitHub (`git pull`) |
+| `diagnosticar_camera.bat` | Testa os índices 0 a 5 (e a URL do Wi-Fi, se informada) e mostra quais entregam imagem |
 
 ## Instalação (no PC da bancada)
 
 ```bash
 pip install -r requirements.txt
 ```
+
+## Câmera não abre (DroidCam)
+
+1. Rode `diagnosticar_camera.bat` e use no `calibrar.bat` um índice ou URL que mostre `OK`.
+2. **USB/índice:** o cliente DroidCam do PC precisa estar aberto e **conectado**, com vídeo aparecendo nele.
+   Desconectado, a webcam virtual mostra só a imagem de espera do DroidCam. O diagnóstico diz `OK`, mas a imagem não é a da câmera.
+3. **Wi-Fi/URL:** PC e celular na mesma rede. Teste a URL `http://IP:4747/video` no navegador primeiro.
+   Feche o cliente do PC: o app do celular aceita uma conexão por vez.
+4. Feche outros programas que usam câmera (Teams, navegador, OBS).
+
+O programa tenta sozinho os backends DirectShow, Media Foundation e automático, e fica com o primeiro que entrega imagem.
 
 ## Antes de rodar
 
