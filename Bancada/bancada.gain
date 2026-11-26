@@ -1,0 +1,17 @@
+# Ganhos de balanço de branco por canal
+# Como aplicar: canal_corrigido = min(255, canal_original * ganho)
+# Atenção: o OpenCV guarda a imagem em BGR; os nomes abaixo já indicam o canal.
+data=2026-11-26T12:49:10
+estrategia=nivel_alvo
+quadros_media=30
+regiao_gabarito=644,492,684,462
+media_r=102.483
+media_g=137.944
+media_b=166.765
+variacao_r=0.0930
+variacao_g=0.0438
+variacao_b=0.0249
+ganho_r=2.244283
+ganho_g=1.667346
+ganho_b=1.379186
+
