@@ -18,6 +18,7 @@ Depois, o `testar_medicao.bat` mede objetos circulares (ex.: moeda) para conferi
 | `calibrar_escala.bat` | Pergunta a **câmera** (sugere a gravada no `.gain`; ENTER aceita) e o **lado do quadrado em mm**. A região vem do `bancada.gain` e os cantos são detectados sozinhos; grava a escala no mesmo `.gain` e salva `bancada_escala.png`. Para outro `.gain`, arraste o arquivo em cima do `.bat` |
 | `testar_medicao.bat` | Captura pela câmera (ou mede uma imagem arrastada em cima do `.bat`), segmenta objetos claros sobre o fundo preto e mede o diâmetro sem e com a correção por região. Pergunta o diâmetro real (opcional) para mostrar o erro. Salva em `medicoes\` |
 | `atualizar.bat` | Puxa as últimas alterações do GitHub (`git pull`) |
+| `enviar.bat` | Envia ao GitHub tudo o que mudou neste PC (ex.: `bancada.gain`, fotos, `medicoes\`). Mostra os arquivos, pede uma descrição, baixa o que o outro PC enviou antes e faz o push. Se faltar internet, o commit fica guardado e sobe no próximo envio |
 | `diagnosticar_camera.bat` | Testa os índices 0 a 5 (e a URL do Wi-Fi, se informada) e mostra quais entregam imagem |
 
 ## Instalação (no PC da bancada)
