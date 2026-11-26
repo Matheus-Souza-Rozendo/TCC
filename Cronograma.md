@@ -4,8 +4,8 @@
 
 Desenvolver um sistema de visão computacional que classifica tomates cereja por:
 
-- **Cor / maturação**: por LUT (Look-Up Table) de cores.
-- **Defeitos e deformidades**: por CNN (rede neural convolucional).
+- **Cor / maturação**: por LUT (Look-Up Table) de cores, gerada por uma MLP treinada com pixels rotulados.
+- **Defeitos**: sadio × com defeito por CNN (rede neural convolucional); **deformidade** pela geometria do contorno.
 - **Tamanho**: medição em milímetros com câmera fixa calibrada.
 
 O sistema inclui uma ferramenta de treinamento (GUI) e uma IHM de operação. O trabalho é a base do TCC.
@@ -23,11 +23,11 @@ O sistema inclui uma ferramenta de treinamento (GUI) e uma IHM de operação. O 
 | ID | Requisito | Critério de aceite |
 |---|---|---|
 | RF01 | Segmentar cada tomate do fundo da imagem | Máscara correta em ≥ 95% das imagens de teste |
-| RF02 | Classificar a cor/maturação por LUT | 3 classes: imaturo (< 10% colorido), intermediário (10–60%), maduro (> 60%), agrupando os estágios USDA. Acurácia ≥ 90% |
-| RF03 | Detectar defeitos por CNN multilabel e deformidade por geometria | 4 rótulos independentes (rachado, podre, dano mecânico, mancha); sadio = nenhum rótulo. F1 por defeito ≥ 0,85. Deformidade por circularidade do contorno |
+| RF02 | Classificar a cor/maturação por LUT gerada por MLP | A MLP classifica a cor de cada pixel (6 classes: verde, amarelado, rosado, vermelho, fundo, cálice) e é avaliada em todas as cores para gerar a LUT. 3 classes por tomate: imaturo (< 10% colorido), intermediário (10–60%), maduro (> 60%), agrupando os estágios USDA. Acurácia ≥ 90% |
+| RF03 | Detectar defeitos por CNN e deformidade por geometria | 2 classes: sadio × com defeito. F1 da classe "com defeito" ≥ 0,85. O tipo do defeito (rachado, podre, dano mecânico, mancha) é registrado nas fotos, mas classificar o tipo fica como trabalho futuro. Deformidade por circularidade do contorno |
 | RF04 | Medir o diâmetro do tomate em mm | Erro médio absoluto ≤ 1 mm contra o paquímetro |
 | RF05 | Calibrar a relação pixel → mm por região da imagem | Erro da calibração ≤ 0,5 mm em todas as regiões da imagem |
-| RF06 | GUI de treinamento da LUT | Carregar imagens, marcar pixels/regiões por classe, gerar e salvar a LUT |
+| RF06 | GUI de treinamento da LUT | Carregar imagens, marcar pixels/regiões por classe, treinar a MLP, gerar e salvar a LUT |
 | RF07 | GUI de treinamento da CNN | Rotular imagens, separar os conjuntos, iniciar o treino, ver as métricas e salvar o modelo |
 | RF08 | IHM de operação | Mostrar a imagem, a classe de cor, o defeito, o tamanho, a classe final e os contadores |
 | RF09 | Registrar os resultados | Exportar CSV com data, imagem, cor, defeito, tamanho e classe final |
@@ -43,12 +43,21 @@ O sistema inclui uma ferramenta de treinamento (GUI) e uma IHM de operação. O 
 
 ## 5. Dataset
 
-1. **Base pública**: usar um dataset público de tomates (ex.: Laboro Tomato, Kaggle) para o pré-treino e o aumento de dados.
-2. **Fotos próprias**: fotografar na bancada final, com a mesma câmera e a mesma iluminação. Meta: ≥ 100 imagens por classe.
-3. **Conjunto de teste exclusivo**: usar somente fotos próprias e nunca usá-las no treino.
-   - Separar por tomate, não por foto: todas as fotos do mesmo tomate ficam no mesmo conjunto (para evitar vazamento de dados).
-   - Medir cada tomate de teste com paquímetro (referência para o RF04).
-4. **Divisão sugerida**: 70% treino / 15% validação / 15% teste.
+1. **Base pública: avaliada e descartada.** O Laboro Tomato (Laboro.AI, 2020; ver `Preparacao-dataset/README.md`) foi baixado e analisado, mas não é usado:
+   - diferença de domínio: fotos de estufa sob luz natural, e a LUT depende da iluminação e da câmera da bancada;
+   - limiares de maturação diferentes dos adotados (≥ 90% contra > 60% para maduro);
+   - não tem rótulos de defeito.
+
+   Para a CNN, usar pesos pré-treinados no ImageNet (transfer learning).
+2. **Treino e validação: tomates comprados no 1º lote**, fotografados na bancada com o `capturar_dataset.bat` (rótulos de defeito, maturação e diâmetro).
+   - **Defeitos provocados** de forma controlada (descrever o protocolo na metodologia): dano mecânico (queda ou pressão), rachado (molho em água), podre (dias em temperatura ambiente); mancha, quando aparecer naturalmente.
+   - **LUT**: pixels marcados nas fotos da bancada, de tomates de todos os estágios de maturação. A área do defeito não é marcada como cor.
+   - Meta: ≥ 100 imagens de sadio e ≥ 100 com defeito; 3 a 4 fotos por tomate, girando o tomate.
+3. **Teste: 2º lote, comprado depois**, em outra compra, e nunca usado no treino.
+   - Metade sadio, metade com defeito provocado pelo mesmo protocolo; incluir tomates imaturos (lotes mistos).
+   - Paquímetro (RF04) e maturação anotados na captura. Gravar em pasta separada (`--pasta ../Dataset-teste`).
+   - **Rodar o teste uma única vez**, sem ajustar limiar, LUT ou modelo depois de ver o resultado.
+4. **Divisão do treino/validação: por tomate**, nunca por foto, e estratificada por sadio/defeito e por maturação (≈ 80% treino / 20% validação dos tomates do 1º lote).
 
 ## 6. Etapas, dependências e entregas
 
@@ -56,11 +65,11 @@ O sistema inclui uma ferramenta de treinamento (GUI) e uma IHM de operação. O 
 |---|---|---|---|
 | E1 | Revisão bibliográfica e definição das classes | — | Lista de classes, critérios, referências |
 | E2 | Montagem da bancada (câmera, luz, fundo) | E1 | Bancada fixa documentada com fotos |
-| E3 | Calibração pixel → mm (papel milimetrado por região da imagem) | E2 | Tabela/mapa de calibração + erro medido |
+| E3 | Calibração pixel → mm (tabuleiro de xadrez, por região da imagem) | E2 | Tabela/mapa de calibração + erro medido |
 | E4 | Coleta e rotulagem do dataset | E1, E2 | Dataset versionado (treino/val/teste) |
 | E5 | GUI de treinamento (LUT + CNN) | E1 | Ferramenta funcional |
 | E6 | Segmentação + medição de tamanho | E3 | Módulo de tamanho validado (RF01, RF04) |
-| E7 | Classificação de cor por LUT | E4, E5 | LUT treinada + métricas (RF02) |
+| E7 | Classificação de cor por LUT (MLP → LUT) | E4, E5 | MLP treinada, LUT gerada + métricas (RF02) |
 | E8 | Treinamento da CNN de defeitos | E4, E5 | Modelo treinado + métricas (RF03) |
 | E9 | Integração e IHM | E6, E7, E8 | Sistema completo (RF08, RF09) |
 | E10 | Teste de efetividade | E9 | Matriz de confusão, acurácia, F1, erro de tamanho, tempo por tomate |
@@ -99,7 +108,7 @@ O sistema inclui uma ferramenta de treinamento (GUI) e uma IHM de operação. O 
 
 | Risco | Mitigação |
 |---|---|
-| Poucas fotos de tomates com defeito | Coletar desde o início, usar aumento de dados e a base pública |
+| Poucas fotos de tomates com defeito | Provocar defeitos de forma controlada, simplificar para sadio × com defeito, usar aumento de dados e transfer learning |
 | Iluminação variável muda as cores da LUT | Iluminação fixa e difusa; balanço de branco travado na câmera |
 | Distorção da lente nas bordas afeta o tamanho | Calibração por região (E3); se for preciso, calibração de câmera com tabuleiro de xadrez (OpenCV) |
 | Atraso no treino da CNN | Usar transfer learning (ex.: MobileNet, ResNet) em vez de treinar do zero |

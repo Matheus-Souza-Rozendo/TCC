@@ -1,4 +1,7 @@
-# Classes de defeito — tomate cereja (CNN multilabel)
+# Classes de defeito — tomate cereja
+
+> **Decisão atual (26/11/2026): a CNN classifica só sadio × com defeito.** Motivo: poucas fotos por tipo de defeito e prazo.
+> O tipo do defeito continua sendo registrado em cada foto (colunas `rachado`, `podre`, `dano_mecanico`, `mancha` do `rotulos.csv`), então o modelo multilabel abaixo pode ser treinado depois, sem fotografar de novo. Ele fica como **trabalho futuro**.
 
 ## ✅ Decisão: arquitetura multilabel
 

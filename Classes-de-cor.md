@@ -2,7 +2,7 @@
 
 ## Como a LUT vai funcionar (2 níveis)
 
-1. **Nível do pixel (LUT):** a LUT diz a cor de cada pixel do tomate.
+1. **Nível do pixel (LUT):** a LUT diz a cor de cada pixel do tomate. Ela é **gerada por uma MLP**: a MLP é treinada com pixels marcados nas fotos da bancada e depois avaliada em todas as cores possíveis; o resultado é gravado na tabela. Na operação, só a LUT é usada, o que é rápido (consulta direta na tabela).
 2. **Nível do tomate:** conta a % de pixels vermelhos na superfície e decide o estágio.
 
 Isso é o mesmo princípio do artigo de Hou et al. (2024), que mede a maturação em % (≥ 90%, 80–90%, ≤ 80%).
@@ -15,7 +15,7 @@ Isso é o mesmo princípio do artigo de Hou et al. (2024), que mede a maturaçã
 | Amarelado | amarelo / laranja-claro |
 | Rosado | rosa / laranja-avermelhado |
 | Vermelho | vermelho |
-| Fundo | cartolina (será ignorado) |
+| Fundo | tecido preto da bancada (será ignorado) |
 | Cálice | talo/sépala verde-escura (será ignorado) |
 
 ## Nível 2 — Estágio do tomate (padrão USDA, 6 estágios)
