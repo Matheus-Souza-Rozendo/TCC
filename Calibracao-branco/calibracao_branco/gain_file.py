@@ -13,6 +13,8 @@ from .sampling import WhiteReferenceSample
 
 GAIN_KEYS = {"red": "ganho_r", "green": "ganho_g", "blue": "ganho_b"}
 REGION_KEY = "regiao_gabarito"
+CAMERA_KEY = "camera"
+DEFAULT_CAMERA_ADDRESS = "0"
 
 
 @dataclass(frozen=True)
@@ -22,6 +24,7 @@ class CalibrationResult:
     region: RegionOfInterest
     strategy_name: str
     created_at: datetime
+    camera_address: str = DEFAULT_CAMERA_ADDRESS
 
 
 class GainFileWriter:
@@ -49,6 +52,10 @@ class GainFileReader:
         """Região onde o gabarito branco foi medido, reaproveitada como região de interesse."""
         return RegionOfInterest.from_text(require_entry(read_entries(source), REGION_KEY))
 
+    def read_camera_address(self, source: Path) -> str:
+        """Câmera usada na calibração de branco; arquivos antigos, sem a chave, usam a padrão."""
+        return read_entries(source).get(CAMERA_KEY, DEFAULT_CAMERA_ADDRESS)
+
 
 def apply_gains(bgr_frame: np.ndarray, gains: ChannelValues) -> np.ndarray:
     corrected = bgr_frame.astype(np.float32) * gains.to_bgr_array().astype(np.float32)
@@ -67,6 +74,7 @@ def _format_lines(result: CalibrationResult) -> List[str]:
         "# Como aplicar: canal_corrigido = min(255, canal_original * ganho)",
         "# Atenção: o OpenCV guarda a imagem em BGR; os nomes abaixo já indicam o canal.",
         f"data={result.created_at.isoformat(timespec='seconds')}",
+        f"{CAMERA_KEY}={result.camera_address}",
         f"estrategia={result.strategy_name}",
         f"quadros_media={result.sample.frames_averaged}",
         f"{REGION_KEY}={result.region.to_text()}",

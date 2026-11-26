@@ -117,6 +117,8 @@ class PixelScaleMap:
 
 class PixelScaleCalibrator:
     def __init__(self, square_size_mm: float, grid: RegionGrid):
+        if square_size_mm <= 0:
+            raise ValueError("O tamanho do quadrado precisa ser maior que zero.")
         self._square_size_mm = square_size_mm
         self._grid = grid
 

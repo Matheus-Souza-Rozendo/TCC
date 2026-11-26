@@ -4,6 +4,7 @@ import cv2
 import numpy as np
 
 from .camera import FrameSource
+from .chessboard import ChessboardDetection
 from .comparison import REFERENCE_WIDTH_FOR_LABEL
 from .pixel_scale import PixelScaleMap
 from .region import RegionOfInterest
@@ -42,10 +43,10 @@ def draw_region(frame: np.ndarray, region: RegionOfInterest) -> np.ndarray:
     return drawn
 
 
-def draw_scale_map(frame: np.ndarray, corners: np.ndarray, scale_map: PixelScaleMap) -> np.ndarray:
+def draw_scale_map(frame: np.ndarray, detection: ChessboardDetection, scale_map: PixelScaleMap) -> np.ndarray:
     """Cantos detectados + células coloridas (verde = dentro da tolerância, vermelho = fora) + mm/pixel."""
     drawn = frame.copy()
-    for corner in corners.reshape(-1, 2):
+    for corner in detection.corners.reshape(-1, 2):
         cv2.circle(drawn, (int(round(corner[0])), int(round(corner[1]))), _line_thickness(frame) + 1, CORNER_COLOR, -1)
     for cell_scale in scale_map.cell_scales:
         region = cell_scale.cell.region

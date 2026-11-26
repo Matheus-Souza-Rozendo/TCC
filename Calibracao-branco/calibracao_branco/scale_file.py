@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Dict, List
 
 from .calibration_sections import SCALE_REGION_KEY, CalibrationFileSections, read_sections, write_sections
-from .chessboard import ChessboardPattern
+from .chessboard import ChessboardDetection
 from .errors import CalibrationFileFormatError
 from .key_value_file import read_entries, require_entry
 from .pixel_scale import CellScale, GridCell, GridSize, PixelScaleMap, RegionGrid
@@ -18,7 +18,8 @@ ERROR_TOLERANCE_MM = 0.5  # RF05: erro da calibração <= 0,5 mm em todas as reg
 @dataclass(frozen=True)
 class ScaleCalibrationResult:
     scale_map: PixelScaleMap
-    pattern: ChessboardPattern
+    detection: ChessboardDetection
+    square_size_mm: float
     created_at: datetime
 
 
@@ -63,15 +64,15 @@ def _read_cell_scale(entries: Dict[str, str], cell: GridCell) -> CellScale:
 
 
 def _format_lines(result: ScaleCalibrationResult) -> List[str]:
-    scale_map, pattern = result.scale_map, result.pattern
+    scale_map = result.scale_map
     lines = [
         "# Como usar: tamanho_mm = tamanho_px * mm_por_pixel da célula onde o objeto está",
         "# Células: celula_<linha>_<coluna>, contando a partir de 0 no canto superior esquerdo",
         f"escala_data={result.created_at.isoformat(timespec='seconds')}",
         f"{SCALE_REGION_KEY}={scale_map.grid.region.to_text()}",
         f"escala_grade={scale_map.grid.size.to_text()}",
-        f"escala_tabuleiro_cantos_internos={pattern.inner_columns}x{pattern.inner_rows}",
-        f"escala_tamanho_quadrado_mm={pattern.square_size_mm:.3f}",
+        f"escala_cantos_detectados={result.detection.size_text()}",
+        f"escala_tamanho_quadrado_mm={result.square_size_mm:.3f}",
         f"escala_mm_por_pixel_medio={scale_map.mean_mm_per_pixel():.6f}",
         f"escala_erro_max_mm={scale_map.max_error_mm():.4f}",
         f"escala_tolerancia_mm={ERROR_TOLERANCE_MM}",

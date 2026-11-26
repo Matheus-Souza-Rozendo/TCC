@@ -1,4 +1,5 @@
 import argparse
+from dataclasses import replace
 import sys
 from pathlib import Path
 from typing import List
@@ -37,7 +38,7 @@ def _run_calibration(camera: FrameSource, options: argparse.Namespace) -> None:
         GainStrategyFactory.create(options.estrategia),
     )
     print(f"Medindo o gabarito na região {region.to_text()} ({options.quadros} quadros)...")
-    result = calibrator.calibrate(region)
+    result = replace(calibrator.calibrate(region), camera_address=options.camera)
     _write_gain_file(result, Path(options.saida))
     _print_summary(result, options.saida)
     if options.foto_comparacao:

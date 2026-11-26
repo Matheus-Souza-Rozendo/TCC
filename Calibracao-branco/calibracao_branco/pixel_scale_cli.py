@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import List
 
 from .camera import FrameSource, OpenCvCameraAdapter, average_frames, parse_camera_address
-from .chessboard import ChessboardDetector, ChessboardPattern
+from .chessboard import ChessboardDetector
 from .errors import CalibrationError
 from .gain_file import GainFileReader
 from .image_files import save_image
@@ -22,7 +22,7 @@ FRAMES_TO_AVERAGE = 10
 def main(arguments: List[str] = None) -> int:
     options = _build_parser().parse_args(arguments)
     try:
-        with OpenCvCameraAdapter(parse_camera_address(options.camera)) as camera:
+        with OpenCvCameraAdapter(parse_camera_address(_camera_address(options))) as camera:
             _run_scale_calibration(camera, options)
     except (CalibrationError, ValueError) as error:
         print(f"ERRO: {error}", file=sys.stderr)
@@ -30,10 +30,14 @@ def main(arguments: List[str] = None) -> int:
     return 0
 
 
+def _camera_address(options: argparse.Namespace) -> str:
+    """Sem --camera, usa a mesma câmera da calibração de branco, gravada no .gain."""
+    return options.camera or GainFileReader().read_camera_address(Path(options.gain))
+
+
 def _run_scale_calibration(camera: FrameSource, options: argparse.Namespace) -> None:
     gain_file = Path(options.gain)
     region = GainFileReader().read_region(gain_file)
-    pattern = ChessboardPattern.from_text(options.cantos, options.quadrado_mm)
     grid = RegionGrid(region, GridSize.from_text(options.grade))
     print(f"Região de interesse (do {gain_file.name}): {region.to_text()} | grade {grid.size.to_text()}")
 
@@ -42,13 +46,14 @@ def _run_scale_calibration(camera: FrameSource, options: argparse.Namespace) -> 
                                     "Cubra a area amarela com o tabuleiro.")
     print(f"Detectando o tabuleiro (média de {FRAMES_TO_AVERAGE} quadros)...")
     frame = average_frames(camera, FRAMES_TO_AVERAGE)
-    corners = ChessboardDetector(pattern).detect(frame)
-    scale_map = PixelScaleCalibrator(pattern.square_size_mm, grid).calibrate(corners)
+    detection = ChessboardDetector().detect(frame)
+    print(f"Tabuleiro encontrado: {detection.size_text()} cantos internos visíveis.")
+    scale_map = PixelScaleCalibrator(options.quadrado_mm, grid).calibrate(detection.corners)
 
-    result = ScaleCalibrationResult(scale_map, pattern, datetime.now())
+    result = ScaleCalibrationResult(scale_map, detection, options.quadrado_mm, datetime.now())
     ScaleSectionWriter().write(result, gain_file)
     _print_summary(result, gain_file)
-    _present_detection(draw_scale_map(frame, corners, scale_map), options, preview)
+    _present_detection(draw_scale_map(frame, detection, scale_map), options, preview)
 
 
 def _present_detection(detection_image, options: argparse.Namespace, preview: CalibrationPreview) -> None:
@@ -77,9 +82,8 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--gain", default="bancada.gain",
                         help="Arquivo .gain: a região de interesse vem dele e a escala é gravada nele.")
-    parser.add_argument("--camera", default="0", help="Índice da webcam ou URL (ex.: http://IP:4747/video).")
-    parser.add_argument("--cantos", default="9x6",
-                        help="Cantos INTERNOS do tabuleiro, colunas x linhas (10x7 quadrados = 9x6 cantos).")
+    parser.add_argument("--camera", default="",
+                        help="Índice da webcam ou URL. Sem ela, usa a câmera gravada no .gain pelo calibrar.bat.")
     parser.add_argument("--quadrado-mm", type=_positive_number, required=True,
                         help="Lado de um quadrado em mm, MEDIDO COM RÉGUA no papel impresso.")
     parser.add_argument("--grade", default="3x3", help="Em quantas células dividir a região (colunas x linhas).")
