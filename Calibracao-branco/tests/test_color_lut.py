@@ -9,7 +9,7 @@ import numpy as np
 
 from calibracao_branco import lut_cli
 from calibracao_branco.channels import ChannelValues
-from calibracao_branco.color_classes import PixelClass, colored_fraction, maturity_from_fraction
+from calibracao_branco.color_classes import PixelClass, SurfaceColor
 from calibracao_branco.color_groups import DISCARD
 from calibracao_branco.color_lut import load_lut
 from calibracao_branco.gain_file import CalibrationResult, GainFileWriter
@@ -59,12 +59,19 @@ def name_like_an_operator(groups) -> list:
 
 class MaturityRuleTests(unittest.TestCase):
     def test_thresholds_of_rf02(self):
-        self.assertEqual([maturity_from_fraction(f) for f in (0.05, 0.10, 0.60, 0.61)],
+        surfaces = [SurfaceColor(0.05, 0.0), SurfaceColor(0.10, 0.0), SurfaceColor(1.0, 0.60), SurfaceColor(1.0, 0.61)]
+        self.assertEqual([surface.maturity() for surface in surfaces],
                          ["imaturo", "intermediario", "intermediario", "maduro"])
+
+    def test_fully_orange_tomato_is_intermediate_not_ripe(self):
+        class_map = np.array([[PixelClass.AMARELADO, PixelClass.AMARELADO, PixelClass.ROSADO, PixelClass.VERMELHO]])
+        self.assertEqual(SurfaceColor.measure(class_map, np.ones_like(class_map)).maturity(), "intermediario")
 
     def test_calyx_does_not_count_as_tomato_surface(self):
         class_map = np.array([[PixelClass.VERMELHO, PixelClass.VERDE, PixelClass.CALICE, PixelClass.CALICE]])
-        self.assertAlmostEqual(colored_fraction(class_map, np.ones_like(class_map)), 0.5)
+        surface = SurfaceColor.measure(class_map, np.ones_like(class_map))
+        self.assertAlmostEqual(surface.colored_fraction, 0.5)
+        self.assertAlmostEqual(surface.red_fraction, 0.5)
 
 
 class LutGenerationEndToEndTest(unittest.TestCase):

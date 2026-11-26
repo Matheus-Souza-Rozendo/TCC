@@ -15,7 +15,8 @@ from .gain_file import apply_gains
 from .image_files import load_image
 from .labeled_capture import LabeledPhoto
 from .region import RegionOfInterest
-from .segmentation import DarkBackgroundSegmenter
+from .errors import NoObjectFoundError
+from .segmentation import tomato_segmenter
 
 
 @dataclass(frozen=True)
@@ -48,8 +49,12 @@ class PhotoSegmenter:
 
     def segment(self, photo: LabeledPhoto) -> SegmentedPhoto:
         image = apply_gains(load_image(photo.path), self._gains)
+        tomatoes = tomato_segmenter().find_objects(image, self._region).inside
+        if not tomatoes:
+            raise NoObjectFoundError("nenhum tomate inteiro dentro da região de interesse")
         mask = np.zeros(image.shape[:2], np.uint8)
-        for segmented_object in DarkBackgroundSegmenter().segment(image, self._region):
+        # Objeto cortado pela borda (ex.: algo esquecido na beira da bancada) fica de fora.
+        for segmented_object in tomatoes:
             mask = cv2.bitwise_or(mask, segmented_object.mask)
         return SegmentedPhoto(image, mask)
 

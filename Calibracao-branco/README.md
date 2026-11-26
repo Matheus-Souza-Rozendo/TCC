@@ -19,6 +19,8 @@ Depois, o `testar_medicao.bat` mede objetos circulares (ex.: moeda) para conferi
 | `testar_medicao.bat` | Captura pela câmera (ou mede uma imagem arrastada em cima do `.bat`), segmenta objetos claros sobre o fundo preto e mede o diâmetro sem e com a correção por região. Pergunta o diâmetro real (opcional) para mostrar o erro. Salva em `medicoes\` |
 | `capturar_dataset.bat` | Abre a **janela de captura**: escolha o destino (Cor, Defeitos ou Teste), marque os rótulos e clique em **Tirar foto**. As pastas são criadas sozinhas e separadas por classe |
 | `gerar_lut.bat` | Gera a LUT de cor (`lut_cor.npz`) com as fotos de `Dataset-cor`: agrupa os pixels por cor, você nomeia os grupos, treina a MLP e confere a maturação de cada foto |
+| `treinar_cnn.bat` | Treina a CNN de defeitos (sadio × com defeito) com as fotos de `Dataset-proprio`: validação cruzada por tomate + modelo final `cnn_defeito.onnx`. Precisa do PyTorch (instala sozinho na 1ª vez); use um PC com placa NVIDIA se der |
+| `classificar.bat` | Abre a **IHM de classificação**: vídeo ao vivo, botão **Classificar**, cartão de cada tomate (destino, maturação, defeito, diâmetro, comprimento × largura, circularidade), contagem por destino e registro em `inspecoes\inspecoes_AAAA-MM-DD.csv` |
 | `atualizar.bat` | Puxa as últimas alterações do GitHub (`git pull`) |
 | `enviar.bat` | Envia ao GitHub tudo o que mudou neste PC (ex.: `bancada.gain`, fotos, `medicoes\`). Mostra os arquivos, pede uma descrição, baixa o que o outro PC enviou antes e faz o push. Se faltar internet, o commit fica guardado e sobe no próximo envio |
 | `diagnosticar_camera.bat` | Testa os índices 0 a 5 (e a URL do Wi-Fi, se informada) e mostra quais entregam imagem |
@@ -182,23 +184,64 @@ python -m calibracao_branco.lut_cli --gain bancada.gain --pasta ../Dataset-cor -
 **O que acontece:**
 1. Aplica os ganhos do branco, segmenta os tomates e sorteia até 4.000 pixels por foto, de dentro da máscara um pouco encolhida (a borda mistura tomate e fundo). Pixels de fora da máscara viram a classe **fundo**.
 2. **Agrupa** os pixels do tomate por cor (k-means em Lab, 8 grupos, ordenados do mais verde para o mais vermelho) e abre `lut/grupos.png`: cada grupo com a cor média, a % dos pixels e o tomate onde ele mais aparece, com só aquele grupo aceso.
-3. **Você diz o que é cada grupo** no terminal: `1` verde, `2` amarelado, `3` rosado, `4` vermelho, `5` cálice, `0` descartar (reflexo de luz, cor estranha). Os nomes ficam em `lut/grupos.json` e são reaproveitados nas próximas vezes; o `.bat` pergunta se quer refazer.
+3. **Você diz o que é cada grupo** no terminal: `1` verde, `2` amarelado, `3` rosado, `4` vermelho, `5` cálice, `0` descartar (reflexo de luz, cor estranha). Os nomes ficam em `lut/grupos.json` e são reaproveitados nas próximas vezes; o `.bat` pergunta se quer refazer. Sem perguntar: `--reagrupar --nomes 1,1,2,4,4,3,4,4` (um código por grupo, na ordem do painel).
 4. **Treina a MLP** (scikit-learn, 2 camadas ocultas de 32, entrada em Lab), com o mesmo número de pixels por classe. Cerca de 20% dos tomates de cada estádio ficam de fora para validação, **separados por tomate**.
 5. **Gera a LUT**: a MLP é avaliada nas 256³ cores e o resultado vai para `lut_cor.npz` (tabela `[azul, verde, vermelho] → classe`). Na operação só a tabela é usada.
-6. **Confere** cada foto: aplica a LUT, calcula o % colorido (regra do RF02) e compara a maturação calculada com a informada. Resultado em `lut/RELATORIO.md`, separando validação e treino, e imagens `lut/conferencia/` (foto | classes).
+6. **Confere** cada foto: aplica a LUT, calcula a maturação (regra do RF02, abaixo) e compara a maturação calculada com a informada. Resultado em `lut/RELATORIO.md`, separando validação e treino, e imagens `lut/conferencia/` (foto | classes).
+
+**Regra de maturação (RF02)**, sobre os pixels do tomate sem cálice:
+
+| Classe | Regra |
+|---|---|
+| Imaturo | menos de 10% colorido (amarelado + rosado + vermelho) |
+| Maduro | mais de 60% **vermelho** |
+| Intermediário | o resto |
+
+Por que "maduro" olha só o vermelho: no USDA os estádios 5–6 (vermelho claro e vermelho) exigem superfície vermelha; amarelado/alaranjado é só o início da mudança. Contando o amarelado, um tomate todo alaranjado (de vez) saía como maduro.
 
 Usar a LUT no resto do projeto:
 
 ```python
 from calibracao_branco.color_lut import load_lut, apply_lut
-from calibracao_branco.color_classes import colored_fraction, maturity_from_fraction
+from calibracao_branco.color_classes import SurfaceColor
 
 lut = load_lut(Path("lut_cor.npz"))
 class_map = apply_lut(lut, balanced_image)          # imagem já com os ganhos do branco
-maturity = maturity_from_fraction(colored_fraction(class_map, tomato_mask))
+maturity = SurfaceColor.measure(class_map, tomato_mask).maturity()
 ```
 
 **Limitação conhecida:** a LUT dá uma classe para toda cor, inclusive o reflexo de luz (que é descartado no treino). Com luz difusa o reflexo é pequeno, mas ele pode contar como pixel colorido.
+
+## CNN de defeitos (sadio × com defeito)
+
+```bash
+pip install -r requirements-treino.txt      # só no PC que treina (PyTorch)
+python -m calibracao_branco.defect_training_cli --gain bancada.gain --pasta ../Dataset-proprio
+```
+
+1. **Recorte**: em cada foto aplica os ganhos, segmenta o tomate e recorta um quadrado 224×224 em volta dele (15% de margem). O fundo **não** é apagado: uma podridão escura na borda pode ficar fora da máscara.
+2. **Rede**: ResNet-18 pré-treinada no ImageNet (transferência de aprendizado), última camada trocada por 2 saídas. Aumento de dados: giro livre, espelhamento, pequeno zoom, brilho/contraste ±15%. Perda com peso por classe (há mais sadios).
+3. **Validação cruzada por tomate** (5 dobras, `StratifiedGroupKFold`): cada dobra treina uma rede nova e valida em tomates que ela nunca viu; a melhor época de cada dobra é a de maior acurácia balanceada. **É essa média ± desvio que estima o desempenho.**
+4. **Modelo final** com todos os tomates, pela mediana das melhores épocas. Exportado em ONNX **com a normalização e a softmax dentro**, e conferido no OpenCV: a IHM roda sem PyTorch.
+5. Saídas em `../Dataset-proprio/cnn/`: `RELATORIO.md` (tabela por dobra, média, desvio, matriz de confusão), `curva_dobra_N.png`, `historico_dobra_N.csv` e `erros_validacao/` (recortes errados, com a probabilidade dada pela CNN).
+
+Métricas ("positivo" = com defeito): **sensibilidade** = defeituosos que a CNN achou; **especificidade** = sadios que passaram como sadios; **acurácia balanceada** = média das duas (não engana quando uma classe tem mais fotos).
+
+## IHM de classificação
+
+```bash
+python -m calibracao_branco.inspection_gui --gain bancada.gain --lut lut_cor.npz --cnn cnn_defeito.onnx
+python -m calibracao_branco.inspection_gui --imagem ../Dataset-proprio/fotos/sadio/tomate_0003_foto_02.jpg   # sem câmera
+```
+
+- **Classificar** (ou Espaço): média de 3 quadros → ganhos do branco → segmentação → para cada tomate: tamanho, maturação (LUT), defeito (CNN no recorte) → **destino**. O resultado fica 4 s no vídeo (Esc volta ao vivo).
+- **Classificação contínua** (C): classifica cada quadro do vídeo, sem registrar. Para ajustar a posição e demonstrar.
+- **Destino**: com defeito → **Descarte** (qualquer cor); senão a maturação (Maduro, Intermediário, Imaturo). Sem LUT o destino fica "Sem classe"; sem CNN o defeito aparece como "sem CNN".
+- **Tamanho**: diâmetro equivalente (círculo de mesma área, com a correção de escala por região), **comprimento × largura** pelo menor retângulo girado (o tomate grape é alongado) e circularidade (1 = círculo).
+- Objeto encostado na borda da área amarela não é classificado (seria medido cortado); a IHM avisa.
+- Cada tomate classificado vai para `inspecoes/inspecoes_AAAA-MM-DD.csv` (vírgula decimal, abre no Excel). **Salvar imagem** grava o resultado em `inspecoes/imagens/`.
+
+Segmentação do tomate: limiar de Otsu no **maior canal** de cada pixel (o vermelho, no tomate maduro). No cinza, um tomate vermelho escuro fica fraco e um objeto branco na cena "rouba" o limiar. Contraste mínimo 30 (tomate podre escuro fica entre 30 e 40 acima do fundo).
 
 ## Formato do `.gain`
 
@@ -307,7 +350,7 @@ python -m unittest discover -s tests -t .
 | `pixel_scale_cli.py` | Linha de comando da calibração de escala |
 | `comparison.py` / `image_files.py` | Foto antes × depois; leitura e gravação de imagens (aceitam acento no caminho) |
 | `drawing.py` | Retângulos e caixas de texto proporcionais à resolução |
-| `segmentation.py` | `ObjectSegmenter` (interface) e `DarkBackgroundSegmenter`: objetos claros sobre fundo preto |
+| `segmentation.py` | `ObjectSegmenter` (interface), `DarkBackgroundSegmenter` (objetos claros sobre fundo preto) e o canal de brilho como Strategy (`GrayChannelStrategy` para a moeda, `BrightestChannelStrategy` para o tomate) |
 | `object_measurement.py` | `CircularObjectMeasurer`: diâmetro em px, sem correção e com correção por região, circularidade |
 | `measurement_overlay.py` | Imagem de resultado da medição |
 | `measurement_cli.py` | Linha de comando do teste de medição |
@@ -315,8 +358,17 @@ python -m unittest discover -s tests -t .
 | `capture_destinations.py` | Destinos das fotos (Strategy): pasta, subpasta por classe e rótulos obrigatórios |
 | `capture_controller.py` | Regras da captura sem interface: número do tomate, trava dos rótulos, validação |
 | `capture_gui.py` | Janela de captura (Tkinter): vídeo, rótulos e botão Tirar foto |
-| `color_classes.py` | Classes de pixel e a regra de maturação do RF02 (% colorido) |
+| `color_classes.py` | Classes de pixel e `SurfaceColor`: % colorido, % vermelho e a regra de maturação do RF02 |
 | `color_samples.py` | Segmentação das fotos rotuladas e amostra de pixels do tomate e do fundo |
 | `color_groups.py` | k-means em Lab, nomes dos grupos e o painel para nomear |
 | `color_lut.py` | MLP de cor de pixel, geração, gravação e aplicação da LUT |
 | `lut_cli.py` | Linha de comando da geração da LUT (`LutConference` faz a conferência) |
+| `tomato_crops.py` | Recorte 224×224 do tomate, igual no treino da CNN e na IHM |
+| `defect_training.py` / `defect_training_cli.py` | Treino da CNN (PyTorch): ResNet-18, validação cruzada por tomate, exportação ONNX, relatório (`CnnReportBuilder`, Builder) |
+| `binary_metrics.py` / `training_chart.py` | Métricas sadio × defeito e a curva de aprendizado (desenhada no OpenCV) |
+| `defect_classifier.py` | `OnnxDefectClassifierAdapter` (Adapter do `cv2.dnn`) e `MissingModelDefectClassifierNullObject` |
+| `maturity_classifier.py` | `LutMaturityClassifier` e `MissingLutMaturityClassifierNullObject` |
+| `tomato_shape.py` | Diâmetro equivalente, comprimento × largura e circularidade em mm |
+| `tomato_inspection.py` | `TomatoInspectionFacade` (Facade): foto crua → tomates classificados; destino de separação |
+| `inspection_session.py` | Contagem por destino e o CSV do dia |
+| `inspection_overlay.py` / `inspection_widgets.py` / `inspection_gui.py` | IHM: desenho sobre o vídeo, cartões/contadores/tabela e a janela |

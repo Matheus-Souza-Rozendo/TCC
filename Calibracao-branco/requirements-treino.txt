@@ -1,0 +1,5 @@
+# So para treinar a CNN (treinar_cnn.bat). A IHM roda o modelo so com o OpenCV.
+# Com placa NVIDIA, instale antes a versao CUDA: https://pytorch.org/get-started/locally/
+torch>=2.2
+torchvision>=0.17
+onnx>=1.15

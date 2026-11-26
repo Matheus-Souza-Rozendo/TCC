@@ -16,7 +16,7 @@ from typing import Dict, List, Set, Tuple
 import cv2
 import numpy as np
 
-from .color_classes import PixelClass, class_counts, colored_fraction, maturity_from_fraction
+from .color_classes import PixelClass, SurfaceColor, class_counts
 from .color_groups import DISCARD, NAME_CHOICES, ColorGroups, cluster_colors, group_panel
 from .color_lut import (PixelColorClassifier, apply_lut, balanced_subsample, build_lut, class_map_image,
                         save_lut)
@@ -37,7 +37,7 @@ CONFERENCE_MARGIN_PX = 20
 class PhotoEvaluation:
     photo: LabeledPhoto
     is_validation: bool
-    colored_fraction: float
+    surface: SurfaceColor
     predicted_maturity: str
     pixel_counts: Dict[str, int]
 
@@ -81,7 +81,7 @@ def _run(options: argparse.Namespace) -> None:
     print(f"LUT salva em: {Path(options.saida).resolve()}")
 
     conference = LutConference(lut, segmenter, output_folder / "conferencia")
-    evaluations = [conference.evaluate(photo, photo.tomato_id in validation_tomatoes) for photo in photos]
+    evaluations = [conference.evaluate(item.photo, item.photo.tomato_id in validation_tomatoes) for item in sampled]
     report = _write_report(evaluations, output_folder / "RELATORIO.md")
     print(report)
 
@@ -118,8 +118,11 @@ def _named_groups(sampled: List[PhotoPixels], segmenter: PhotoSegmenter, options
     groups = cluster_colors(np.vstack([photo.tomato_colors for photo in sampled]), options.grupos)
     panel_file = names_file.with_name("grupos.png")
     save_image(group_panel(groups, [segmenter.segment(photo.photo) for photo in sampled]), panel_file)
-    _open_for_viewing(panel_file)
-    named = groups.with_names(_ask_group_names(len(groups.centers_lab), panel_file))
+    if options.nomes:
+        named = groups.with_names(names_from_codes(options.nomes, len(groups.centers_lab)))
+    else:
+        _open_for_viewing(panel_file)
+        named = groups.with_names(_ask_group_names(len(groups.centers_lab), panel_file))
     named.save(names_file)
     return named
 
@@ -142,6 +145,15 @@ def _ask_group_names(group_count: int, panel_file: Path) -> List[str]:
             answer = input(f"  Opção inválida. Grupo {group} ({choices}): ").strip()
         names.append(NAME_CHOICES[answer])
     return names
+
+
+def names_from_codes(codes_text: str, group_count: int) -> List[str]:
+    """'1,1,2,0,...' -> nomes dos grupos, na ordem do painel (mesmos códigos da pergunta interativa)."""
+    codes = [code.strip() for code in codes_text.split(",")]
+    if len(codes) != group_count or any(code not in NAME_CHOICES for code in codes):
+        choices = " | ".join(f"{key}={name}" for key, name in NAME_CHOICES.items())
+        raise ValueError(f"--nomes precisa de {group_count} códigos separados por vírgula ({choices}).")
+    return [NAME_CHOICES[code] for code in codes]
 
 
 def _training_pixels(sampled: List[PhotoPixels], groups: ColorGroups) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -185,9 +197,9 @@ class LutConference:
     def evaluate(self, photo: LabeledPhoto, is_validation: bool) -> PhotoEvaluation:
         segmented = self._segmenter.segment(photo)
         class_map = apply_lut(self._lut, segmented.image)
-        fraction = colored_fraction(class_map, segmented.tomato_mask)
+        surface = SurfaceColor.measure(class_map, segmented.tomato_mask)
         save_image(_conference_image(segmented, class_map), self._images_folder / f"{photo.path.stem}.png")
-        return PhotoEvaluation(photo, is_validation, fraction, maturity_from_fraction(fraction),
+        return PhotoEvaluation(photo, is_validation, surface, surface.maturity(),
                                class_counts(class_map, segmented.tomato_mask))
 
 
@@ -203,17 +215,18 @@ def _conference_image(segmented: SegmentedPhoto, class_map: np.ndarray) -> np.nd
 
 def _write_report(evaluations: List[PhotoEvaluation], destination: Path) -> str:
     lines = ["# Conferência da LUT de cor", "",
-             "Maturação calculada pela regra do RF02 (% colorido = amarelado + rosado + vermelho, sem cálice) "
+             "Maturação calculada pela regra do RF02 (imaturo: < 10% colorido; maduro: > 60% vermelho; "
+             "senão intermediário; porcentagens sobre o tomate sem cálice) "
              "contra a maturação informada na captura.", ""]
     for title, subset in (("Tomates de validação (não usados no treino da MLP)", [e for e in evaluations if e.is_validation]),
                           ("Tomates de treino (só conferência: a MLP já viu esses pixels)", [e for e in evaluations if not e.is_validation])):
         if subset:
             lines += [f"## {title}", "", *_confusion_table(subset), ""]
-    lines += ["## Por foto", "", "| Foto | Tomate | Conjunto | Informada | % colorido | Calculada | Acerto |",
-              "|---|---|---|---|---|---|---|"]
+    lines += ["## Por foto", "", "| Foto | Tomate | Conjunto | Informada | % colorido | % vermelho | Calculada | Acerto |",
+              "|---|---|---|---|---|---|---|---|"]
     for e in evaluations:
         lines.append(f"| {e.photo.path.name} | {e.photo.tomato_id} | {'validação' if e.is_validation else 'treino'} | "
-                     f"{e.photo.maturity} | {e.colored_fraction:.0%} | {e.predicted_maturity} | "
+                     f"{e.photo.maturity} | {e.surface.colored_fraction:.0%} | {e.surface.red_fraction:.0%} | {e.predicted_maturity} | "
                      f"{'sim' if e.is_correct() else '**não**'} |")
     lines += ["", "Imagens de conferência (foto | classes da LUT) em `conferencia/`. Cores: verde = verde, "
               "amarelo = amarelado, rosa = rosado, vermelho = vermelho, verde-escuro = cálice."]
@@ -242,6 +255,8 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--saida", default="lut_cor.npz", help="Arquivo da LUT gerada.")
     parser.add_argument("--grupos", type=int, default=8, help="Quantos grupos de cor no k-means.")
     parser.add_argument("--reagrupar", action="store_true", help="Refaz os grupos e pergunta os nomes de novo.")
+    parser.add_argument("--nomes", default="", help="Nomes dos grupos sem perguntar, ex.: 1,1,2,3,4,4,4,0 "
+                        "(1 verde, 2 amarelado, 3 rosado, 4 vermelho, 5 cálice, 0 descartar).")
     return parser
 
 

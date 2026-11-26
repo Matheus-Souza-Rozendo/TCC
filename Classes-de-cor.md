@@ -39,7 +39,12 @@ Isso é o mesmo princípio do artigo de Hou et al. (2024), que mede a maturaçã
 
 **Por quê:** cada classe tem mais fotos, o rótulo fica menos subjetivo, e continua citável (é um agrupamento do padrão USDA).
 
-**Regra no código:** `% colorido = (pixels amarelado + rosado + vermelho) / (pixels do tomate sem cálice)`.
+**Regra no código** (porcentagens sobre os pixels do tomate sem cálice):
+- **Imaturo:** `% colorido = amarelado + rosado + vermelho` abaixo de 10%.
+- **Maduro:** `% vermelho` acima de 60%.
+- **Intermediário:** o resto.
+
+**Por que o maduro olha só o vermelho (ajuste de 26/11/2026):** no USDA os estádios 5–6 exigem superfície vermelha, e o amarelado/alaranjado é só o início da mudança de cor. Com a regra antiga (% colorido > 60% = maduro), um tomate todo alaranjado (de vez) saía maduro: na conferência da LUT, todas as 22 fotos de intermediário saíam maduro.
 
 ## Para conferir com o orientador
 

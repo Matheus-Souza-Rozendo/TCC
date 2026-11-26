@@ -1,0 +1,195 @@
+Treinando em: GPU NVIDIA GeForce RTX 3050 Laptop GPU
+AVISO: tomate_0020_foto_01.jpg está no rotulos.csv mas o arquivo não existe; ignorada.
+AVISO: tomate_0020_foto_02.jpg está no rotulos.csv mas o arquivo não existe; ignorada.
+AVISO: tomate_0020_foto_03.jpg está no rotulos.csv mas o arquivo não existe; ignorada.
+AVISO: tomate_0020_foto_04.jpg está no rotulos.csv mas o arquivo não existe; ignorada.
+Dataset recortado:
+  sadio: 109 fotos de 17 tomates
+  com_defeito: 67 fotos de 11 tomates
+
+Validação cruzada - dobra 1 de 5 (5 tomates de validação)
+  época  1: perda treino 0.711 | perda validação 0.448 | acurácia balanceada 83.3%
+  época  2: perda treino 0.544 | perda validação 0.235 | acurácia balanceada 95.8%
+  época  3: perda treino 0.475 | perda validação 0.222 | acurácia balanceada 83.3%
+  época  4: perda treino 0.473 | perda validação 0.238 | acurácia balanceada 97.8%
+  época  5: perda treino 0.315 | perda validação 0.126 | acurácia balanceada 91.7%
+  época  6: perda treino 0.333 | perda validação 0.073 | acurácia balanceada 100.0%
+  época  7: perda treino 0.235 | perda validação 0.106 | acurácia balanceada 100.0%
+  época  8: perda treino 0.186 | perda validação 0.219 | acurácia balanceada 93.5%
+  época  9: perda treino 0.151 | perda validação 0.319 | acurácia balanceada 91.3%
+  época 10: perda treino 0.170 | perda validação 0.538 | acurácia balanceada 84.8%
+  época 11: perda treino 0.152 | perda validação 0.075 | acurácia balanceada 95.8%
+  época 12: perda treino 0.124 | perda validação 0.109 | acurácia balanceada 97.8%
+  época 13: perda treino 0.130 | perda validação 0.941 | acurácia balanceada 80.4%
+  época 14: perda treino 0.134 | perda validação 0.069 | acurácia balanceada 97.8%
+  época 15: perda treino 0.180 | perda validação 0.038 | acurácia balanceada 100.0%
+  época 16: perda treino 0.142 | perda validação 0.032 | acurácia balanceada 100.0%
+  época 17: perda treino 0.141 | perda validação 0.054 | acurácia balanceada 95.8%
+  época 18: perda treino 0.149 | perda validação 0.031 | acurácia balanceada 100.0%
+  época 19: perda treino 0.143 | perda validação 0.065 | acurácia balanceada 95.8%
+  época 20: perda treino 0.131 | perda validação 0.086 | acurácia balanceada 95.8%
+  época 21: perda treino 0.088 | perda validação 0.050 | acurácia balanceada 100.0%
+  época 22: perda treino 0.122 | perda validação 0.042 | acurácia balanceada 100.0%
+  época 23: perda treino 0.082 | perda validação 0.548 | acurácia balanceada 82.6%
+  época 24: perda treino 0.071 | perda validação 0.060 | acurácia balanceada 100.0%
+  época 25: perda treino 0.033 | perda validação 0.022 | acurácia balanceada 100.0%
+  época 26: perda treino 0.070 | perda validação 0.027 | acurácia balanceada 100.0%
+  época 27: perda treino 0.113 | perda validação 0.030 | acurácia balanceada 100.0%
+  época 28: perda treino 0.149 | perda validação 0.028 | acurácia balanceada 100.0%
+  época 29: perda treino 0.093 | perda validação 0.034 | acurácia balanceada 95.8%
+  época 30: perda treino 0.062 | perda validação 0.017 | acurácia balanceada 100.0%
+
+Validação cruzada - dobra 2 de 5 (6 tomates de validação)
+  época  1: perda treino 0.635 | perda validação 0.580 | acurácia balanceada 53.8%
+  época  2: perda treino 0.548 | perda validação 0.627 | acurácia balanceada 54.6%
+  época  3: perda treino 0.418 | perda validação 0.623 | acurácia balanceada 55.6%
+  época  4: perda treino 0.313 | perda validação 0.573 | acurácia balanceada 68.3%
+  época  5: perda treino 0.264 | perda validação 0.873 | acurácia balanceada 77.4%
+  época  6: perda treino 0.176 | perda validação 1.482 | acurácia balanceada 69.1%
+  época  7: perda treino 0.296 | perda validação 0.617 | acurácia balanceada 68.6%
+  época  8: perda treino 0.219 | perda validação 1.107 | acurácia balanceada 69.4%
+  época  9: perda treino 0.133 | perda validação 0.956 | acurácia balanceada 62.3%
+  época 10: perda treino 0.189 | perda validação 0.619 | acurácia balanceada 69.2%
+  época 11: perda treino 0.187 | perda validação 1.052 | acurácia balanceada 57.7%
+  época 12: perda treino 0.149 | perda validação 1.139 | acurácia balanceada 61.7%
+  época 13: perda treino 0.079 | perda validação 0.637 | acurácia balanceada 67.9%
+  época 14: perda treino 0.071 | perda validação 0.259 | acurácia balanceada 78.4%
+  época 15: perda treino 0.065 | perda validação 0.793 | acurácia balanceada 71.5%
+  época 16: perda treino 0.187 | perda validação 0.695 | acurácia balanceada 68.3%
+  época 17: perda treino 0.156 | perda validação 0.624 | acurácia balanceada 70.0%
+  época 18: perda treino 0.084 | perda validação 1.484 | acurácia balanceada 73.2%
+  época 19: perda treino 0.138 | perda validação 1.116 | acurácia balanceada 71.5%
+  época 20: perda treino 0.096 | perda validação 0.897 | acurácia balanceada 83.3%
+  época 21: perda treino 0.063 | perda validação 0.747 | acurácia balanceada 69.7%
+  época 22: perda treino 0.077 | perda validação 1.195 | acurácia balanceada 65.5%
+  época 23: perda treino 0.063 | perda validação 0.994 | acurácia balanceada 63.8%
+  época 24: perda treino 0.062 | perda validação 1.622 | acurácia balanceada 69.4%
+  época 25: perda treino 0.128 | perda validação 0.642 | acurácia balanceada 79.8%
+  época 26: perda treino 0.047 | perda validação 0.689 | acurácia balanceada 70.7%
+  época 27: perda treino 0.065 | perda validação 0.428 | acurácia balanceada 78.0%
+  época 28: perda treino 0.136 | perda validação 0.510 | acurácia balanceada 81.6%
+  época 29: perda treino 0.033 | perda validação 0.817 | acurácia balanceada 75.6%
+  época 30: perda treino 0.092 | perda validação 0.565 | acurácia balanceada 72.4%
+
+Validação cruzada - dobra 3 de 5 (6 tomates de validação)
+  época  1: perda treino 0.660 | perda validação 0.753 | acurácia balanceada 53.1%
+  época  2: perda treino 0.423 | perda validação 0.598 | acurácia balanceada 71.9%
+  época  3: perda treino 0.442 | perda validação 0.730 | acurácia balanceada 68.1%
+  época  4: perda treino 0.435 | perda validação 0.691 | acurácia balanceada 64.0%
+  época  5: perda treino 0.318 | perda validação 0.949 | acurácia balanceada 68.8%
+  época  6: perda treino 0.229 | perda validação 0.229 | acurácia balanceada 90.6%
+  época  7: perda treino 0.149 | perda validação 0.211 | acurácia balanceada 90.6%
+  época  8: perda treino 0.186 | perda validação 0.164 | acurácia balanceada 94.2%
+  época  9: perda treino 0.224 | perda validação 0.507 | acurácia balanceada 81.6%
+  época 10: perda treino 0.156 | perda validação 0.233 | acurácia balanceada 94.7%
+  época 11: perda treino 0.115 | perda validação 0.294 | acurácia balanceada 83.2%
+  época 12: perda treino 0.170 | perda validação 0.424 | acurácia balanceada 80.6%
+  época 13: perda treino 0.130 | perda validação 0.338 | acurácia balanceada 89.0%
+  época 14: perda treino 0.108 | perda validação 0.256 | acurácia balanceada 82.2%
+  época 15: perda treino 0.094 | perda validação 0.281 | acurácia balanceada 90.6%
+  época 16: perda treino 0.168 | perda validação 0.338 | acurácia balanceada 87.5%
+  época 17: perda treino 0.109 | perda validação 0.846 | acurácia balanceada 65.6%
+  época 18: perda treino 0.155 | perda validação 0.508 | acurácia balanceada 71.9%
+  época 19: perda treino 0.142 | perda validação 0.459 | acurácia balanceada 78.1%
+  época 20: perda treino 0.062 | perda validação 0.359 | acurácia balanceada 78.1%
+  época 21: perda treino 0.057 | perda validação 0.087 | acurácia balanceada 100.0%
+  época 22: perda treino 0.074 | perda validação 0.090 | acurácia balanceada 96.9%
+  época 23: perda treino 0.044 | perda validação 0.186 | acurácia balanceada 90.6%
+  época 24: perda treino 0.104 | perda validação 0.657 | acurácia balanceada 68.8%
+  época 25: perda treino 0.059 | perda validação 0.865 | acurácia balanceada 62.5%
+  época 26: perda treino 0.086 | perda validação 0.526 | acurácia balanceada 75.0%
+  época 27: perda treino 0.139 | perda validação 0.235 | acurácia balanceada 87.5%
+  época 28: perda treino 0.120 | perda validação 0.250 | acurácia balanceada 87.5%
+  época 29: perda treino 0.155 | perda validação 0.146 | acurácia balanceada 94.2%
+  época 30: perda treino 0.066 | perda validação 0.180 | acurácia balanceada 90.6%
+
+Validação cruzada - dobra 4 de 5 (6 tomates de validação)
+  época  1: perda treino 0.641 | perda validação 0.477 | acurácia balanceada 74.4%
+  época  2: perda treino 0.598 | perda validação 0.461 | acurácia balanceada 67.3%
+  época  3: perda treino 0.485 | perda validação 0.502 | acurácia balanceada 83.3%
+  época  4: perda treino 0.284 | perda validação 0.488 | acurácia balanceada 77.1%
+  época  5: perda treino 0.351 | perda validação 0.276 | acurácia balanceada 88.1%
+  época  6: perda treino 0.287 | perda validação 0.574 | acurácia balanceada 81.8%
+  época  7: perda treino 0.159 | perda validação 0.480 | acurácia balanceada 77.4%
+  época  8: perda treino 0.165 | perda validação 0.605 | acurácia balanceada 75.6%
+  época  9: perda treino 0.102 | perda validação 0.463 | acurácia balanceada 81.8%
+  época 10: perda treino 0.261 | perda validação 0.321 | acurácia balanceada 79.5%
+  época 11: perda treino 0.126 | perda validação 0.260 | acurácia balanceada 85.7%
+  época 12: perda treino 0.105 | perda validação 0.234 | acurácia balanceada 85.1%
+  época 13: perda treino 0.126 | perda validação 0.333 | acurácia balanceada 83.9%
+  época 14: perda treino 0.138 | perda validação 0.484 | acurácia balanceada 74.7%
+  época 15: perda treino 0.156 | perda validação 0.656 | acurácia balanceada 81.2%
+  época 16: perda treino 0.125 | perda validação 0.211 | acurácia balanceada 90.8%
+  época 17: perda treino 0.104 | perda validação 0.312 | acurácia balanceada 82.4%
+  época 18: perda treino 0.064 | perda validação 0.118 | acurácia balanceada 94.3%
+  época 19: perda treino 0.167 | perda validação 0.406 | acurácia balanceada 81.5%
+  época 20: perda treino 0.065 | perda validação 0.458 | acurácia balanceada 80.1%
+  época 21: perda treino 0.060 | perda validação 0.207 | acurácia balanceada 85.7%
+  época 22: perda treino 0.101 | perda validação 0.408 | acurácia balanceada 82.1%
+  época 23: perda treino 0.089 | perda validação 0.465 | acurácia balanceada 82.1%
+  época 24: perda treino 0.084 | perda validação 0.489 | acurácia balanceada 78.6%
+  época 25: perda treino 0.103 | perda validação 0.510 | acurácia balanceada 78.6%
+  época 26: perda treino 0.045 | perda validação 0.774 | acurácia balanceada 82.1%
+  época 27: perda treino 0.037 | perda validação 0.688 | acurácia balanceada 78.6%
+  época 28: perda treino 0.044 | perda validação 0.360 | acurácia balanceada 85.7%
+  época 29: perda treino 0.033 | perda validação 0.177 | acurácia balanceada 85.7%
+  época 30: perda treino 0.135 | perda validação 0.591 | acurácia balanceada 87.5%
+
+Validação cruzada - dobra 5 de 5 (5 tomates de validação)
+  época  1: perda treino 0.606 | perda validação 0.624 | acurácia balanceada 47.4%
+  época  2: perda treino 0.485 | perda validação 0.806 | acurácia balanceada 72.1%
+  época  3: perda treino 0.464 | perda validação 1.175 | acurácia balanceada 42.1%
+  época  4: perda treino 0.447 | perda validação 0.788 | acurácia balanceada 61.4%
+  época  5: perda treino 0.237 | perda validação 0.763 | acurácia balanceada 64.0%
+  época  6: perda treino 0.228 | perda validação 0.758 | acurácia balanceada 70.2%
+  época  7: perda treino 0.294 | perda validação 1.077 | acurácia balanceada 62.7%
+  época  8: perda treino 0.189 | perda validação 0.729 | acurácia balanceada 66.0%
+  época  9: perda treino 0.196 | perda validação 0.870 | acurácia balanceada 60.3%
+  época 10: perda treino 0.201 | perda validação 0.891 | acurácia balanceada 64.5%
+  época 11: perda treino 0.189 | perda validação 0.857 | acurácia balanceada 60.3%
+  época 12: perda treino 0.168 | perda validação 0.795 | acurácia balanceada 77.0%
+  época 13: perda treino 0.188 | perda validação 1.193 | acurácia balanceada 62.5%
+  época 14: perda treino 0.178 | perda validação 0.793 | acurácia balanceada 60.3%
+  época 15: perda treino 0.119 | perda validação 0.957 | acurácia balanceada 63.4%
+  época 16: perda treino 0.173 | perda validação 1.047 | acurácia balanceada 57.2%
+  época 17: perda treino 0.112 | perda validação 1.054 | acurácia balanceada 58.8%
+  época 18: perda treino 0.164 | perda validação 0.941 | acurácia balanceada 62.9%
+  época 19: perda treino 0.096 | perda validação 1.301 | acurácia balanceada 61.4%
+  época 20: perda treino 0.133 | perda validação 1.286 | acurácia balanceada 68.6%
+  época 21: perda treino 0.100 | perda validação 0.834 | acurácia balanceada 64.5%
+  época 22: perda treino 0.176 | perda validação 1.272 | acurácia balanceada 63.8%
+  época 23: perda treino 0.140 | perda validação 1.253 | acurácia balanceada 70.2%
+  época 24: perda treino 0.135 | perda validação 0.886 | acurácia balanceada 74.3%
+  época 25: perda treino 0.120 | perda validação 0.915 | acurácia balanceada 69.1%
+  época 26: perda treino 0.094 | perda validação 1.155 | acurácia balanceada 75.9%
+  época 27: perda treino 0.097 | perda validação 1.321 | acurácia balanceada 66.0%
+  época 28: perda treino 0.136 | perda validação 1.169 | acurácia balanceada 72.8%
+  época 29: perda treino 0.107 | perda validação 1.609 | acurácia balanceada 69.1%
+  época 30: perda treino 0.069 | perda validação 1.784 | acurácia balanceada 61.4%
+
+Modelo final: todos os 176 recortes, 20 épocas (mediana da melhor época das dobras).
+  época  1 de 20: perda treino 0.599
+  época  2 de 20: perda treino 0.494
+  época  3 de 20: perda treino 0.402
+  época  4 de 20: perda treino 0.254
+  época  5 de 20: perda treino 0.297
+  época  6 de 20: perda treino 0.174
+  época  7 de 20: perda treino 0.160
+  época  8 de 20: perda treino 0.222
+  época  9 de 20: perda treino 0.283
+  época 10 de 20: perda treino 0.212
+  época 11 de 20: perda treino 0.161
+  época 12 de 20: perda treino 0.175
+  época 13 de 20: perda treino 0.166
+  época 14 de 20: perda treino 0.061
+  época 15 de 20: perda treino 0.139
+  época 16 de 20: perda treino 0.065
+  época 17 de 20: perda treino 0.097
+  época 18 de 20: perda treino 0.107
+  época 19 de 20: perda treino 0.182
+  época 20 de 20: perda treino 0.092
+Modelo salvo em: C:\Users\matheus.souza\Desktop\Teste\Calibracao-branco\cnn_defeito.onnx
+Conferido: o OpenCV lê o ONNX e dá a mesma resposta do PyTorch (diferença máx. 0.0009).
+
+Validação cruzada: acurácia balanceada 90.9% ± 9.3%, sensibilidade 93.6%, especificidade 88.3%.
+Relatório completo: C:\Users\matheus.souza\Desktop\Teste\Dataset-proprio\cnn\RELATORIO.md
