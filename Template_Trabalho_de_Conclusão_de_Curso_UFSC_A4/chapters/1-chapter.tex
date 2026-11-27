@@ -18,12 +18,17 @@ Nesta seção, apresentam-se o objetivo geral e os objetivos específicos que no
 
 \subsection{Objetivo Geral}
 
-Desenvolver um protótipo de máquina de seleção óptica de baixo custo para tomates-cereja, visando automatizar o processo de triagem e classificação para pequenos e médios produtores rurais.
+Desenvolver e avaliar um protótipo de bancada de inspeção óptica de baixo custo que classifique tomates-cereja quanto ao estádio de maturação, à presença de defeitos e ao tamanho, como prova de conceito para a automação da triagem voltada a pequenos e médios produtores rurais.
+
+\subsection{Objetivos Específicos}
 
 \begin{itemize}
-	\item Desenvolver um modelo unificado de detecção multitarefa baseado na arquitetura \textit{YOLO}, utilizando técnicas de \textit{Transfer Learning} para identificar simultaneamente o estado de maturação e a presença de patologias (mofo, podridão apical e rachaduras);
-	\item Estruturar um \textit{dataset} com amostras coletadas localmente, realizando o treinamento e a otimização dos pesos em ambiente de computação em nuvem (\textit{Google Colab});
-	\item Implementar rotinas de visão computacional para a estimativa do diâmetro horizontal dos frutos através da conversão de \textit{pixels} para milímetros, visando a classificação por calibre comercial (entre 15 mm e 35 mm);
-	\item Projetar e integrar uma arquitetura de processamento local (\textit{Edge Computing}) baseada em computador pessoal com interface microcontrolada, garantindo a execução do modelo com baixa latência e o acionamento sincronizado dos atuadores para a separação física dos frutos;
-	\item Avaliar o desempenho global do protótipo, analisando métricas de acurácia, tempo de inferência e a eficiência do descarte mecânico, com foco na meta referencial de 90\% de assertividade.
+	\item Montar uma bancada de aquisição com câmera fixa, iluminação controlada e fundo escuro, com calibração de branco e calibração métrica por padrão de xadrez, de modo a converter medidas em \textit{pixels} para milímetros;
+	\item Implementar a segmentação dos frutos por limiarização de Otsu e medir, para cada tomate, o diâmetro, o comprimento, a largura e a circularidade;
+	\item Classificar o estádio de maturação (imaturo, intermediário e maduro) a partir da proporção de cores da superfície do fruto, usando uma tabela de consulta (\textit{Look-Up Table}, LUT) gerada por uma rede neural \textit{Multilayer Perceptron} (MLP) treinada com \textit{pixels} agrupados no espaço CIE L*a*b*;
+	\item Construir um \textit{dataset} próprio, coletado na bancada, de tomates sadios e com defeitos visíveis (podridão, rachaduras, danos mecânicos e manchas), e treinar por transferência de aprendizado uma rede neural convolucional ResNet-18 para distinguir frutos sadios de frutos com defeito, com validação cruzada agrupada por tomate;
+	\item Integrar as etapas em uma interface homem-máquina (IHM) que exiba o resultado da inspeção em tempo real, indique o destino de cada fruto (descarte ou classe de maturação) e registre as inspeções para posterior análise;
+	\item Avaliar o desempenho do sistema em um lote de teste independente, formado por tomates não utilizados no treinamento, por meio de acurácia balanceada, sensibilidade, especificidade e intervalos de confiança, tendo como referência a meta de 90\% de acurácia, além de medir o tempo de processamento por fruto.
 \end{itemize}
+
+A separação física dos frutos por atuadores e a integração com uma esteira industrial estão fora do escopo deste trabalho e são indicadas como trabalhos futuros.
