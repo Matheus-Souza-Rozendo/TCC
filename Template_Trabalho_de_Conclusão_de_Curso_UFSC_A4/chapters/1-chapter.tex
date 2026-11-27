@@ -5,38 +5,40 @@
 
 \section{Justificativa}
 
-O agronegócio é um dos pilares da economia brasileira e tem papel estratégico no desenvolvimento regional. Contudo, a eficiência do setor é comprometida pelas perdas na cadeia de suprimentos de produtos perecíveis. Em escala mundial, a \textcite{FAO2011} estima que cerca de um terço dos alimentos produzidos para consumo humano é perdido ou desperdiçado, e as frutas e hortaliças estão entre os produtos mais afetados. No Brasil, levantamentos em centrais de abastecimento, como o de \textcite{ciagro2020} na Ceasa de Juazeiro-BA, registram perdas pós-colheita de hortifrútis associadas, entre outros fatores, ao manejo inadequado (ver \autoref{cap:revisao}).
+O agronegócio é um dos pilares da economia brasileira e tem papel estratégico no desenvolvimento nacional. Entretanto, a eficiência do setor é comprometida pelas perdas na cadeia logística de produtos perecíveis. No mundo, a \textcite{FAO2011} estima que cerca de um terço dos alimentos produzidos para consumo humano é perdido, e as frutas e legumes estão entre os produtos mais afetados. No Brasil, levantamentos em centros de abastecimento, como o de \textcite{ciagro2020} na Ceasa de Juazeiro-BA, registram perdas associadas, entre outros fatores, ao manejo inadequado pós-colheita.
 
-Esse cenário tem impacto econômico direto. O transporte de hortaliças como o tomate-cereja sem uma triagem prévia adequada movimenta mercadorias fora dos padrões de comercialização: transportar frutos que serão descartados no destino eleva os gastos com frete, embalagens e mão de obra, reduz a rentabilidade do produtor e a competitividade do setor. Além disso, frutos em estádios de maturação diferentes, enviados juntos, têm prazos de consumo diferentes, e os mais maduros se perdem antes da venda. A classificação na origem, por defeito e por maturação, ataca as duas causas.
+Esse cenário gera um grande impacto econômico. O transporte de frutas como o tomate-cereja sem uma triagem adequada movimenta mercadorias que serão descartadas. Isso eleva os gastos com frete, embalagens e mão de obra, reduz o lucro do produtor e a competitividade do setor. A classificação na origem, por defeito e por maturação, ataca esse problema.
 
-A classificação manual é lenta, cansativa e subjetiva, e os sistemas de visão computacional vêm substituindo-a na inspeção de alimentos \cite{brosnan2004,cubero2011}. As soluções industriais, porém, têm custo elevado para pequenos e médios produtores. Por outro lado, câmeras de telefones celulares, computadores pessoais e redes neurais pré-treinadas de uso livre tornaram acessíveis os componentes de um sistema de visão. Este trabalho investiga se esses componentes de baixo custo permitem classificar tomates-cereja com desempenho útil. O tomate-cereja foi escolhido como primeira cultura, por ser um fruto pequeno, de alto valor e classificado por cor, tamanho e defeitos.
+Os sistemas de visão computacional vêm substituindo a classificação manual de alimentos \cite{brosnan2004,cubero2011}. Porém as soluções industriais têm custo elevado para pequenos e médios produtores. Por outro lado, câmeras de telefones celulares, computadores pessoais e redes neurais pré-treinadas de uso livre tornaram acessíveis os componentes de um sistema de visão. Este trabalho investiga se esses componentes de baixo custo permitem classificar tomates-cereja com desempenho útil. O tomate-cereja foi escolhido como primeira cultura, por ser um fruto pequeno, de alto valor e classificado por cor, tamanho e defeitos.
 
 % ----------------------------------------------------------
 \section{Objetivos}
 % ----------------------------------------------------------
 
-Nesta seção, apresentam-se o objetivo geral e os objetivos específicos que norteiam o desenvolvimento deste trabalho.
+Nesta seção, apresentam-se o objetivo geral e os objetivos específicos no desenvolvimento deste trabalho.
 
 \subsection{Objetivo Geral}
 
-Desenvolver e avaliar um protótipo de bancada de inspeção óptica de baixo custo que classifique tomates-cereja quanto ao estádio de maturação e à presença de defeitos e que meça o seu tamanho, como prova de conceito para a automação da triagem voltada a pequenos e médios produtores rurais.
+Desenvolver e avaliar um protótipo de bancada de inspeção óptica de baixo custo que classifique tomates-cereja quanto ao estado de maturação e à presença de defeitos e que meça o seu tamanho, como prova de conceito para a automação da triagem voltada a pequenos e médios produtores rurais.
 
 \subsection{Objetivos Específicos}
 
 \begin{itemize}
-	\item Montar uma bancada de aquisição com câmera fixa, iluminação controlada e fundo escuro, com calibração de branco e calibração métrica por padrão de xadrez, de modo a converter medidas em \textit{pixels} para milímetros;
-	\item Implementar a segmentação dos frutos por limiarização de Otsu e medir, para cada tomate, o diâmetro, o comprimento, a largura e a circularidade;
-	\item Classificar o estádio de maturação (imaturo, intermediário e maduro) a partir da proporção de cores da superfície do fruto, usando uma tabela de consulta (\textit{Look-Up Table}, LUT) gerada por uma rede neural \textit{Multilayer Perceptron} (MLP) treinada com \textit{pixels} agrupados no espaço CIE L*a*b*;
-	\item Construir um conjunto de dados próprio, coletado na bancada, de tomates sadios e com defeitos visíveis (podridão, rachaduras, danos mecânicos e manchas), e treinar por transferência de aprendizado uma rede neural convolucional ResNet-18 para distinguir frutos sadios de frutos com defeito, com validação cruzada agrupada por tomate;
-	\item Integrar as etapas em uma interface homem-máquina (IHM) que exiba o resultado da inspeção em tempo real, indique o destino de cada fruto (descarte ou classe de maturação) e registre as inspeções para posterior análise;
-	\item Avaliar o desempenho do sistema em um lote de teste formado por tomates não utilizados no treinamento, por meio de acurácia balanceada, sensibilidade, especificidade e intervalos de confiança, comparando-o com os critérios de aceitação definidos no \autoref{cap:metodos}, além de medir o tempo de processamento por fruto.
+	\item Montar uma bancada de aquisição com câmera fixa, iluminação controlada e fundo escuro, com calibração de branco e calibração métrica por padrão de xadrez;
+	\item Implementar a segmentação dos frutos por limiarização de Otsu
+	\item Medir, para cada tomate, comprimento, largura e a circularidade;
+	\item Classificar o estado de maturação a partir da proporção de cores na superfície do fruto, usando uma tabela de consulta (\textit{Look-Up Table}, LUT) gerada por uma rede neural \textit{Multilayer Perceptron} (MLP) treinada com \textit{pixels} agrupados no espaço CIE L*a*b*;
+	\item Construir um conjunto de dados próprio, de tomates sadios e com defeitos visíveis.
+	\item Usar a tecnica de aprendizagem por transferência no modelo convolucional ResNet-18 para distinguir frutos sadios de frutos com defeito;
+	\item Cria uma interface grafica (IHM) que exiba o resultado da inspeção em tempo real, indique o destino de cada fruto e registre as inspeções para uma analise posterior;
+	\item Avaliar o desempenho do sistema em um lote de teste formado por tomates não utilizados no treinamento e comparar com os critérios de aceitação definidos no \autoref{cap:metodos}, além de medir o tempo de processamento por fruto.
 \end{itemize}
-
-A separação física dos frutos por atuadores e a integração com uma esteira industrial estão fora do escopo deste trabalho e são indicadas como trabalhos futuros.
 
 % ----------------------------------------------------------
 \section{Estrutura do Trabalho}
 % ----------------------------------------------------------
 
-O \autoref{cap:revisao} apresenta a revisão bibliográfica: a classificação comercial do tomate, os fundamentos de visão computacional, a classificação de cor por tabela de consulta, as redes neurais convolucionais, a avaliação de classificadores com poucos dados e os trabalhos relacionados. O \autoref{cap:metodos} descreve a bancada, as calibrações, os conjuntos de dados, o treinamento da LUT e da CNN, a interface de operação e o protocolo de avaliação. O \autoref{cap:resultados} apresenta e discute os resultados, e o \autoref{cap:conclusao} traz as conclusões e as sugestões de trabalhos futuros.
+O \autoref{cap:revisao} apresenta a revisão bibliográfica, mostrando a classificação comercial do tomate, os fundamentos de visão computacional, a classificação de cor por tabela de consulta, as redes neurais convolucionais, a avaliação de classificadores com poucos dados e os trabalhos relacionados. 
+
+O \autoref{cap:metodos} descreve a bancada, as calibrações, os conjuntos de dados, o treinamento da LUT e da CNN, a interface de operação e o protocolo de avaliação. O \autoref{cap:resultados} apresenta e discute os resultados, e o \autoref{cap:conclusao} traz as conclusões e as sugestões de trabalhos futuros.
 

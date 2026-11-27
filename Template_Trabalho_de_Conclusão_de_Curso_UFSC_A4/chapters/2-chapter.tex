@@ -2,74 +2,128 @@
 \chapter{Revisão Bibliográfica}\label{cap:revisao}
 % ----------------------------------------------------------
 
-
 \section{A Logística de Produtos Perecíveis no Agronegócio}
 
-A logística de produtos perecíveis, particularmente no setor de hortifrúti, é caracterizada por uma complexidade elevada devido à natureza biológica dos itens. Diferentemente dos produtos industrializados, os perecíveis possuem uma vida útil curta e continuam seus processos metabólicos mesmo após a colheita, o que exige uma gestão da cadeia de suprimentos ágil e eficiente para evitar a perda de valor comercial.
+A logística de produtos perecíveis, particularmente no setor de hortifrúti, possui uma complexidade elevada devido à natureza biológica dos produtos. Diferente de produtos industrializados, os perecíveis possuem uma vida útil curta e continuam seus processos metabólicos mesmo após a colheita, o que exige uma gestão da cadeia de suprimentos ágil e eficiente para evitar a perda comercial.
 
 \subsection{O Panorama do Desperdício}
-O desperdício de alimentos é um dos maiores desafios globais. Segundo a Organização das Nações Unidas para a Alimentação e a Agricultura \cite{FAO2011}, cerca de um terço de todos os alimentos produzidos no mundo para consumo humano é perdido ou desperdiçado anualmente. No contexto brasileiro, essa realidade é agravada por gargalos infraestruturais e processos de manuseio inadequados.
 
-% FIXME (revisão): conferir no texto original os 10% e 30% e as etapas intermediárias que faltam entre "produção e colheita" e "Por fim".
-Segundo \textcite{ciagro2020}, em levantamento na Ceasa de Juazeiro-BA, as perdas na cadeia de hortifrúti podem atingir patamares críticos.
-
-As perdas na cadeia produtiva ocorrem em diferentes etapas, começando pela produção e colheita, que registra aproximadamente 10\% de desperdício devido ao manejo inadequado. Por fim, a fase de comercialização responde por cerca de 30\% de perdas registradas nos centros de distribuição e no setor de varejo.
-
-Nesse cenário, a classificação na origem atua sobre duas causas das perdas: retira do fluxo os frutos que não seriam comercializados antes que consumam frete e embalagem, e agrupa os frutos por estádio de maturação, permitindo destiná-los a mercados com prazos de consumo compatíveis. As seções seguintes partem dos critérios de qualidade do tomate e avançam para as técnicas de visão computacional e de aprendizado de máquina que permitem automatizar essa classificação.
+O desperdício de alimentos é um dos maiores desafios logísticos que o mundo enfrenta atualmente. Segundo a Organização das Nações Unidas para a Alimentação e a Agricultura \cite{FAO2011}, cerca de um terço de todos os alimentos produzidos no mundo para consumo humano é perdido ou desperdiçado anualmente. No contexto brasileiro, essa realidade é agravada por gargalos infraestruturais e processos de manuseio inadequados.
 
 % ----------------------------------------------------------
 \section{O Tomate-Cereja e sua Classificação Comercial}
 % ----------------------------------------------------------
 
-A classificação comercial do tomate baseia-se em atributos externos observáveis: cor, tamanho, forma e presença de defeitos. No Brasil, as normas de classificação do tomate do Programa Brasileiro para a Modernização da Horticultura (PBMH) \cite{ceagesp2003}, elaboradas com a Companhia de Entrepostos e Armazéns Gerais de São Paulo (CEAGESP), separam o produto em grupos pelo formato, em classes pelo tamanho, em subgrupos pela coloração e em categorias pela tolerância a defeitos. Os defeitos são divididos em graves, que comprometem a conservação ou o uso do fruto e têm tolerância menor, e leves. Coloração, tamanho e defeitos são, portanto, critérios distintos na norma, o que justifica tratá-los por métodos distintos em um sistema automático.
+No Brasil, a classificação comercial do tomate segue as normas do Programa Brasileiro para a Modernização da Horticultura (PBMH) \cite{ceagesp2003}, que avaliam atributos externos observáveis divididos em quatro critérios: formato, tamanho, coloração e tolerância a defeitos. Os defeitos são classificados em leves ou graves. Os graves possuem uma tolerância menor por afetarem o consumo ou a conservação do fruto. Por serem parâmetros tratados de forma independente na norma, justifica-se o uso de técnicas específicas para cada um desses parâmetros em um sistema automático.
 
-\subsection{Estádios de maturação}
+\subsection{Estados de maturação}
 
-A maturação do tomate manifesta-se principalmente pela mudança de cor da casca, do verde para o vermelho, resultado da degradação da clorofila e da síntese de carotenoides, em especial o licopeno. O padrão de classificação do Departamento de Agricultura dos Estados Unidos (USDA) \cite{usda1991} define seis estádios pela fração da superfície que mudou de cor: verde (\textit{green}); início de cor (\textit{breaker}), até 10\% da superfície com cor amarelo-acastanhada, rosa ou vermelha; virando (\textit{turning}), de 10\% a 30\%; rosado (\textit{pink}), de 30\% a 60\% rosa ou vermelha; vermelho claro (\textit{light red}), mais de 60\% rosa-avermelhada ou vermelha, desde que não mais de 90\% vermelha; e vermelho (\textit{red}), mais de 90\% vermelha. Os auxílios visuais do USDA \cite{usda_tomato_visual_aids} ilustram esses estádios.
+A maturação do tomate manifesta-se principalmente pela mudança de cor da casca, do verde para o vermelho, resultado da degradação da clorofila e da síntese de carotenoides, em especial o licopeno. O padrão de classificação do Departamento de Agricultura dos Estados Unidos (USDA) \cite{usda1991} define seis estados de maturação pela fração da superfície que mudou de cor, conforme ilustrado na Figura~\ref{fig:maturacao_usda}.
 
-Dois aspectos desse padrão são relevantes para a automação. Primeiro, os estádios são definidos por \emph{porcentagem de área}, e não por um único valor de cor médio, o que sugere classificar cada pixel da superfície e depois contar as proporções. Segundo, os estádios iniciais aceitam qualquer mudança de cor, inclusive o amarelo-acastanhado, ao passo que os finais exigem predominância de tons rosa-avermelhados e vermelhos. Neste trabalho, os seis estádios são agrupados em três classes (imaturo, intermediário e maduro), em uma adaptação do padrão do USDA que simplifica a rotulagem das amostras. \textcite{hou2024} também usam a proporção de área vermelha para a maturação, mas com limiares de 80\% e 90\% que distinguem apenas frutos já avermelhados de tomates de mesa.
+\begin{figure}[H]
+    \centering
+    \caption{Estádios de maturação do tomate segundo o padrão do USDA.}
+    \includegraphics[width=0.85\textwidth]{images/imagem_usda1991.png}
+    \label{fig:maturacao_usda}
+    \legend{Fonte: \textcite{usda1991}.}
+\end{figure}
+
+Dois critérios desse padrão são determinantes para sistemas automatizados de classificação. Primeiramente a avaliação baseada na proporção de área atingida, em vez da média global de cor, e a transição de cor progressiva, na qual os estados iniciais admitem tonalidades amarelas, enquanto os finais exigem de forma predominante tons avermelhados e vermelhos. Para simplificar a rotulagem das amostras neste trabalho, os seis estados originais do USDA foram agrupados em três classes, sendo elas imaturo, intermediário e maduro. Embora \textcite{hou2024} também empreguem a fração de área vermelha como métrica, os autores adotam limiares de 80\% e 90\%, restringindo a classificação a frutos já avermelhados destinados ao consumo \textit{in natura}.
 
 \subsection{Defeitos externos e calibre}
 
-Os defeitos externos do tomate incluem rachaduras, podridões e mofos, danos mecânicos (amassados e cortes) e manchas. Diferentemente da cor, os defeitos são padrões locais de textura e forma, de aparência muito variável, o que dificulta descrevê-los por regras explícitas \cite{dacosta2020}. Já o tamanho é uma grandeza geométrica. Para os tomates de mesa dos grupos redondo e oblongo, a classe é definida pelo maior diâmetro transversal \cite{ceagesp2003}; o tomate-cereja não segue esse mesmo critério de diâmetro, e por isso este trabalho mede o tamanho dos frutos, mas não os separa em classes de calibre. Em qualquer caso, medir o tamanho a partir da imagem exige converter medidas em pixels para milímetros.
+Os defeitos externos do tomate incluem rachaduras, podridões e mofos, danos mecânicos e manchas. Diferentemente da cor, os defeitos são padrões locais de textura e forma, de aparência muito variável, o que dificulta descrevê-los por regras explícitas \cite{dacosta2020}. Já o tamanho é uma grandeza geométrica. Para os tomates de mesa dos grupos redondo e oblongo, a classe é definida pelo maior diâmetro transversal \cite{ceagesp2003}; o tomate-cereja não segue esse mesmo critério de diâmetro, e por isso este trabalho mede o tamanho dos frutos, mas não os separa em classes de calibre. Em qualquer caso, medir o tamanho a partir da imagem exige converter medidas em pixels para milímetros.
 
 % ----------------------------------------------------------
-\section{Visão Computacional na Inspeção de Frutos}
+\section{Visão Computacional}
 % ----------------------------------------------------------
 
-Visão computacional é o conjunto de técnicas que extrai informação útil de imagens digitais. Na inspeção de alimentos, ela oferece medição sem contato, não destrutiva e repetível, e por isso vem substituindo a inspeção visual humana, que é lenta, cansativa e subjetiva \cite{brosnan2004,cubero2011}. \textcite{chen2002} descrevem um sistema de visão para aplicações agrícolas como a combinação de iluminação, câmera, placa de aquisição e programa, cujo processamento consiste em realce da imagem, extração de características e classificação. Revisões posteriores \cite{brosnan2004,cubero2011} detalham essa sequência para frutos e hortaliças, destacando a aquisição sob iluminação controlada, a segmentação do fruto em relação ao fundo e a extração de características de cor, tamanho, forma e textura.
+Visão computacional é o conjunto de técnicas que extrai informações úteis de imagens digitais. Na inspeção de alimentos, ela permite realizar medições sem contato, não destrutivas e consistentes, substituindo aos poucos a inspeção visual humana, que é lenta, cansativa e subjetiva \cite{brosnan2004,cubero2011}. \textcite{chen2002} descrevem que um sistema de visão computacional para aplicações agrícolas é formado pela combinação de iluminação, câmera, placa de aquisição e software, em que o processamento consiste no realce da imagem, extração de características e classificação.
 
 \subsection{Cor digital e balanço de branco}
 
-Uma câmera digital registra, em cada pixel, a resposta de três sensores (vermelho, verde e azul, RGB). Esses valores dependem não só do objeto, mas também da fonte de luz e da resposta do sensor; a mesma fruta fotografada sob iluminações diferentes produz valores RGB diferentes. Para que a cor medida represente o objeto, é necessário compensar a luz, problema conhecido como constância de cor \cite{ebner2007}. A forma mais simples de compensação, adequada a uma bancada de iluminação fixa, é medir uma referência branca sob a mesma luz e calcular um ganho por canal que leve essa referência a um valor neutro, segundo o modelo diagonal de adaptação de von Kries \cite{ebner2007}.
+Uma câmera digital registra, em cada pixel $(x,y)$, a resposta de três sensores, onde cada sensor representa um canal de cor: vermelho, verde e azul. No modelo físico de formação da imagem com iluminação uniforme, a resposta \(c_i(x,y)\) de cada canal \(i \in \{r, g, b\}\) depende do fator geométrico de sombreamento \(G(x,y)\), da reflectância espectral do objeto \(R_i(x,y)\) e da intensidade da fonte de luz \(L_{i}\) \cite{ebner2007}. Como uma mesma fruta fotografada sob diferentes condições de luz produz valores \acs{RGB} diferentes, torna-se necessário compensar o efeito da iluminação para que a cor medida represente fielmente o objeto \cite{ebner2007}.
 
-O espaço RGB, porém, mistura brilho e cromaticidade: uma sombra altera os três canais ao mesmo tempo. O espaço CIE L*a*b* \cite{cie2004}, definido pela Comissão Internacional de Iluminação (CIE), separa a luminosidade (L*) de dois eixos cromáticos, a* (do verde ao vermelho) e b* (do azul ao amarelo), e foi projetado para que distâncias euclidianas aproximem diferenças percebidas pelo olho humano. \textcite{mendoza2006} mostraram que um sistema de visão calibrado permite medir a cor de alimentos em L*a*b*, apontando-o como o espaço mais adequado para superfícies curvas, mas também que o fundo, a curvatura e o brilho da superfície afetam a cor média medida. Cabe observar que, sem a caracterização colorimétrica da câmera, as coordenadas L*a*b* calculadas a partir do RGB são apenas uma aproximação do CIELAB; ainda assim, a separação entre luminosidade e cromaticidade é útil para agrupar e classificar cores de pixels.
+Para transformar uma imagem capturada sob um iluminante \(L\) para um iluminante de referência \(L'\), o modelo diagonal de adaptação de von Kries aplica um fator de escala independente a cada canal de cor:
+\[
+\begin{bmatrix}
+c_{r}^{\prime} \\
+c_{g}^{\prime} \\
+c_{b}^{\prime}
+\end{bmatrix}
+=
+\begin{bmatrix}
+k_{r} & 0 & 0 \\
+0 & k_{g} & 0 \\
+0 & 0 & k_{b}
+\end{bmatrix}
+\begin{bmatrix}
+c_{r} \\
+c_{g} \\
+c_{b}
+\end{bmatrix},
+\qquad k_{i}=\frac{L_{i}^{\prime}}{L_{i}}
+\]
+Como o iluminante real \(L_{i}\) geralmente é desconhecido, a compensação exige obter uma estimativa \(\tilde{L}_i \approx L_i\) que permita normalizar cada canal da imagem e recuperar a reflectância do objeto (com o fator de sombreamento):
+\[
+\frac{c_{i}(x,y)}{\tilde{L}_{i}} = \frac{G(x,y)\,R_{i}(x,y)\,L_{i}}{\tilde{L}_{i}} \approx G(x,y)\,R_{i}(x,y)
+\]
+Em sistemas com iluminação controlada, como bancadas de inspeção visual, essa estimativa é obtida diretamente pela medição de uma superfície de referência branca sob a mesma fonte de luz \cite{ebner2007}. A partir dos valores registrados nessa referência, calcula-se um ganho por canal \(k_{i}\) para equilibrar as respostas e ajustar o branco medido a um valor neutro, corrigindo o balanço de branco de toda a cena.
 
-\subsection{Segmentação por limiarização}
+\subsection{Segmentação e morfologia matemática}
 
-A segmentação separa os pixels do objeto dos pixels do fundo. Quando o objeto contrasta com um fundo uniforme, a limiarização é a técnica mais simples e eficiente: pixels acima de um limiar pertencem ao objeto \cite{gonzalez2010}. O método de \textcite{otsu1979} escolhe o limiar automaticamente, maximizando a variância entre as duas classes do histograma, o que o torna robusto a pequenas variações de iluminação entre imagens. A escolha da imagem a limiarizar também é importante: sobre um fundo escuro, o maior valor entre R, G e B de cada pixel preserva o contraste tanto de frutos vermelhos quanto de verdes, ao passo que a conversão para níveis de cinza atenua o tomate vermelho-escuro, cujos canais verde e azul são baixos. A suavização prévia da imagem reduz o efeito do ruído no limiar, e operações de morfologia matemática (abertura e fechamento), seguidas do preenchimento de buracos internos, removem pequenos falsos objetos e corrigem falhas na máscara causadas por reflexos \cite{gonzalez2010}.
+A segmentação divide a imagem em regiões distintas, separando os pixels do objeto de interesse dos pixels do fundo \cite{gonzalez2010}. Quando o objeto apresenta alto contraste em relação a um fundo uniforme, a limiarização global define uma máscara binária a partir de um limiar de intensidade \(T\):
+\[
+B(x,y) =
+\begin{cases}
+1, & \text{se } f(x,y) > T, \\
+0, & \text{caso contrário,}
+\end{cases}
+\]
+em que \(f(x,y)\) representa a imagem em tons de cinza que será segmentada.
+
+O método de \textcite{otsu1979} encontra o limiar ótimo \(T^{*}\) automaticamente a partir do histograma normalizado de \(L\) níveis de intensidade, com probabilidades \(p_k = n_k / N\) para \(k \in \{0, 1, \dots, L-1\}\), onde \(n_{k}\) é o número de pixels no nível \(k\) e \(N\) é o total de pixels. Para um limiar candidato \(t\), os pixels são divididos em duas classes, \(C_0\) (intensidades até \(t\)) e \(C_1\) (intensidades acima de \(t\)), com probabilidades acumuladas \(\omega_0(t)\) e \(\omega_1(t)\) e médias \(\mu_0(t)\) e \(\mu_1(t)\). O limiar ótimo maximiza a variância entre classes \(\sigma_B^2(t)\):
+\[
+\sigma_{B}^{2}(t) = \omega_{0}(t)\omega_{1}(t)\left[\mu_{1}(t)-\mu_{0}(t)\right]^{2},
+\qquad T^{*} = \arg\max_{0 \le t < L-1} \sigma_{B}^{2}(t).
+\]
+Esse critério estatístico torna a escolha do limiar menos sensível a pequenas variações de iluminação entre as capturas.
+
+Porém, na prática, a aplicação direta da limiarização é bastante afetada por ruídos de captura e reflexos. A filtragem passa-baixa prévia reduz o ruído antes do cálculo do limiar, enquanto operações de morfologia matemática refinam a máscara binária \(B\). As mais usadas são a abertura morfológica, que suaviza contornos e elimina pequenos ruídos isolados, e o fechamento morfológico, que une regiões fragmentadas e preenche falhas internas.
 
 \subsection{Calibração geométrica e medição de tamanho}
 
-Para medir em milímetros, é preciso conhecer a relação entre pixels e unidades reais no plano do objeto. A calibração de câmera com um padrão plano de geometria conhecida, como um tabuleiro de xadrez, é a abordagem consolidada \cite{zhang2000}; os cantos do tabuleiro podem ser localizados com precisão subpixel e de forma robusta pelo detector de \textcite{duda2018}, disponível na biblioteca OpenCV. Como a lente e a perspectiva fazem a escala variar ao longo da imagem, uma alternativa simples à modelagem completa da câmera é estimar a escala localmente, em regiões da área de trabalho, a partir das distâncias conhecidas entre cantos vizinhos do tabuleiro. Essa simplificação tem uma limitação inerente ao modelo de câmera \textit{pinhole} \cite{zhang2000}: a escala é válida para o plano do tabuleiro, enquanto o contorno visível do fruto está alguns milímetros acima dele, mais próximo da câmera, o que tende a ampliar ligeiramente a medida.
+Para medir em milímetros, é preciso conhecer a relação entre pixels e unidades reais no plano do objeto. A calibração de câmera usando um padrão plano de geometria conhecida, como um tabuleiro de xadrez, é um método clássico \cite{zhang2000}; os cantos do tabuleiro podem ser detectados com precisão subpixel e alta confiabilidade pelo detector de \textcite{duda2018}, disponível na biblioteca OpenCV. Como a lente e a perspectiva fazem a escala variar ao longo da imagem, uma alternativa simples à modelagem completa da câmera é estimar a escala localmente, em diferentes regiões da área de trabalho, a partir das distâncias conhecidas entre cantos vizinhos do tabuleiro. Essa simplificação tem uma limitação própria do modelo de câmera pinhole \cite{zhang2000}: a escala é válida para o plano do tabuleiro, enquanto o contorno visível do fruto está alguns milímetros acima dele, mais próximo da câmera, o que gera uma pequena superestimativa na medida.
 
-Com a escala conhecida, o tamanho do fruto é descrito por descritores de forma calculados sobre o contorno segmentado \cite{gonzalez2010}: a área; o diâmetro equivalente, que é o diâmetro do círculo de mesma área; a circularidade, $4\pi A/P^2$, igual a 1 para um círculo e menor para formas alongadas ou irregulares; e as dimensões do menor retângulo que envolve o contorno \cite{freeman1975}, que fornecem comprimento e largura do fruto independentemente da sua orientação. Para tomates-cereja alongados, do tipo \textit{grape}, comprimento e largura descrevem o fruto melhor do que um único diâmetro. \textcite{hou2024} também estimam o tamanho do tomate a partir do contorno segmentado, convertendo pixels em milímetros por um fator de escala.
+\begin{figure}[H]
+    \centering
+    \caption{Exemplos de vistas de um padrão planar em diferentes orientações para calibração de câmera.}
+    \includegraphics[width=0.85\textwidth]{images/imagem_zhang2000.png}
+    \label{fig:calibracao_zhang2000}
+    \legend{Fonte: Adaptado de \textcite{zhang2000}.}
+\end{figure}
 
 % ----------------------------------------------------------
 \section{Classificação de Cor por Tabela de Consulta}
 % ----------------------------------------------------------
 
-Classificar cada pixel por um modelo estatístico, a cada imagem, pode ser custoso para operação em tempo real. Uma tabela de consulta (\textit{lookup table}, LUT) resolve esse problema: como uma imagem de 8 bits por canal tem $256^3 \approx 16{,}7$ milhões de cores possíveis, o classificador pode ser avaliado uma única vez para todas elas e o resultado armazenado em uma tabela indexada pela própria cor. Na operação, classificar um pixel reduz-se a uma consulta de memória. \textcite{chen2002} já registravam o uso de tabelas de consulta no próprio hardware de aquisição de imagens de sistemas de visão agrícolas, e \textcite{blasco2003} segmentaram fruto e fundo com um classificador bayesiano treinado a partir de pixels rotulados, em um sistema de inspeção em linha.
+Classificar cada pixel de uma imagem usando um modelo estatístico exige muito processamento para rodar em tempo real. Para resolver esse problema, utiliza-se uma tabela de consulta (\textit{lookup table}, LUT). Como uma imagem de 8 bits por canal possui \(256^3 \approx 16{,}7\) milhões de cores possíveis, o classificador pode ser avaliado uma única vez para todas elas, armazenando o resultado em uma tabela indexada pela própria cor. Assim, durante a execução, classificar um pixel passa a ser apenas uma leitura direta na memória.
 
 \subsection{Agrupamento de cores com \textit{k-means}}
 
-Rotular manualmente milhares de pixels é inviável. O algoritmo \textit{k-means} \cite{macqueen1967} reduz esse esforço ao particionar os pixels em $k$ grupos de cores semelhantes, minimizando a distância de cada pixel ao centro do seu grupo; a inicialização \textit{k-means++} \cite{arthur2007} escolhe centros iniciais espalhados, tornando o resultado mais estável. Ao agrupar os pixels no espaço L*a*b*, cada grupo corresponde a uma cor percebida, e o operador só precisa nomear os grupos (por exemplo, verde, amarelado, rosado ou vermelho) em vez de cada pixel: o agrupamento é automático, e o significado de cada grupo é atribuído por um especialista.
+Rotular manualmente milhares de pixels para análise de cor é inviável na prática. Por isso, o algoritmo \textit{k-means} \cite{macqueen1967} resolve esse problema dividindo um conjunto de vetores de características \(\mathbf{x}_n \in \mathbb{R}^d\) (\(n = 1, \dots, N\)), onde cada \(\mathbf{x}_{n}\) representa os atributos de cor de um pixel, em \(k\) grupos distintos \(S_1, S_2, \dots, S_k\). O algoritmo busca minimizar a soma das distâncias ao quadrado entre cada ponto e o centro do seu grupo:
+\[
+J = \sum_{j=1}^{k} \sum_{\mathbf{x}_{n} \in S_{j}} \left\| \mathbf{x}_{n} - \boldsymbol{\mu}_{j} \right\|_{2}^{2},
+\]
+em que \(\boldsymbol{\mu}_{j}\) é o centroide do grupo \(S_{j}\) e \(\|\cdot\|_2\) representa a norma euclidiana. Na prática, o procedimento alterna entre atribuir cada pixel ao centroide mais próximo e recalcular a posição desses centroides até atingir a convergência.
+
+Como a otimização de \(J\) é não convexa, o resultado final depende dos centros iniciais e pode convergir para mínimos locais. A inicialização \textit{k-means++} \cite{arthur2007} reduz esse problema escolhendo centros iniciais mais distantes entre si, de modo que pontos longe dos centros já selecionados tenham maior probabilidade de serem sorteados, tornando o agrupamento mais estável e consistente.
 
 \subsection{Perceptron multicamadas}
 
-O perceptron multicamadas (\textit{multilayer perceptron}, MLP) é uma rede neural com uma ou mais camadas ocultas de neurônios com função de ativação não linear, treinada pelo algoritmo de retropropagação do erro \cite{rumelhart1986}. Com neurônios ocultos suficientes, uma MLP aproxima qualquer função contínua \cite{hornik1989}. Isso permite que ela aprenda fronteiras não lineares e suaves entre as classes de cor, ajustadas aos pixels rotulados, sem se restringir às regiões convexas que resultariam de atribuir cada cor simplesmente ao centro de grupo mais próximo. Os rótulos de treino vêm do agrupamento; a MLP acrescenta a possibilidade de unir vários grupos em uma mesma classe com uma fronteira contínua e de incluir a classe do fundo, cujos pixels não participam do agrupamento. Um cuidado importante é o desbalanceamento: se uma classe tem muito mais pixels que as outras, o classificador tende a favorecê-la, o que se contorna limitando o número de exemplos de cada classe no treino \cite{he2009}.
+O perceptron multicamadas (MLP) é uma rede neural com uma ou mais camadas ocultas de neurônios com função de ativação não linear, treinada pelo algoritmo de retropropagação do erro \cite{rumelhart1986}. Com neurônios ocultos suficientes, uma MLP consegue aproximar qualquer função contínua \cite{hornik1989}. Isso permite que ela aprenda fronteiras de decisão não lineares entre as classes de cor, ajustadas aos pixels rotulados, sem ficar presa às divisões rígidas que aconteceriam se cada cor fosse ligada apenas ao centro de grupo mais próximo. Os rótulos de treino vêm do agrupamento, mas a MLP permite unir vários grupos em uma mesma classe com uma fronteira contínua e ainda incluir a classe do fundo, que não entra na etapa de agrupamento.
 
-A combinação MLP e LUT reúne a flexibilidade da rede com o baixo custo de operação da tabela. Sua limitação é herdada dos dados de treino: a tabela só é confiável para as cores observadas sob a iluminação da calibração, e cores muito distantes das vistas no treino recebem uma classe extrapolada pela rede.
+A combinação entre MLP e LUT une a flexibilidade da rede com o baixo custo computacional da tabela. A principal limitação vem diretamente dos dados de treino: a tabela só é confiável para as cores observadas nas condições de iluminação da calibração, fazendo com que cores muito diferentes das vistas no treino recebam uma classificação estimada por extrapolação da rede.
 
 % ----------------------------------------------------------
 \section{Aprendizado Profundo e Redes Neurais Convolucionais}
@@ -97,7 +151,7 @@ O treinamento ajusta os pesos para minimizar uma função de perda, tipicamente 
 \section{Avaliação de Classificadores com Poucos Dados}
 % ----------------------------------------------------------
 
-Um classificador deve ser avaliado em dados que não participaram do treino. Com conjuntos pequenos, separar uma única parte para validação produz estimativas instáveis, que dependem de quais amostras caíram nessa parte. A validação cruzada em $k$ partes (\textit{k-fold}) treina $k$ modelos, cada um validado em uma parte diferente, e resume o desempenho pela média e pelo desvio padrão. \textcite{kohavi1995}, comparando métodos de estimativa em bases de dados reais, recomenda a validação cruzada estratificada, que mantém em cada parte a proporção das classes, com dez partes para a seleção de modelos; com poucas amostras da classe minoritária, porém, o número de partes fica limitado pela quantidade de exemplos dessa classe disponíveis para cada parte.
+Um classificador deve ser avaliado em dados que não participaram do treino. Com conjuntos pequenos, separar uma única parte para validação produz estimativas instáveis, que dependem de quais amostras caíram nessa parte. A validação cruzada em \(k\) partes (\textit{k-fold}) treina \(k\) modelos, cada um validado em uma parte diferente, e resume o desempenho pela média e pelo desvio padrão. \textcite{kohavi1995}, comparando métodos de estimativa em bases de dados reais, recomenda a validação cruzada estratificada, que mantém em cada parte a proporção das classes, com dez partes para a seleção de modelos; com poucas amostras da classe minoritária, porém, o número de partes fica limitado pela quantidade de exemplos dessa classe disponíveis para cada parte.
 
 A independência entre treino e validação precisa ser garantida na unidade correta. Quando várias imagens provêm do mesmo fruto, elas são quase idênticas; se fotos do mesmo fruto aparecem em treino e validação, o modelo é avaliado em exemplos que praticamente já viu, e o desempenho é superestimado. \textcite{kapoor2023} identificam o vazamento de dados (\textit{data leakage}) como causa disseminada de resultados superestimados e irreprodutíveis em pesquisas baseadas em aprendizado de máquina. A solução é dividir os dados por grupo (no caso, por fruto), de modo que todas as imagens de um fruto fiquem do mesmo lado da divisão. Uma forma mais sutil de vazamento é escolher hiperparâmetros, como a época de parada do treinamento, com os mesmos dados usados para estimar o desempenho: a estimativa resultante é otimista \cite{cawley2010}, e uma estimativa não enviesada exige validação cruzada aninhada \cite{varma2006} ou um conjunto de teste independente.
 

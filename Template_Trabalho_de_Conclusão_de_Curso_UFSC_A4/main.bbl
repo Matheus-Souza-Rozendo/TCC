@@ -296,37 +296,6 @@
       \field{pages}{173\bibrangedash 191}
       \range{pages}{19}
     \endentry
-    \entry{cie2004}{manual}{}{}
-      \name{author}{1}{}{%
-        {{hash=f07b473fc1405b200f1629ce1f24eba7}{%
-           family={{Commission Internationale de l'Éclairage}},
-           familyi={C\bibinitperiod}}}%
-      }
-      \list{location}{1}{%
-        {Vienna}%
-      }
-      \list{organization}{1}{%
-        {CIE}%
-      }
-      \strng{namehash}{f07b473fc1405b200f1629ce1f24eba7}
-      \strng{fullhash}{f07b473fc1405b200f1629ce1f24eba7}
-      \strng{fullhashraw}{f07b473fc1405b200f1629ce1f24eba7}
-      \strng{bibnamehash}{f07b473fc1405b200f1629ce1f24eba7}
-      \strng{authorbibnamehash}{f07b473fc1405b200f1629ce1f24eba7}
-      \strng{authornamehash}{f07b473fc1405b200f1629ce1f24eba7}
-      \strng{authorfullhash}{f07b473fc1405b200f1629ce1f24eba7}
-      \strng{authorfullhashraw}{f07b473fc1405b200f1629ce1f24eba7}
-      \field{sortinit}{C}
-      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{edition}{3}
-      \field{note}{CIE 15:2004}
-      \field{title}{Colorimetry}
-      \field{year}{2004}
-    \endentry
     \entry{dacosta2020}{article}{}{}
       \name{author}{3}{}{%
         {{hash=1656561acded93e7ecab77b731c46d6d}{%
@@ -588,41 +557,6 @@
       \field{labeltitlesource}{title}
       \field{title}{Global Food Losses and Food Waste: Extent, Causes and Prevention}
       \field{year}{2011}
-    \endentry
-    \entry{freeman1975}{article}{}{}
-      \name{author}{2}{}{%
-        {{hash=e55a41b6f202eba6bf73c6e1099ab8d6}{%
-           family={Freeman},
-           familyi={F\bibinitperiod},
-           given={Herbert},
-           giveni={H\bibinitperiod}}}%
-        {{hash=8922e1565d8b565a6afb08dbee82f450}{%
-           family={Shapira},
-           familyi={S\bibinitperiod},
-           given={Ruth},
-           giveni={R\bibinitperiod}}}%
-      }
-      \strng{namehash}{8c42b259d6a036aeb5585c3ac74a8658}
-      \strng{fullhash}{8c42b259d6a036aeb5585c3ac74a8658}
-      \strng{fullhashraw}{8c42b259d6a036aeb5585c3ac74a8658}
-      \strng{bibnamehash}{8c42b259d6a036aeb5585c3ac74a8658}
-      \strng{authorbibnamehash}{8c42b259d6a036aeb5585c3ac74a8658}
-      \strng{authornamehash}{8c42b259d6a036aeb5585c3ac74a8658}
-      \strng{authorfullhash}{8c42b259d6a036aeb5585c3ac74a8658}
-      \strng{authorfullhashraw}{8c42b259d6a036aeb5585c3ac74a8658}
-      \field{sortinit}{F}
-      \field{sortinithash}{2638baaa20439f1b5a8f80c6c08a13b4}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{journaltitle}{Communications of the ACM}
-      \field{number}{7}
-      \field{title}{Determining the minimum-area encasing rectangle for an arbitrary closed curve}
-      \field{volume}{18}
-      \field{year}{1975}
-      \field{pages}{409\bibrangedash 413}
-      \range{pages}{5}
     \endentry
     \entry{gonzalez2010}{book}{}{}
       \name{author}{2}{}{%
@@ -1376,46 +1310,6 @@
       \field{pages}{281\bibrangedash 297}
       \range{pages}{17}
     \endentry
-    \entry{mendoza2006}{article}{}{}
-      \name{author}{3}{}{%
-        {{hash=cbb8ba55b61b01fea88d03a91cb0fca1}{%
-           family={Mendoza},
-           familyi={M\bibinitperiod},
-           given={Fernando},
-           giveni={F\bibinitperiod}}}%
-        {{hash=edf35a130dcaabc92fd778cd260cda8b}{%
-           family={Dejmek},
-           familyi={D\bibinitperiod},
-           given={Petr},
-           giveni={P\bibinitperiod}}}%
-        {{hash=a82e2e9b4f89d2a19b16251b39106a1e}{%
-           family={Aguilera},
-           familyi={A\bibinitperiod},
-           given={José\bibnamedelima M.},
-           giveni={J\bibinitperiod\bibinitdelim M\bibinitperiod}}}%
-      }
-      \strng{namehash}{eaeb810c36e06cf6be69497722880426}
-      \strng{fullhash}{eaeb810c36e06cf6be69497722880426}
-      \strng{fullhashraw}{eaeb810c36e06cf6be69497722880426}
-      \strng{bibnamehash}{eaeb810c36e06cf6be69497722880426}
-      \strng{authorbibnamehash}{eaeb810c36e06cf6be69497722880426}
-      \strng{authornamehash}{eaeb810c36e06cf6be69497722880426}
-      \strng{authorfullhash}{eaeb810c36e06cf6be69497722880426}
-      \strng{authorfullhashraw}{eaeb810c36e06cf6be69497722880426}
-      \field{sortinit}{M}
-      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{journaltitle}{Postharvest Biology and Technology}
-      \field{number}{3}
-      \field{title}{Calibrated color measurements of agricultural foods using image analysis}
-      \field{volume}{41}
-      \field{year}{2006}
-      \field{pages}{285\bibrangedash 295}
-      \range{pages}{11}
-    \endentry
     \entry{nguyen2015}{inproceedings}{}{}
       \name{author}{3}{}{%
         {{hash=f480ed206a30d0a24ab31eb69169599c}{%
@@ -1683,56 +1577,6 @@
       \field{volume}{6}
       \field{year}{2019}
     \endentry
-    \entry{usda_tomato_visual_aids}{report}{}{}
-      \name{author}{1}{}{%
-        {{hash=80fd38d05f96523b89762870eb63ab35}{%
-           family={{United States Department of Agriculture}},
-           familyi={U\bibinitperiod}}}%
-      }
-      \name{shortauthor}{1}{}{%
-        {{hash=96b6352f0feb7beef6ead98c27472286}{%
-           family={USDA},
-           familyi={U\bibinitperiod}}}%
-      }
-      \list{institution}{1}{%
-        {Agricultural Marketing Service (AMS)}%
-      }
-      \list{location}{1}{%
-        {Washington, D.C.}%
-      }
-      \strng{namehash}{96b6352f0feb7beef6ead98c27472286}
-      \strng{fullhash}{80fd38d05f96523b89762870eb63ab35}
-      \strng{fullhashraw}{80fd38d05f96523b89762870eb63ab35}
-      \strng{bibnamehash}{96b6352f0feb7beef6ead98c27472286}
-      \strng{authorbibnamehash}{80fd38d05f96523b89762870eb63ab35}
-      \strng{authornamehash}{80fd38d05f96523b89762870eb63ab35}
-      \strng{authorfullhash}{80fd38d05f96523b89762870eb63ab35}
-      \strng{authorfullhashraw}{80fd38d05f96523b89762870eb63ab35}
-      \strng{shortauthorbibnamehash}{96b6352f0feb7beef6ead98c27472286}
-      \strng{shortauthornamehash}{96b6352f0feb7beef6ead98c27472286}
-      \strng{shortauthorfullhash}{96b6352f0feb7beef6ead98c27472286}
-      \strng{shortauthorfullhashraw}{96b6352f0feb7beef6ead98c27472286}
-      \field{extraname}{1}
-      \field{sortinit}{U}
-      \field{sortinithash}{6901a00e45705986ee5e7ca9fd39adca}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{}
-      \field{labelnamesource}{shortauthor}
-      \field{labeltitlesource}{title}
-      \field{title}{Tomato Visual Aids}
-      \field{type}{Official Grade Standards and Visual Aids}
-      \field{urlday}{8}
-      \field{urlmonth}{4}
-      \field{urlyear}{2026}
-      \field{year}{2021}
-      \field{urldateera}{ce}
-      \verb{urlraw}
-      \verb https://www.ams.usda.gov/sites/default/files/media/Tomato_Visual_Aids%5B1%5D.pdf
-      \endverb
-      \verb{url}
-      \verb https://www.ams.usda.gov/sites/default/files/media/Tomato_Visual_Aids%5B1%5D.pdf
-      \endverb
-    \endentry
     \entry{usda1991}{manual}{}{}
       \name{author}{1}{}{%
         {{hash=80fd38d05f96523b89762870eb63ab35}{%
@@ -1762,7 +1606,6 @@
       \strng{shortauthornamehash}{96b6352f0feb7beef6ead98c27472286}
       \strng{shortauthorfullhash}{96b6352f0feb7beef6ead98c27472286}
       \strng{shortauthorfullhashraw}{96b6352f0feb7beef6ead98c27472286}
-      \field{extraname}{2}
       \field{sortinit}{U}
       \field{sortinithash}{6901a00e45705986ee5e7ca9fd39adca}
       \field{extradatescope}{labelyear}
