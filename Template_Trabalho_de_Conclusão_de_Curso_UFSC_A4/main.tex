@@ -36,7 +36,7 @@
 % Pacotes de citações
 % ---
 \usepackage{csquotes}
-\usepackage[backend = biber, style = abnt]{biblatex}
+\usepackage[backend = biber, style = abnt, uniquelist = false, uniquename = false]{biblatex}
 % FIXME Se desejar estilo numérico de citações,  comente a linha acima e descomente a linha a seguir.
 % \usepackage[backend = biber, style = numeric-comp]{biblatex}
 
@@ -170,6 +170,7 @@
 \siglalista{CEASA}{Central de Abastecimento}
 \siglalista{CIE}{Comissão Internacional de Iluminação}
 \siglalista{CNN}{Rede Neural Convolucional (\textit{Convolutional Neural Network})}
+\siglalista{CPU}{Unidade Central de Processamento (\textit{Central Processing Unit})}
 \siglalista{CSV}{Valores Separados por Vírgula (\textit{Comma-Separated Values})}
 \siglalista{FAO}{Organização das Nações Unidas para a Alimentação e a Agricultura}
 \siglalista{HSV}{Matiz, Saturação e Valor (\textit{Hue, Saturation, Value})}
@@ -184,12 +185,13 @@
 \siglalista{RMSE}{Raiz do Erro Quadrático Médio (\textit{Root Mean Square Error})}
 \siglalista{USDA}{Departamento de Agricultura dos Estados Unidos (\textit{United States Department of Agriculture})}
 \siglalista{YOLO}{\textit{You Only Look Once}}
-\simbololista{A}{\ensuremath{A}}{Área do contorno do fruto, em pixels ou mm$^2$}
-\simbololista{P}{\ensuremath{P}}{Perímetro do contorno do fruto, em pixels}
-\simbololista{k}{\ensuremath{k}}{Número de grupos do \textit{k-means} ou de partes da validação cruzada}
+\simbololista{A}{\ensuremath{A}}{{Área do contorno do fruto (pixels ou mm$^2$)}}
+\simbololista{P}{\ensuremath{P}}{{Perímetro do contorno do fruto (pixels)}}
+\simbololista{k}{\ensuremath{k}}{{Número de grupos do \textit{k-means} ou de partes da validação cruzada}}
 
 % compila a lista de abreviaturas e siglas e a lista de símbolos
-\makenoidxglossaries 
+\makenoidxglossaries
+\providecommand*{\quadroautorefname}{Quadro}
 
 % ---
 

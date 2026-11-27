@@ -1,0 +1,14 @@
+INFO - This is Biber 2.22
+INFO - Logfile is 'main.blg'
+INFO - Reading 'main.bcf'
+INFO - Found 49 citekeys in bib section 0
+INFO - Processing section 0
+INFO - Looking for bibtex file 'aftertext/references.bib' for section 0
+INFO - LaTeX decoding ...
+INFO - Found BibTeX data source 'aftertext/references.bib'
+INFO - Overriding locale 'pt-BR' defaults 'normalization = NFD' with 'normalization = prenormalized'
+INFO - Overriding locale 'pt-BR' defaults 'variable = shifted' with 'variable = non-ignorable'
+INFO - Sorting list 'nty/global//global/global/global' of type 'entry' with template 'nty' and locale 'pt-BR'
+INFO - No sort tailoring available for locale 'pt-BR'
+INFO - Writing 'main.bbl' with encoding 'UTF-8'
+INFO - Output to main.bbl

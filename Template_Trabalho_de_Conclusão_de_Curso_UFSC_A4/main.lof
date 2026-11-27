@@ -1,7 +1,10 @@
 \babel@toc {brazil}{}\relax 
 \babel@toc {brazil}{}\relax 
-\contentsline {figure}{\numberline {1}{\ignorespaces Elementos do trabalho acadêmico.}}{10}{figure.2.1}%
-\babel@toc {brazil}{}\relax 
-\babel@toc {brazil}{}\relax 
+\contentsline {figure}{\numberline {1}{\ignorespaces Fluxo de processamento de uma imagem da bancada.}}{23}{figure.3.1}%
+\contentsline {figure}{\numberline {2}{\ignorespaces Caixa escura da bancada (modelo 3D).}}{24}{figure.3.2}%
+\contentsline {figure}{\numberline {3}{\ignorespaces Calibração da escala por região com tabuleiro de 15 mm: escala (mm/pixel) e erro estimado em cada célula.}}{25}{figure.3.3}%
+\contentsline {figure}{\numberline {4}{\ignorespaces Os oito grupos de cor do \textit {k-means}: cor média, fração dos pixels e exemplo de pixels de cada grupo.}}{28}{figure.3.4}%
+\contentsline {figure}{\numberline {5}{\ignorespaces Curvas de aprendizado de duas partes da validação cruzada: perda de treino (azul) e de validação (vermelho), normalizadas pela perda máxima, e acurácia balanceada de validação (verde). A linha vertical marca a melhor época.}}{35}{figure.4.5}%
+\contentsline {figure}{\numberline {6}{\ignorespaces Exemplos do conjunto de teste, como exibidos pela IHM: o contorno tem a cor do destino decidido pelo sistema.}}{36}{figure.4.6}%
 \babel@toc {brazil}{}\relax 
 \babel@toc {brazil}{}\relax 

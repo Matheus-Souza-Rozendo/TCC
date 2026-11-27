@@ -8,38 +8,69 @@
 \setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
 \setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
 \setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
-\contentsline {chapter}{\chapternumberline {1}\MakeTextUppercase []{Introdução}}{8}{chapter.1}%
-\contentsline {section}{\numberline {1.1}Justificativa}{8}{section.1.1}%
-\contentsline {section}{\numberline {1.2}Objetivos}{8}{section.1.2}%
-\contentsline {subsection}{\numberline {1.2.1}Objetivo Geral}{8}{subsection.1.2.1}%
+\contentsline {chapter}{\chapternumberline {1}\MakeTextUppercase []{Introdução}}{12}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Justificativa}{12}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Objetivos}{12}{section.1.2}%
+\contentsline {subsection}{\numberline {1.2.1}Objetivo Geral}{12}{subsection.1.2.1}%
+\contentsline {subsection}{\numberline {1.2.2}Objetivos Específicos}{13}{subsection.1.2.2}%
+\contentsline {section}{\numberline {1.3}Estrutura do Trabalho}{13}{section.1.3}%
 \setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
-\contentsline {chapter}{\chapternumberline {2}\MakeTextUppercase []{Desenvolvimento}}{10}{chapter.2}%
-\contentsline {section}{\numberline {2.1}Exposição do tema ou matéria}{10}{section.2.1}%
-\contentsline {subsection}{\numberline {2.1.1}Formatação do texto}{10}{subsection.2.1.1}%
-\contentsline {subsubsection}{\numberline {2.1.1.1}As ilustrações}{11}{subsubsection.2.1.1.1}%
-\contentsline {subsubsection}{\numberline {2.1.1.2}Equações e fórmulas}{12}{subsubsection.2.1.1.2}%
-\contentsline {paragraph}{\numberline {2.1.1.2.1}Exemplo tabela}{12}{paragraph.2.1.1.2.1}%
+\contentsline {chapter}{\chapternumberline {2}\MakeTextUppercase []{Revisão Bibliográfica}}{14}{chapter.2}%
+\contentsline {section}{\numberline {2.1}A Logística de Produtos Perecíveis no Agronegócio}{14}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}O Panorama do Desperdício}{14}{subsection.2.1.1}%
+\contentsline {section}{\numberline {2.2}O Tomate-Cereja e sua Classificação Comercial}{14}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Estádios de maturação}{15}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}Defeitos externos e calibre}{15}{subsection.2.2.2}%
+\contentsline {section}{\numberline {2.3}Visão Computacional na Inspeção de Frutos}{15}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Cor digital e balanço de branco}{16}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}Segmentação por limiarização}{16}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.3}Calibração geométrica e medição de tamanho}{17}{subsection.2.3.3}%
+\contentsline {section}{\numberline {2.4}Classificação de Cor por Tabela de Consulta}{17}{section.2.4}%
+\contentsline {subsection}{\numberline {2.4.1}Agrupamento de cores com \textit {k-means}}{18}{subsection.2.4.1}%
+\contentsline {subsection}{\numberline {2.4.2}Perceptron multicamadas}{18}{subsection.2.4.2}%
+\contentsline {section}{\numberline {2.5}Aprendizado Profundo e Redes Neurais Convolucionais}{18}{section.2.5}%
+\contentsline {subsection}{\numberline {2.5.1}Redes neurais convolucionais}{19}{subsection.2.5.1}%
+\contentsline {subsection}{\numberline {2.5.2}Transferência de aprendizado}{19}{subsection.2.5.2}%
+\contentsline {subsection}{\numberline {2.5.3}Aumento de dados e otimização}{20}{subsection.2.5.3}%
+\contentsline {section}{\numberline {2.6}Avaliação de Classificadores com Poucos Dados}{20}{section.2.6}%
+\contentsline {section}{\numberline {2.7}Trabalhos Relacionados}{21}{section.2.7}%
 \setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
-\contentsline {chapter}{\chapternumberline {3}\MakeTextUppercase []{Revisão Bibliográfica}}{13}{chapter.3}%
-\contentsline {section}{\numberline {3.1}A Logística de Produtos Perecíveis no Agronegócio}{13}{section.3.1}%
-\contentsline {subsection}{\numberline {3.1.1}O Panorama do Desperdício}{13}{subsection.3.1.1}%
+\contentsline {chapter}{\chapternumberline {3}\MakeTextUppercase []{Materiais e Métodos}}{23}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Bancada de Aquisição}{23}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Calibrações}{23}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Balanço de branco}{23}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Escala por região}{24}{subsection.3.2.2}%
+\contentsline {section}{\numberline {3.3}Segmentação e Medição}{25}{section.3.3}%
+\contentsline {section}{\numberline {3.4}Conjuntos de Dados}{26}{section.3.4}%
+\contentsline {section}{\numberline {3.5}Classificação da Maturação por LUT}{26}{section.3.5}%
+\contentsline {section}{\numberline {3.6}Detecção de Defeitos por CNN}{27}{section.3.6}%
+\contentsline {subsection}{\numberline {3.6.1}Entrada e arquitetura}{27}{subsection.3.6.1}%
+\contentsline {subsection}{\numberline {3.6.2}Treinamento}{28}{subsection.3.6.2}%
+\contentsline {subsection}{\numberline {3.6.3}Validação cruzada e modelo final}{29}{subsection.3.6.3}%
+\contentsline {section}{\numberline {3.7}Interface de Operação}{29}{section.3.7}%
+\contentsline {section}{\numberline {3.8}Protocolo de Avaliação}{30}{section.3.8}%
 \setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
-\contentsline {chapter}{\chapternumberline {4}\MakeTextUppercase []{Conclusão}}{14}{chapter.4}%
+\contentsline {chapter}{\chapternumberline {4}\MakeTextUppercase []{Resultados e Discussão}}{31}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Calibração e Medição de Tamanho}{31}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Segmentação}{32}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Classificação da Maturação}{32}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Validação da LUT}{32}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.3.2}Conjunto de teste}{33}{subsection.4.3.2}%
+\contentsline {section}{\numberline {4.4}Detecção de Defeitos}{34}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Validação cruzada}{34}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}Conjunto de teste}{35}{subsection.4.4.2}%
+\contentsline {section}{\numberline {4.5}Sistema Completo}{36}{section.4.5}%
+\contentsline {section}{\numberline {4.6}Síntese e Limitações}{37}{section.4.6}%
+\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
+\contentsline {chapter}{\chapternumberline {5}\MakeTextUppercase []{Conclusão}}{39}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Trabalhos Futuros}{40}{section.5.1}%
 \vspace {\cftbeforechapterskip }
 \setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
-\contentsline {chapter}{REFERÊNCIAS}{15}{section*.15}%
-\babel@toc {brazil}{}\relax 
-\babel@toc {brazil}{}\relax 
+\contentsline {chapter}{REFERÊNCIAS}{41}{section*.17}%
 \babel@toc {brazil}{}\relax 
 \babel@toc {brazil}{}\relax 
 \renewcommand *{\cftappendixname }{AP\^ENDICE \space }
 \setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
 \setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
 \cftinsert {A}
-\contentsline {appendix}{\chapternumberline {A}\MakeTextUppercase []{Descrição}}{16}{appendix.A}%
-\cftinsert {AAA}
-\renewcommand *{\cftappendixname }{ANEXO \space }
-\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
-\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
-\cftinsert {A}
-\contentsline {appendix}{\chapternumberline {A}\MakeTextUppercase []{Descrição}}{17}{appendix.anexochapback.1}%
+\contentsline {appendix}{\chapternumberline {A}\MakeTextUppercase []{Resultados por tomate no conjunto de teste}}{45}{appendix.A}%

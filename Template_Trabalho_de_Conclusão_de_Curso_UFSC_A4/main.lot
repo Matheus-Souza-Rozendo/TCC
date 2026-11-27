@@ -1,7 +1,9 @@
 \babel@toc {brazil}{}\relax 
 \babel@toc {brazil}{}\relax 
-\contentsline {table}{\numberline {3}{\ignorespaces Médias concentrações urbanas 2010-2011.}}{12}{table.2.3}%
+\contentsline {table}{\numberline {1}{\ignorespaces Erro na medição do diâmetro de uma moeda de 27,00 mm (64 medições em todas as células).}}{31}{table.4.1}%
+\contentsline {table}{\numberline {2}{\ignorespaces Matriz de confusão da maturação no conjunto de teste (22 tomates).}}{33}{table.4.2}%
+\contentsline {table}{\numberline {3}{\ignorespaces Validação cruzada da CNN em 5 partes, com divisão por tomate (métricas por foto).}}{34}{table.4.3}%
+\contentsline {table}{\numberline {4}{\ignorespaces Desempenho da CNN no conjunto de teste (22 tomates, uma foto cada), com intervalos de confiança de Wilson (95\%).}}{35}{table.4.4}%
 \babel@toc {brazil}{}\relax 
 \babel@toc {brazil}{}\relax 
-\babel@toc {brazil}{}\relax 
-\babel@toc {brazil}{}\relax 
+\contentsline {table}{\numberline {5}{\ignorespaces Resultado por tomate no conjunto de teste. Os destinos errados estão marcados com asterisco.}}{45}{table.A.5}%

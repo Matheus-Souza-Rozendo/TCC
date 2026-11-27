@@ -5,13 +5,13 @@
 
 \section{A Logística de Produtos Perecíveis no Agronegócio}
 
-A logística de produtos perecíveis, particularmente no setor de hortifrúti, é caracterizada por uma complexidade elevada devido à natureza biológica dos itens. Diferente de produtos industrializados, os perecíveis possuem uma vida útil curta e continuam seus processos metabólicos mesmo após a colheita, o que exige uma gestão da cadeia de suprimentos ágil e eficiente para evitar a perda de valor comercial.
+A logística de produtos perecíveis, particularmente no setor de hortifrúti, é caracterizada por uma complexidade elevada devido à natureza biológica dos itens. Diferentemente dos produtos industrializados, os perecíveis possuem uma vida útil curta e continuam seus processos metabólicos mesmo após a colheita, o que exige uma gestão da cadeia de suprimentos ágil e eficiente para evitar a perda de valor comercial.
 
 \subsection{O Panorama do Desperdício}
 O desperdício de alimentos é um dos maiores desafios globais. Segundo a Organização das Nações Unidas para a Alimentação e a Agricultura \cite{FAO2011}, cerca de um terço de todos os alimentos produzidos no mundo para consumo humano é perdido ou desperdiçado anualmente. No contexto brasileiro, essa realidade é agravada por gargalos infraestruturais e processos de manuseio inadequados.
 
 % FIXME (revisão): conferir no texto original os 10% e 30% e as etapas intermediárias que faltam entre "produção e colheita" e "Por fim".
-Segundo \textcite{ciagro2020}, em levantamento no CEASA de Juazeiro-BA, as perdas na cadeia de hortifrúti podem atingir patamares críticos.
+Segundo \textcite{ciagro2020}, em levantamento na Ceasa de Juazeiro-BA, as perdas na cadeia de hortifrúti podem atingir patamares críticos.
 
 As perdas na cadeia produtiva ocorrem em diferentes etapas, começando pela produção e colheita, que registra aproximadamente 10\% de desperdício devido ao manejo inadequado. Por fim, a fase de comercialização responde por cerca de 30\% de perdas registradas nos centros de distribuição e no setor de varejo.
 
@@ -31,7 +31,7 @@ Dois aspectos desse padrão são relevantes para a automação. Primeiro, os est
 
 \subsection{Defeitos externos e calibre}
 
-Os defeitos externos do tomate incluem rachaduras, podridões e mofos, danos mecânicos (amassados e cortes) e manchas. Diferentemente da cor, os defeitos são padrões locais de textura e forma, de aparência muito variável, o que dificulta descrevê-los por regras explícitas \cite{dacosta2020}. Já o tamanho é uma grandeza geométrica. Para os tomates de mesa dos grupos redondo e oblongo, a classe é definida pelo maior diâmetro transversal \cite{ceagesp2003}; o tomate-cereja não segue esse mesmo critério de diâmetro, de modo que a faixa de calibre adotada neste trabalho é um critério de projeto. Em qualquer caso, medir o tamanho a partir da imagem exige converter medidas em pixels para milímetros.
+Os defeitos externos do tomate incluem rachaduras, podridões e mofos, danos mecânicos (amassados e cortes) e manchas. Diferentemente da cor, os defeitos são padrões locais de textura e forma, de aparência muito variável, o que dificulta descrevê-los por regras explícitas \cite{dacosta2020}. Já o tamanho é uma grandeza geométrica. Para os tomates de mesa dos grupos redondo e oblongo, a classe é definida pelo maior diâmetro transversal \cite{ceagesp2003}; o tomate-cereja não segue esse mesmo critério de diâmetro, e por isso este trabalho mede o tamanho dos frutos, mas não os separa em classes de calibre. Em qualquer caso, medir o tamanho a partir da imagem exige converter medidas em pixels para milímetros.
 
 % ----------------------------------------------------------
 \section{Visão Computacional na Inspeção de Frutos}
@@ -81,7 +81,7 @@ Defeitos como podridão, rachaduras e danos mecânicos são difíceis de descrev
 
 As redes neurais convolucionais (\textit{convolutional neural networks}, CNN) são redes especializadas em imagens. Em vez de conectar cada pixel a cada neurônio, aplicam pequenos filtros que percorrem a imagem (convolução), compartilhando pesos e preservando a estrutura espacial \cite{lecun2015,goodfellow2016}. \textcite{zeiler2014} mostraram, ao visualizar redes treinadas, que as primeiras camadas respondem a bordas e manchas de cor e as seguintes a texturas e partes de objetos. Uma camada final, totalmente conectada, produz a pontuação de cada classe, convertida em probabilidades pela função \textit{softmax}. O trabalho de \textcite{krizhevsky2012} na competição ImageNet consolidou as CNN como o estado da arte em classificação de imagens.
 
-Redes mais profundas, contudo, eram difíceis de otimizar: a partir de certa profundidade, o próprio erro de treinamento aumentava com o acréscimo de camadas. As redes residuais (ResNet) de \textcite{he2016} contornaram esse problema com conexões de atalho, que somam a entrada de um bloco à sua saída; assim, cada bloco aprende apenas uma correção residual em relação à identidade, o que facilita a otimização de redes profundas. Na ResNet, cada convolução é seguida de normalização em lote (\textit{batch normalization}) \cite{ioffe2015}, que estabiliza e acelera o treinamento. A ResNet-18, versão com 18 camadas e cerca de 11,7 milhões de parâmetros \cite{he2016}, é a menor da família, o que a torna adequada a conjuntos de dados pequenos e à execução em computadores sem placa de vídeo dedicada.
+Redes mais profundas, contudo, eram difíceis de otimizar: a partir de certa profundidade, o próprio erro de treinamento aumentava com o acréscimo de camadas. As redes residuais (ResNet) de \textcite{he2016} contornaram esse problema com conexões de atalho, que somam a entrada de um bloco à sua saída; assim, cada bloco aprende apenas uma correção residual em relação à identidade, o que facilita a otimização de redes profundas. Na ResNet, cada convolução é seguida de normalização em lote (\textit{batch normalization}) \cite{ioffe2015}, que estabiliza e acelera o treinamento. A ResNet-18, versão com 18 camadas \cite{he2016} e cerca de 11,7 milhões de parâmetros na implementação da biblioteca torchvision, é a menor da família, o que a torna adequada a conjuntos de dados pequenos e à execução em computadores sem placa de vídeo dedicada.
 
 \subsection{Transferência de aprendizado}
 

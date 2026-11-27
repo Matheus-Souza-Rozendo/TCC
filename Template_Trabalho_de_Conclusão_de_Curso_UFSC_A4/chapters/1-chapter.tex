@@ -5,11 +5,11 @@
 
 \section{Justificativa}
 
-O agronegócio é um dos pilares da economia brasileira e tem papel estratégico no desenvolvimento regional. Contudo, a eficiência do setor é comprometida pelas perdas na cadeia de suprimentos de produtos perecíveis. Em escala mundial, a \textcite{FAO2011} estima que cerca de um terço dos alimentos produzidos para consumo humano é perdido ou desperdiçado, e as frutas e hortaliças estão entre os produtos mais afetados. No Brasil, levantamentos em centrais de abastecimento, como o de \textcite{ciagro2020} no CEASA de Juazeiro-BA, registram perdas pós-colheita de hortifrútis associadas, entre outros fatores, ao manejo inadequado (ver \autoref{cap:revisao}).
+O agronegócio é um dos pilares da economia brasileira e tem papel estratégico no desenvolvimento regional. Contudo, a eficiência do setor é comprometida pelas perdas na cadeia de suprimentos de produtos perecíveis. Em escala mundial, a \textcite{FAO2011} estima que cerca de um terço dos alimentos produzidos para consumo humano é perdido ou desperdiçado, e as frutas e hortaliças estão entre os produtos mais afetados. No Brasil, levantamentos em centrais de abastecimento, como o de \textcite{ciagro2020} na Ceasa de Juazeiro-BA, registram perdas pós-colheita de hortifrútis associadas, entre outros fatores, ao manejo inadequado (ver \autoref{cap:revisao}).
 
 Esse cenário tem impacto econômico direto. O transporte de hortaliças como o tomate-cereja sem uma triagem prévia adequada movimenta mercadorias fora dos padrões de comercialização: transportar frutos que serão descartados no destino eleva os gastos com frete, embalagens e mão de obra, reduz a rentabilidade do produtor e a competitividade do setor. Além disso, frutos em estádios de maturação diferentes, enviados juntos, têm prazos de consumo diferentes, e os mais maduros se perdem antes da venda. A classificação na origem, por defeito e por maturação, ataca as duas causas.
 
-A classificação manual é lenta, cansativa e subjetiva, e os sistemas de visão computacional vêm substituindo-a na inspeção de alimentos \cite{brosnan2004,cubero2011}. As soluções industriais, porém, têm custo elevado para pequenos e médios produtores. Por outro lado, câmeras de telefones celulares, computadores pessoais e redes neurais pré-treinadas de uso livre tornaram acessíveis os componentes de um sistema de visão. Este trabalho investiga se esses componentes de baixo custo permitem classificar tomates-cereja com desempenho útil. O tomate-cereja foi escolhido como primeira cultura, por ser um fruto pequeno, de alto valor e classificado por cor, tamanho e defeitos; o mesmo método pode ser estendido a outras culturas, como o pepino.
+A classificação manual é lenta, cansativa e subjetiva, e os sistemas de visão computacional vêm substituindo-a na inspeção de alimentos \cite{brosnan2004,cubero2011}. As soluções industriais, porém, têm custo elevado para pequenos e médios produtores. Por outro lado, câmeras de telefones celulares, computadores pessoais e redes neurais pré-treinadas de uso livre tornaram acessíveis os componentes de um sistema de visão. Este trabalho investiga se esses componentes de baixo custo permitem classificar tomates-cereja com desempenho útil. O tomate-cereja foi escolhido como primeira cultura, por ser um fruto pequeno, de alto valor e classificado por cor, tamanho e defeitos.
 
 % ----------------------------------------------------------
 \section{Objetivos}
@@ -19,7 +19,7 @@ Nesta seção, apresentam-se o objetivo geral e os objetivos específicos que no
 
 \subsection{Objetivo Geral}
 
-Desenvolver e avaliar um protótipo de bancada de inspeção óptica de baixo custo que classifique tomates-cereja quanto ao estádio de maturação, à presença de defeitos e ao tamanho, como prova de conceito para a automação da triagem voltada a pequenos e médios produtores rurais.
+Desenvolver e avaliar um protótipo de bancada de inspeção óptica de baixo custo que classifique tomates-cereja quanto ao estádio de maturação e à presença de defeitos e que meça o seu tamanho, como prova de conceito para a automação da triagem voltada a pequenos e médios produtores rurais.
 
 \subsection{Objetivos Específicos}
 
@@ -27,9 +27,9 @@ Desenvolver e avaliar um protótipo de bancada de inspeção óptica de baixo cu
 	\item Montar uma bancada de aquisição com câmera fixa, iluminação controlada e fundo escuro, com calibração de branco e calibração métrica por padrão de xadrez, de modo a converter medidas em \textit{pixels} para milímetros;
 	\item Implementar a segmentação dos frutos por limiarização de Otsu e medir, para cada tomate, o diâmetro, o comprimento, a largura e a circularidade;
 	\item Classificar o estádio de maturação (imaturo, intermediário e maduro) a partir da proporção de cores da superfície do fruto, usando uma tabela de consulta (\textit{Look-Up Table}, LUT) gerada por uma rede neural \textit{Multilayer Perceptron} (MLP) treinada com \textit{pixels} agrupados no espaço CIE L*a*b*;
-	\item Construir um \textit{dataset} próprio, coletado na bancada, de tomates sadios e com defeitos visíveis (podridão, rachaduras, danos mecânicos e manchas), e treinar por transferência de aprendizado uma rede neural convolucional ResNet-18 para distinguir frutos sadios de frutos com defeito, com validação cruzada agrupada por tomate;
+	\item Construir um conjunto de dados próprio, coletado na bancada, de tomates sadios e com defeitos visíveis (podridão, rachaduras, danos mecânicos e manchas), e treinar por transferência de aprendizado uma rede neural convolucional ResNet-18 para distinguir frutos sadios de frutos com defeito, com validação cruzada agrupada por tomate;
 	\item Integrar as etapas em uma interface homem-máquina (IHM) que exiba o resultado da inspeção em tempo real, indique o destino de cada fruto (descarte ou classe de maturação) e registre as inspeções para posterior análise;
-	\item Avaliar o desempenho do sistema em um lote de teste independente, formado por tomates não utilizados no treinamento, por meio de acurácia balanceada, sensibilidade, especificidade e intervalos de confiança, tendo como referência a meta de 90\% de acurácia, além de medir o tempo de processamento por fruto.
+	\item Avaliar o desempenho do sistema em um lote de teste formado por tomates não utilizados no treinamento, por meio de acurácia balanceada, sensibilidade, especificidade e intervalos de confiança, comparando-o com os critérios de aceitação definidos no \autoref{cap:metodos}, além de medir o tempo de processamento por fruto.
 \end{itemize}
 
 A separação física dos frutos por atuadores e a integração com uma esteira industrial estão fora do escopo deste trabalho e são indicadas como trabalhos futuros.

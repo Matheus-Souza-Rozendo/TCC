@@ -2,7 +2,7 @@
 \chapter{Materiais e Métodos}\label{cap:metodos}
 % ----------------------------------------------------------
 
-Este capítulo descreve a bancada de aquisição, as calibrações, o processamento das imagens, a construção dos conjuntos de dados, o treinamento dos dois classificadores (a LUT de cor e a CNN de defeitos), a interface de operação e o protocolo de avaliação. A \autoref{fig:fluxo} resume o processamento de cada imagem: após o balanço de branco, os tomates são segmentados e, para cada um, são calculados o tamanho, a maturação e a probabilidade de defeito, que determinam o destino do fruto.
+Este capítulo descreve a bancada de aquisição, as calibrações, o processamento das imagens, a construção dos conjuntos de dados, o treinamento dos dois classificadores (a LUT de cor e a CNN de defeitos), a interface de operação e o protocolo de avaliação. Trata-se de uma pesquisa aplicada, de abordagem quantitativa e caráter experimental. A \autoref{fig:fluxo} resume o processamento de cada imagem: após o balanço de branco, os tomates são segmentados e, para cada um, são calculados o tamanho, a maturação e a probabilidade de defeito; a maturação e o defeito determinam o destino do fruto, e o tamanho é apenas medido e registrado.
 
 \begin{figure}[htb]
 	\caption{\label{fig:fluxo}Fluxo de processamento de uma imagem da bancada.}
@@ -21,6 +21,7 @@ O sistema foi implementado em Python, com a biblioteca OpenCV para o processamen
 % ----------------------------------------------------------
 
 A bancada consiste em uma caixa escura fechada, projetada para bloquear a luz ambiente, com a câmera fixa apontada para baixo a 303 mm do fundo (\autoref{fig:caixa}). Foi usada a câmera de um telefone celular, ligada ao computador pelo aplicativo DroidCam, com resolução de 1920 $\times$ 1080 pixels. O fundo é um tecido sintético preto e fosco, escolhido para contrastar com frutos de qualquer cor e para reduzir reflexos. Na imagem, apenas uma região de interesse retangular de 938 $\times$ 588 pixels (cerca de 188 $\times$ 118 mm) é processada; objetos que tocam a borda dessa região são descartados, pois parte deles não está visível.
+% FIXME (autor): informar o modelo do celular e o custo aproximado dos componentes (celular, caixa, iluminação, computador), para sustentar o termo "baixo custo".
 % FIXME (autor): descrever a iluminação usada (tipo de lâmpada/LED, posição, difusor) e se foco, exposição e balanço de branco da câmera foram travados no aplicativo.
 
 \begin{figure}[htb]
@@ -36,7 +37,7 @@ A bancada consiste em uma caixa escura fechada, projetada para bloquear a luz am
 
 \subsection{Balanço de branco}
 
-Com uma folha branca na bancada, mede-se a média de cada canal na região de interesse e calcula-se um ganho por canal que leve essa média a um nível-alvo de 230, conforme o modelo diagonal de von Kries descrito na \autoref{cap:revisao}. Os ganhos obtidos foram 2,33 (R), 1,78 (G) e 1,48 (B): a luz da bancada era fria e a exposição, baixa, o que exigiu um ganho elevado no canal vermelho. O programa também mede a variação do branco ao longo da região, para detectar iluminação não uniforme; o canal vermelho variou 14,7\%, acima do limite de 8\% adotado como alerta, o que é discutido como limitação no \autoref{cap:resultados}. Todos os ganhos são aplicados a cada imagem antes de qualquer outro processamento, tanto no treinamento quanto na operação.
+Com uma folha branca na bancada, mede-se a média de cada canal na região de interesse e calcula-se um ganho por canal que leve essa média a um nível-alvo de 230, conforme o modelo diagonal de von Kries descrito no \autoref{cap:revisao}. Os ganhos obtidos foram 2,33 (R), 1,78 (G) e 1,48 (B): a luz da bancada era fria e a exposição, baixa, o que exigiu um ganho elevado no canal vermelho. O programa também mede a variação do branco ao longo da região, para detectar iluminação não uniforme; o canal vermelho variou 14,7\%, acima do limite de 8\% adotado como alerta, o que é discutido como limitação no \autoref{cap:resultados}. Todos os ganhos são aplicados a cada imagem antes de qualquer outro processamento, tanto no treinamento quanto na operação.
 
 \subsection{Escala por região}
 
@@ -55,7 +56,7 @@ Para medir um objeto, cada um dos seus pixels é convertido em área (mm$^2$) co
 \section{Segmentação e Medição}
 % ----------------------------------------------------------
 
-A segmentação segue o método descrito na \autoref{cap:revisao}. Na imagem com balanço de branco, calcula-se, para cada pixel, o maior valor entre os canais R, G e B, o que mantém contrastados contra o fundo preto tanto os frutos vermelhos quanto os verdes. Essa imagem é suavizada com filtro gaussiano de 5 $\times$ 5 pixels e limiarizada pelo método de Otsu. Em seguida, aplicam-se abertura (elemento estruturante elíptico de 5 pixels) e fechamento (9 pixels), e os contornos externos encontrados são preenchidos. Um objeto só é aceito se a diferença entre o seu brilho médio e o do fundo for de pelo menos 30 níveis; sem essa verificação, em uma imagem sem tomate o limiar de Otsu dividiria o próprio ruído do fundo em duas classes.
+A segmentação segue o método descrito no \autoref{cap:revisao}. Na imagem com balanço de branco, calcula-se, para cada pixel, o maior valor entre os canais R, G e B, o que mantém contrastados contra o fundo preto tanto os frutos vermelhos quanto os verdes. Essa imagem é suavizada com filtro gaussiano de 5 $\times$ 5 pixels e limiarizada pelo método de Otsu. Em seguida, aplicam-se abertura (elemento estruturante elíptico de 5 pixels) e fechamento (9 pixels), e os contornos externos encontrados são preenchidos. Um objeto só é aceito se a diferença entre o seu brilho médio e o do fundo for de pelo menos 30 níveis; sem essa verificação, em uma imagem sem tomate o limiar de Otsu dividiria o próprio ruído do fundo em duas classes.
 
 Para cada tomate segmentado, são calculados:
 \begin{alineas}
@@ -70,27 +71,27 @@ A medição foi validada com uma moeda de R\$ 1,00, de diâmetro nominal 27,00 m
 \section{Conjuntos de Dados}
 % ----------------------------------------------------------
 
-Os tomates-cereja foram adquiridos em supermercado e fotografados na bancada com um programa de captura desenvolvido neste trabalho, que grava a foto e uma linha de rótulos em um arquivo CSV: número do tomate, defeitos presentes (rachado, podre ou mofado, dano mecânico e mancha) e estádio de maturação. Um tomate é considerado sadio quando não tem nenhum defeito marcado. Os rótulos foram atribuídos por inspeção visual do autor. Foram formados três conjuntos, sempre com tomates distintos entre si:
+Os tomates-cereja foram adquiridos em supermercado e fotografados na bancada com um programa de captura desenvolvido neste trabalho, que grava a foto e uma linha de rótulos em um arquivo CSV: número do tomate, defeitos presentes (rachado, podre ou mofado, dano mecânico e mancha) e estádio de maturação. Um tomate é considerado sadio quando não tem nenhum defeito marcado. O estádio de maturação é um campo opcional do programa; ele foi preenchido no conjunto de cor e no de teste, mas não nas sessões do conjunto de defeitos. Os rótulos foram atribuídos por inspeção visual do autor. Os tomates vieram de supermercado, e não diretamente de produtores, o que pode não representar a variedade de defeitos encontrada na origem. Foram formados três conjuntos, sempre com tomates distintos entre si:
 % FIXME (autor): informar se algum defeito foi provocado (queda, pressão, imersão em água) ou se todos são naturais, e quantas compras/lotes foram usados.
 
 \begin{alineas}
-	\item \textbf{conjunto de cor}: 51 fotos de 32 tomates com maturação informada (2 imaturos, 7 intermediários e 23 maduros), usado para gerar a LUT;
-	\item \textbf{conjunto de defeitos}: 259 fotos aproveitáveis de 97 tomates, 49 sadios (140 fotos) e 48 com defeito (119 fotos), usado no treinamento e na validação cruzada da CNN. Das 266 fotos capturadas, 5 (de dois tomates) não estavam disponíveis no repositório de dados e 2 (de um mesmo tomate) foram descartadas porque o fruto não ficou inteiro dentro da região de interesse. Cerca de 40\% dos tomates foram fotografados em várias posições, girando o fruto entre as fotos (até 11 fotos por tomate); os demais têm uma foto. Entre os tomates com defeito, 25 têm mancha, 19 dano mecânico, 12 podridão ou mofo e 3 rachadura; 9 têm mais de um defeito;
-	\item \textbf{conjunto de teste}: 22 tomates, uma foto cada, que não foram usados no treinamento de nenhum dos modelos: 9 sadios e 13 com defeito; 17 maduros, 4 intermediários e 1 imaturo.
+	\item \textbf{conjunto de cor}: 51 fotos (50 aproveitáveis) de 32 tomates com maturação informada (2 imaturos, 7 intermediários e 23 maduros), usado para gerar a LUT;
+	\item \textbf{conjunto de defeitos}: 259 fotos aproveitáveis de 97 tomates, 49 sadios (140 fotos) e 48 com defeito (119 fotos), usado no treinamento e na validação cruzada da CNN. Das 266 fotos registradas na planilha de rótulos, 5 (de dois tomates) não tinham o arquivo de imagem correspondente e foram excluídas e 2 (de um mesmo tomate) foram descartadas porque o fruto não ficou inteiro dentro da região de interesse. Cerca de 40\% dos tomates foram fotografados em várias posições, girando o fruto entre as fotos (até 11 fotos por tomate); os demais têm uma foto. Entre os tomates com defeito, 25 têm mancha, 19 dano mecânico, 12 podridão ou mofo e 3 rachadura; 9 têm mais de um defeito;
+	\item \textbf{conjunto de teste}: 22 tomates, uma foto cada, que não foram usados no treinamento de nenhum dos modelos, fotografados em 27/11/2026 logo após os últimos tomates do conjunto de defeitos: 9 sadios e 13 com defeito; 17 maduros, 4 intermediários e 1 imaturo.
 \end{alineas}
 
-Nas primeiras sessões de captura, todos os tomates sadios foram fotografados antes dos defeituosos. Como a ordem de captura pode se confundir com a classe (por exemplo, pelo aquecimento da câmera ou por pequenas mudanças de posição), as sessões seguintes, que formam a maior parte do conjunto de defeitos, e o conjunto de teste alternaram tomates sadios e defeituosos.
+Na primeira sessão de captura (tomates 1 a 29), todos os tomates sadios foram fotografados antes dos defeituosos. Como a ordem de captura pode se confundir com a classe (por exemplo, pelo aquecimento da câmera ou por pequenas mudanças de posição e de iluminação), as sessões seguintes e o conjunto de teste intercalaram, ao menos parcialmente, tomates sadios e defeituosos. A primeira sessão, porém, reúne 28 dos 97 tomates e 176 das 259 fotos do conjunto de defeitos, pois nela cada tomate foi fotografado várias vezes; o efeito dessa sessão é analisado no \autoref{cap:resultados}.
 
 % ----------------------------------------------------------
 \section{Classificação da Maturação por LUT}
 % ----------------------------------------------------------
 
-A LUT foi gerada em quatro etapas, conforme os fundamentos da \autoref{cap:revisao}:
+A LUT foi gerada em quatro etapas, conforme os fundamentos do \autoref{cap:revisao}:
 
 \begin{alineas}
 	\item \textbf{amostragem}: em cada foto do conjunto de cor, o tomate é segmentado e são sorteados até 4.000 pixels do seu interior (descartando uma faixa de 4 pixels junto à borda, onde a cor se mistura com o fundo) e 1.500 pixels do fundo;
-	\item \textbf{agrupamento}: os pixels de tomate, convertidos para L*a*b*, são agrupados em 8 grupos pelo \textit{k-means} com inicialização \textit{k-means++}. Um painel com a cor média e exemplos de cada grupo (\autoref{fig:grupos}) foi usado para dar nome a cada grupo entre verde, amarelado, rosado, vermelho e cálice;
-	\item \textbf{treinamento da MLP}: uma MLP com duas camadas ocultas de 32 neurônios recebe as coordenadas L*a*b* normalizadas do pixel e prevê sua classe (as cores nomeadas mais o fundo). Para evitar que as classes mais frequentes dominem, cada classe contribui com até 20.000 pixels. Os pixels de cerca de 20\% dos tomates de cada maturação com pelo menos três tomates foram reservados para validação (sorteio por tomate);
+	\item \textbf{agrupamento}: os pixels de tomate de todas as fotos, convertidos para L*a*b*, são agrupados em 8 grupos pelo \textit{k-means} com inicialização \textit{k-means++}. Um painel com a cor média e exemplos de cada grupo (\autoref{fig:grupos}) foi usado para dar nome a cada grupo entre verde, amarelado, rosado, vermelho e cálice;
+	\item \textbf{treinamento da MLP}: uma MLP com duas camadas ocultas de 32 neurônios recebe as coordenadas L*a*b* normalizadas do pixel e prevê sua classe (as cores nomeadas mais o fundo). Para evitar que as classes mais frequentes dominem, cada classe contribui com até 20.000 pixels. Os pixels de cerca de 20\% dos tomates de cada maturação com pelo menos três tomates foram reservados para validação da MLP (sorteio por tomate); como o agrupamento usou todas as fotos, essa validação não é independente dos rótulos;
 	\item \textbf{geração da tabela}: a MLP é avaliada uma única vez para as $256^3$ cores possíveis, e o resultado é gravado em uma tabela de 16,7 milhões de posições (cerca de 16 MB).
 \end{alineas}
 
@@ -125,7 +126,7 @@ Toda a rede foi ajustada (\textit{fine-tuning}) com o otimizador AdamW \cite{los
 
 \subsection{Validação cruzada e modelo final}
 
-O desempenho esperado em tomates novos foi estimado por validação cruzada em 5 partes, com divisão \emph{por tomate} e estratificada por classe (\textit{StratifiedGroupKFold}): todas as fotos de um tomate ficam na mesma parte, evitando o vazamento descrito por \textcite{kapoor2023}. Em cada parte, uma rede nova foi treinada por até 30 épocas, e a época com a maior acurácia balanceada na validação (com desempate pela menor perda) foi registrada. Como essa escolha usa os próprios dados de validação, a estimativa resultante é otimista \cite{cawley2010}, razão pela qual o desempenho final é medido no conjunto de teste.
+O desempenho esperado em tomates novos foi estimado por validação cruzada em 5 partes, com divisão \emph{por tomate} e estratificada por classe (\textit{StratifiedGroupKFold}): todas as fotos de um tomate ficam na mesma parte, evitando o vazamento descrito por \textcite{kapoor2023}. Em cada parte, uma rede nova foi treinada por até 30 épocas, e a época com a maior acurácia balanceada na validação (com desempate pela menor perda) foi registrada. Como essa escolha usa os próprios dados de validação, a estimativa resultante é otimista \cite{cawley2010}, razão pela qual o desempenho final é medido no conjunto de teste. As métricas da validação cruzada são calculadas por foto; como um tomate pode ter até 11 fotos, os tomates muito fotografados pesam mais nessas médias.
 
 O modelo final foi treinado com todos os tomates do conjunto de defeitos pelo número de épocas igual à mediana das melhores épocas das 5 partes. Separar tomates apenas para escolher a época retiraria exemplos de defeito, que são escassos. O modelo foi exportado no formato ONNX, com a função \textit{softmax} na saída, e é executado na operação pelo módulo de redes neurais do OpenCV, sem necessidade do PyTorch ou de placa de vídeo. Após a exportação, conferiu-se que as probabilidades calculadas pelo OpenCV coincidem com as do PyTorch em todas as imagens de treino (diferença máxima tolerada de 0,02). Um tomate é classificado como defeituoso quando a probabilidade de defeito é de pelo menos 0,5.
 
@@ -143,7 +144,7 @@ O destino é decidido em duas etapas: um tomate com defeito vai para o descarte,
 \section{Protocolo de Avaliação}
 % ----------------------------------------------------------
 
-O conjunto de teste foi processado uma única vez, depois de concluídos a LUT e o modelo final da CNN, pela mesma rotina de inspeção da IHM, sem nenhum ajuste posterior de limiares ou modelos. Em cada foto, se mais de um objeto fosse segmentado, o maior seria tomado como o tomate. Foram calculados:
+O conjunto de teste foi processado uma única vez, depois de concluídos a LUT e o modelo final da CNN, pela mesma rotina de inspeção da IHM, sem nenhum ajuste posterior de limiares ou modelos; a versão preliminar da CNN, treinada com 28 tomates, nunca foi aplicada a ele. Em cada foto, se mais de um objeto fosse segmentado, o maior seria tomado como o tomate. Foram calculados:
 
 \begin{alineas}
 	\item para a CNN, tomando ``com defeito'' como classe positiva: acurácia, sensibilidade, especificidade, acurácia balanceada, precisão e F1, além da matriz de confusão;
@@ -152,4 +153,4 @@ O conjunto de teste foi processado uma única vez, depois de concluídos a LUT e
 	\item o tempo de processamento por imagem, desde o balanço de branco até a decisão do destino.
 \end{alineas}
 
-A unidade de análise é o tomate. Para as proporções (acurácia, sensibilidade e especificidade), foram calculados intervalos de confiança de 95\% pelo método de \textcite{wilson1927}. Os critérios de aceitação definidos no início do projeto foram: acurácia de pelo menos 90\% na maturação; F1 de pelo menos 0,85 na classe ``com defeito''; erro médio absoluto de até 1 mm no diâmetro e de até 0,5 mm na calibração da escala; e tempo de processamento de até 200 ms por tomate.
+A unidade de análise é o tomate. Para as proporções (acurácia, sensibilidade e especificidade), foram calculados intervalos de confiança de 95\% pelo método de \textcite{wilson1927}. Os critérios de aceitação definidos no início do projeto foram: segmentação correta em pelo menos 95\% das imagens; erro de até 0,5 mm na calibração da escala, medido pelo resíduo das distâncias entre cantos do próprio tabuleiro; erro médio absoluto de até 1 mm no diâmetro; acurácia de pelo menos 90\% na maturação; F1 de pelo menos 0,85 na classe ``com defeito''; e tempo de processamento de até 200 ms por tomate.
