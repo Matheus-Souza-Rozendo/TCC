@@ -21,6 +21,7 @@ Depois, o `testar_medicao.bat` mede objetos circulares (ex.: moeda) para conferi
 | `gerar_lut.bat` | Gera a LUT de cor (`lut_cor.npz`) com as fotos de `Dataset-cor`: agrupa os pixels por cor, você nomeia os grupos, treina a MLP e confere a maturação de cada foto |
 | `treinar_cnn.bat` | Treina a CNN de defeitos (sadio × com defeito) com as fotos de `Dataset-proprio`: validação cruzada por tomate + modelo final `cnn_defeito.onnx`. Precisa do PyTorch (instala sozinho na 1ª vez); use um PC com placa NVIDIA se der |
 | `classificar.bat` | Abre a **IHM de classificação**: vídeo ao vivo, botão **Classificar**, cartão de cada tomate (destino, maturação, defeito, diâmetro, comprimento × largura, circularidade), contagem por destino e registro em `inspecoes\inspecoes_AAAA-MM-DD.csv` |
+| `avaliar_teste.bat` | Avalia a LUT e a CNN no lote de teste (`Dataset-teste`, tomates que nenhum modelo viu), pelo mesmo caminho da IHM. Rodar **uma vez só**, com os modelos prontos. Gera `Dataset-teste/avaliacao/RELATORIO.md` (métricas com intervalo de confiança de Wilson), `por_tomate.csv` e as imagens anotadas |
 | `atualizar.bat` | Puxa as últimas alterações do GitHub (`git pull`) |
 | `enviar.bat` | Envia ao GitHub tudo o que mudou neste PC (ex.: `bancada.gain`, fotos, `medicoes\`). Mostra os arquivos, pede uma descrição, baixa o que o outro PC enviou antes e faz o push. Se faltar internet, o commit fica guardado e sobe no próximo envio |
 | `diagnosticar_camera.bat` | Testa os índices 0 a 5 (e a URL do Wi-Fi, se informada) e mostra quais entregam imagem |

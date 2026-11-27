@@ -49,6 +49,10 @@ _DESTINATION_BY_MATURITY = {"maduro": SortingDestination.MADURO, "intermediario"
                             "imaturo": SortingDestination.IMATURO}
 
 
+def destination_for_maturity(maturity: str) -> SortingDestination:
+    return _DESTINATION_BY_MATURITY.get(maturity, SortingDestination.INDEFINIDO)
+
+
 @dataclass(frozen=True)
 class TomatoInspection:
     number: int
@@ -63,7 +67,7 @@ class TomatoInspection:
             return SortingDestination.DESCARTE
         if not self.maturity.is_evaluated:
             return SortingDestination.INDEFINIDO
-        return _DESTINATION_BY_MATURITY[self.maturity.label()]
+        return destination_for_maturity(self.maturity.label())
 
 
 @dataclass(frozen=True)

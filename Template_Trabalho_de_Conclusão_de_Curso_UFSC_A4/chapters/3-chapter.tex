@@ -1,118 +1,155 @@
 % ----------------------------------------------------------
-\chapter{Revisão Bibliográfica}
+\chapter{Materiais e Métodos}\label{cap:metodos}
 % ----------------------------------------------------------
 
+Este capítulo descreve a bancada de aquisição, as calibrações, o processamento das imagens, a construção dos conjuntos de dados, o treinamento dos dois classificadores (a LUT de cor e a CNN de defeitos), a interface de operação e o protocolo de avaliação. A \autoref{fig:fluxo} resume o processamento de cada imagem: após o balanço de branco, os tomates são segmentados e, para cada um, são calculados o tamanho, a maturação e a probabilidade de defeito, que determinam o destino do fruto.
 
-\section{A Logística de Produtos Perecíveis no Agronegócio}
+\begin{figure}[htb]
+	\caption{\label{fig:fluxo}Fluxo de processamento de uma imagem da bancada.}
+	\centering
+	\small
+	\setlength{\fboxsep}{4pt}
+	\fbox{Imagem da câmera} $\rightarrow$ \fbox{Balanço de branco} $\rightarrow$ \fbox{Segmentação (Otsu)} $\rightarrow$
+	\fbox{\begin{tabular}{l}Tamanho e forma (escala por região)\\ Maturação (LUT de cor)\\ Defeito (CNN ResNet-18)\end{tabular}} $\rightarrow$ \fbox{Destino}
+	\fonte{Elaborado pelo autor (2026).}
+\end{figure}
 
-A logística de produtos perecíveis, particularmente no setor de hortifrúti, é caracterizada por uma complexidade elevada devido à natureza biológica dos itens. Diferente de produtos industrializados, os perecíveis possuem uma vida útil curta e continuam seus processos metabólicos mesmo após a colheita, o que exige uma gestão da cadeia de suprimentos ágil e eficiente para evitar a perda de valor comercial.
-
-\subsection{O Panorama do Desperdício}
-O desperdício de alimentos é um dos maiores desafios globais. Segundo a Organização das Nações Unidas para a Alimentação e a Agricultura \cite{FAO2011}, cerca de um terço de todos os alimentos produzidos no mundo para consumo humano é perdido ou desperdiçado anualmente. No contexto brasileiro, essa realidade é agravada por gargalos infraestruturais e processos de manuseio inadequados.
-
-% FIXME (revisão): conferir no texto original os 10% e 30% e as etapas intermediárias que faltam entre "produção e colheita" e "Por fim".
-Segundo \textcite{ciagro2020}, em levantamento no CEASA de Juazeiro-BA, as perdas na cadeia de hortifrúti podem atingir patamares críticos.
-
-As perdas na cadeia produtiva ocorrem em diferentes etapas, começando pela produção e colheita, que registra aproximadamente 10\% de desperdício devido ao manejo inadequado. Por fim, a fase de comercialização responde por cerca de 30\% de perdas registradas nos centros de distribuição e no setor de varejo.
-
-Nesse cenário, a classificação na origem atua sobre duas causas das perdas: retira do fluxo os frutos que não seriam comercializados antes que consumam frete e embalagem, e agrupa os frutos por estádio de maturação, permitindo destiná-los a mercados com prazos de consumo compatíveis. As seções seguintes partem dos critérios de qualidade do tomate e avançam para as técnicas de visão computacional e de aprendizado de máquina que permitem automatizar essa classificação.
-
-% ----------------------------------------------------------
-\section{O Tomate-Cereja e sua Classificação Comercial}
-% ----------------------------------------------------------
-
-A classificação comercial do tomate baseia-se em atributos externos observáveis: cor, tamanho, forma e presença de defeitos. No Brasil, as normas de classificação do tomate do Programa Brasileiro para a Modernização da Horticultura (PBMH) \cite{ceagesp2003}, elaboradas com a Companhia de Entrepostos e Armazéns Gerais de São Paulo (CEAGESP), separam o produto em grupos pelo formato, em classes pelo tamanho, em subgrupos pela coloração e em categorias pela tolerância a defeitos. Os defeitos são divididos em graves, que comprometem a conservação ou o uso do fruto e têm tolerância menor, e leves. Coloração, tamanho e defeitos são, portanto, critérios distintos na norma, o que justifica tratá-los por métodos distintos em um sistema automático.
-
-\subsection{Estádios de maturação}
-
-A maturação do tomate manifesta-se principalmente pela mudança de cor da casca, do verde para o vermelho, resultado da degradação da clorofila e da síntese de carotenoides, em especial o licopeno. O padrão de classificação do Departamento de Agricultura dos Estados Unidos (USDA) \cite{usda1991} define seis estádios pela fração da superfície que mudou de cor: verde (\textit{green}); início de cor (\textit{breaker}), até 10\% da superfície com cor amarelo-acastanhada, rosa ou vermelha; virando (\textit{turning}), de 10\% a 30\%; rosado (\textit{pink}), de 30\% a 60\% rosa ou vermelha; vermelho claro (\textit{light red}), mais de 60\% rosa-avermelhada ou vermelha, desde que não mais de 90\% vermelha; e vermelho (\textit{red}), mais de 90\% vermelha. Os auxílios visuais do USDA \cite{usda_tomato_visual_aids} ilustram esses estádios.
-
-Dois aspectos desse padrão são relevantes para a automação. Primeiro, os estádios são definidos por \emph{porcentagem de área}, e não por um único valor de cor médio, o que sugere classificar cada pixel da superfície e depois contar as proporções. Segundo, os estádios iniciais aceitam qualquer mudança de cor, inclusive o amarelo-acastanhado, ao passo que os finais exigem predominância de tons rosa-avermelhados e vermelhos. Neste trabalho, os seis estádios são agrupados em três classes (imaturo, intermediário e maduro), em uma adaptação do padrão do USDA que simplifica a rotulagem das amostras. \textcite{hou2024} também usam a proporção de área vermelha para a maturação, mas com limiares de 80\% e 90\% que distinguem apenas frutos já avermelhados de tomates de mesa.
-
-\subsection{Defeitos externos e calibre}
-
-Os defeitos externos do tomate incluem rachaduras, podridões e mofos, danos mecânicos (amassados e cortes) e manchas. Diferentemente da cor, os defeitos são padrões locais de textura e forma, de aparência muito variável, o que dificulta descrevê-los por regras explícitas \cite{dacosta2020}. Já o tamanho é uma grandeza geométrica. Para os tomates de mesa dos grupos redondo e oblongo, a classe é definida pelo maior diâmetro transversal \cite{ceagesp2003}; o tomate-cereja não segue esse mesmo critério de diâmetro, de modo que a faixa de calibre adotada neste trabalho é um critério de projeto. Em qualquer caso, medir o tamanho a partir da imagem exige converter medidas em pixels para milímetros.
+O sistema foi implementado em Python, com a biblioteca OpenCV para o processamento de imagens e a inferência da CNN, a biblioteca scikit-learn para o \textit{k-means} e a MLP e o PyTorch para o treinamento da CNN. O código foi organizado em módulos pequenos e testáveis, com testes automatizados de unidade para a segmentação, a medição, a LUT, a inspeção e as métricas.
 
 % ----------------------------------------------------------
-\section{Visão Computacional na Inspeção de Frutos}
+\section{Bancada de Aquisição}
 % ----------------------------------------------------------
 
-Visão computacional é o conjunto de técnicas que extrai informação útil de imagens digitais. Na inspeção de alimentos, ela oferece medição sem contato, não destrutiva e repetível, e por isso vem substituindo a inspeção visual humana, que é lenta, cansativa e subjetiva \cite{brosnan2004,cubero2011}. \textcite{chen2002} descrevem um sistema de visão para aplicações agrícolas como a combinação de iluminação, câmera, placa de aquisição e programa, cujo processamento consiste em realce da imagem, extração de características e classificação. Revisões posteriores \cite{brosnan2004,cubero2011} detalham essa sequência para frutos e hortaliças, destacando a aquisição sob iluminação controlada, a segmentação do fruto em relação ao fundo e a extração de características de cor, tamanho, forma e textura.
+A bancada consiste em uma caixa escura fechada, projetada para bloquear a luz ambiente, com a câmera fixa apontada para baixo a 303 mm do fundo (\autoref{fig:caixa}). Foi usada a câmera de um telefone celular, ligada ao computador pelo aplicativo DroidCam, com resolução de 1920 $\times$ 1080 pixels. O fundo é um tecido sintético preto e fosco, escolhido para contrastar com frutos de qualquer cor e para reduzir reflexos. Na imagem, apenas uma região de interesse retangular de 938 $\times$ 588 pixels (cerca de 188 $\times$ 118 mm) é processada; objetos que tocam a borda dessa região são descartados, pois parte deles não está visível.
+% FIXME (autor): descrever a iluminação usada (tipo de lâmpada/LED, posição, difusor) e se foco, exposição e balanço de branco da câmera foram travados no aplicativo.
 
-\subsection{Cor digital e balanço de branco}
-
-Uma câmera digital registra, em cada pixel, a resposta de três sensores (vermelho, verde e azul, RGB). Esses valores dependem não só do objeto, mas também da fonte de luz e da resposta do sensor; a mesma fruta fotografada sob iluminações diferentes produz valores RGB diferentes. Para que a cor medida represente o objeto, é necessário compensar a luz, problema conhecido como constância de cor \cite{ebner2007}. A forma mais simples de compensação, adequada a uma bancada de iluminação fixa, é medir uma referência branca sob a mesma luz e calcular um ganho por canal que leve essa referência a um valor neutro, segundo o modelo diagonal de adaptação de von Kries \cite{ebner2007}.
-
-O espaço RGB, porém, mistura brilho e cromaticidade: uma sombra altera os três canais ao mesmo tempo. O espaço CIE L*a*b* \cite{cie2004}, definido pela Comissão Internacional de Iluminação (CIE), separa a luminosidade (L*) de dois eixos cromáticos, a* (do verde ao vermelho) e b* (do azul ao amarelo), e foi projetado para que distâncias euclidianas aproximem diferenças percebidas pelo olho humano. \textcite{mendoza2006} mostraram que um sistema de visão calibrado permite medir a cor de alimentos em L*a*b*, apontando-o como o espaço mais adequado para superfícies curvas, mas também que o fundo, a curvatura e o brilho da superfície afetam a cor média medida. Cabe observar que, sem a caracterização colorimétrica da câmera, as coordenadas L*a*b* calculadas a partir do RGB são apenas uma aproximação do CIELAB; ainda assim, a separação entre luminosidade e cromaticidade é útil para agrupar e classificar cores de pixels.
-
-\subsection{Segmentação por limiarização}
-
-A segmentação separa os pixels do objeto dos pixels do fundo. Quando o objeto contrasta com um fundo uniforme, a limiarização é a técnica mais simples e eficiente: pixels acima de um limiar pertencem ao objeto \cite{gonzalez2010}. O método de \textcite{otsu1979} escolhe o limiar automaticamente, maximizando a variância entre as duas classes do histograma, o que o torna robusto a pequenas variações de iluminação entre imagens. A escolha da imagem a limiarizar também é importante: sobre um fundo escuro, o maior valor entre R, G e B de cada pixel preserva o contraste tanto de frutos vermelhos quanto de verdes, ao passo que a conversão para níveis de cinza atenua o tomate vermelho-escuro, cujos canais verde e azul são baixos. A suavização prévia da imagem reduz o efeito do ruído no limiar, e operações de morfologia matemática (abertura e fechamento), seguidas do preenchimento de buracos internos, removem pequenos falsos objetos e corrigem falhas na máscara causadas por reflexos \cite{gonzalez2010}.
-
-\subsection{Calibração geométrica e medição de tamanho}
-
-Para medir em milímetros, é preciso conhecer a relação entre pixels e unidades reais no plano do objeto. A calibração de câmera com um padrão plano de geometria conhecida, como um tabuleiro de xadrez, é a abordagem consolidada \cite{zhang2000}; os cantos do tabuleiro podem ser localizados com precisão subpixel e de forma robusta pelo detector de \textcite{duda2018}, disponível na biblioteca OpenCV. Como a lente e a perspectiva fazem a escala variar ao longo da imagem, uma alternativa simples à modelagem completa da câmera é estimar a escala localmente, em regiões da área de trabalho, a partir das distâncias conhecidas entre cantos vizinhos do tabuleiro. Essa simplificação tem uma limitação inerente ao modelo de câmera \textit{pinhole} \cite{zhang2000}: a escala é válida para o plano do tabuleiro, enquanto o contorno visível do fruto está alguns milímetros acima dele, mais próximo da câmera, o que tende a ampliar ligeiramente a medida.
-
-Com a escala conhecida, o tamanho do fruto é descrito por descritores de forma calculados sobre o contorno segmentado \cite{gonzalez2010}: a área; o diâmetro equivalente, que é o diâmetro do círculo de mesma área; a circularidade, $4\pi A/P^2$, igual a 1 para um círculo e menor para formas alongadas ou irregulares; e as dimensões do menor retângulo que envolve o contorno \cite{freeman1975}, que fornecem comprimento e largura do fruto independentemente da sua orientação. Para tomates-cereja alongados, do tipo \textit{grape}, comprimento e largura descrevem o fruto melhor do que um único diâmetro. \textcite{hou2024} também estimam o tamanho do tomate a partir do contorno segmentado, convertendo pixels em milímetros por um fator de escala.
+\begin{figure}[htb]
+	\caption{\label{fig:caixa}Caixa escura da bancada (modelo 3D).}
+	\centering
+	\includegraphics[width=0.85\textwidth]{images/caixa.jpg}
+	\fonte{Elaborado pelo autor (2026).}
+\end{figure}
 
 % ----------------------------------------------------------
-\section{Classificação de Cor por Tabela de Consulta}
+\section{Calibrações}
 % ----------------------------------------------------------
 
-Classificar cada pixel por um modelo estatístico, a cada imagem, pode ser custoso para operação em tempo real. Uma tabela de consulta (\textit{lookup table}, LUT) resolve esse problema: como uma imagem de 8 bits por canal tem $256^3 \approx 16{,}7$ milhões de cores possíveis, o classificador pode ser avaliado uma única vez para todas elas e o resultado armazenado em uma tabela indexada pela própria cor. Na operação, classificar um pixel reduz-se a uma consulta de memória. \textcite{chen2002} já registravam o uso de tabelas de consulta no próprio hardware de aquisição de imagens de sistemas de visão agrícolas, e \textcite{blasco2003} segmentaram fruto e fundo com um classificador bayesiano treinado a partir de pixels rotulados, em um sistema de inspeção em linha.
+\subsection{Balanço de branco}
 
-\subsection{Agrupamento de cores com \textit{k-means}}
+Com uma folha branca na bancada, mede-se a média de cada canal na região de interesse e calcula-se um ganho por canal que leve essa média a um nível-alvo de 230, conforme o modelo diagonal de von Kries descrito na \autoref{cap:revisao}. Os ganhos obtidos foram 2,33 (R), 1,78 (G) e 1,48 (B): a luz da bancada era fria e a exposição, baixa, o que exigiu um ganho elevado no canal vermelho. O programa também mede a variação do branco ao longo da região, para detectar iluminação não uniforme; o canal vermelho variou 14,7\%, acima do limite de 8\% adotado como alerta, o que é discutido como limitação no \autoref{cap:resultados}. Todos os ganhos são aplicados a cada imagem antes de qualquer outro processamento, tanto no treinamento quanto na operação.
 
-Rotular manualmente milhares de pixels é inviável. O algoritmo \textit{k-means} \cite{macqueen1967} reduz esse esforço ao particionar os pixels em $k$ grupos de cores semelhantes, minimizando a distância de cada pixel ao centro do seu grupo; a inicialização \textit{k-means++} \cite{arthur2007} escolhe centros iniciais espalhados, tornando o resultado mais estável. Ao agrupar os pixels no espaço L*a*b*, cada grupo corresponde a uma cor percebida, e o operador só precisa nomear os grupos (por exemplo, verde, amarelado, rosado ou vermelho) em vez de cada pixel: o agrupamento é automático, e o significado de cada grupo é atribuído por um especialista.
+\subsection{Escala por região}
 
-\subsection{Perceptron multicamadas}
+A escala foi calibrada com um tabuleiro de xadrez impresso com quadrados de 15 mm, colocado no plano do fundo. Os cantos internos foram detectados pelo método de \textcite{duda2018}, implementado no OpenCV. A região de interesse foi dividida em uma grade de 3 $\times$ 3 células e, em cada célula, a escala (mm/pixel) foi estimada como a média de 15 mm dividido pelo comprimento, em pixels, de cada segmento entre cantos vizinhos cujo ponto médio cai na célula. A \autoref{fig:escala} mostra o resultado: a escala variou de 0,1966 a 0,2038 mm/pixel, com média de 0,2008 mm/pixel, diminuindo de cima para baixo na imagem, padrão compatível com uma pequena inclinação da câmera em relação ao plano.
 
-O perceptron multicamadas (\textit{multilayer perceptron}, MLP) é uma rede neural com uma ou mais camadas ocultas de neurônios com função de ativação não linear, treinada pelo algoritmo de retropropagação do erro \cite{rumelhart1986}. Com neurônios ocultos suficientes, uma MLP aproxima qualquer função contínua \cite{hornik1989}. Isso permite que ela aprenda fronteiras não lineares e suaves entre as classes de cor, ajustadas aos pixels rotulados, sem se restringir às regiões convexas que resultariam de atribuir cada cor simplesmente ao centro de grupo mais próximo. Os rótulos de treino vêm do agrupamento; a MLP acrescenta a possibilidade de unir vários grupos em uma mesma classe com uma fronteira contínua e de incluir a classe do fundo, cujos pixels não participam do agrupamento. Um cuidado importante é o desbalanceamento: se uma classe tem muito mais pixels que as outras, o classificador tende a favorecê-la, o que se contorna limitando o número de exemplos de cada classe no treino \cite{he2009}.
+\begin{figure}[htb]
+	\caption{\label{fig:escala}Calibração da escala por região com tabuleiro de 15 mm: escala (mm/pixel) e erro estimado em cada célula.}
+	\centering
+	\includegraphics[width=0.9\textwidth]{images/bancada_escala.png}
+	\fonte{Elaborado pelo autor (2026).}
+\end{figure}
 
-A combinação MLP e LUT reúne a flexibilidade da rede com o baixo custo de operação da tabela. Sua limitação é herdada dos dados de treino: a tabela só é confiável para as cores observadas sob a iluminação da calibração, e cores muito distantes das vistas no treino recebem uma classe extrapolada pela rede.
-
-% ----------------------------------------------------------
-\section{Aprendizado Profundo e Redes Neurais Convolucionais}
-% ----------------------------------------------------------
-
-Defeitos como podridão, rachaduras e danos mecânicos são difíceis de descrever pela cor de pixels isolados: dependem de textura, forma e contexto espacial. O aprendizado profundo contorna essa dificuldade aprendendo as próprias características a partir dos dados, em múltiplos níveis de abstração \cite{lecun2015,goodfellow2016}. \textcite{kamilaris2018}, em uma revisão de 40 trabalhos de aplicação agrícola, observam que o aprendizado profundo superou, na maior parte deles, as técnicas de processamento de imagem comumente usadas.
-
-\subsection{Redes neurais convolucionais}
-
-As redes neurais convolucionais (\textit{convolutional neural networks}, CNN) são redes especializadas em imagens. Em vez de conectar cada pixel a cada neurônio, aplicam pequenos filtros que percorrem a imagem (convolução), compartilhando pesos e preservando a estrutura espacial \cite{lecun2015,goodfellow2016}. \textcite{zeiler2014} mostraram, ao visualizar redes treinadas, que as primeiras camadas respondem a bordas e manchas de cor e as seguintes a texturas e partes de objetos. Uma camada final, totalmente conectada, produz a pontuação de cada classe, convertida em probabilidades pela função \textit{softmax}. O trabalho de \textcite{krizhevsky2012} na competição ImageNet consolidou as CNN como o estado da arte em classificação de imagens.
-
-Redes mais profundas, contudo, eram difíceis de otimizar: a partir de certa profundidade, o próprio erro de treinamento aumentava com o acréscimo de camadas. As redes residuais (ResNet) de \textcite{he2016} contornaram esse problema com conexões de atalho, que somam a entrada de um bloco à sua saída; assim, cada bloco aprende apenas uma correção residual em relação à identidade, o que facilita a otimização de redes profundas. Na ResNet, cada convolução é seguida de normalização em lote (\textit{batch normalization}) \cite{ioffe2015}, que estabiliza e acelera o treinamento. A ResNet-18, versão com 18 camadas e cerca de 11,7 milhões de parâmetros \cite{he2016}, é a menor da família, o que a torna adequada a conjuntos de dados pequenos e à execução em computadores sem placa de vídeo dedicada.
-
-\subsection{Transferência de aprendizado}
-
-Treinar uma CNN do zero exige grandes conjuntos de dados; com poucas centenas de imagens, a rede tende a memorizar os exemplos (sobreajuste). A transferência de aprendizado aproveita uma rede previamente treinada em um conjunto grande e genérico, como o ImageNet \cite{deng2009}, e a adapta à nova tarefa \cite{pan2010}. \textcite{yosinski2014} mostraram que as primeiras camadas de uma CNN aprendem características gerais, úteis para quase qualquer imagem, enquanto as últimas são específicas da tarefa original. Na prática, substitui-se a camada final por uma com o número de classes desejado e ajusta-se a rede inteira com taxa de aprendizado pequena (\textit{fine-tuning}), para não destruir as características já aprendidas. Em tomates, \textcite{dacosta2020} compararam o uso de ResNets pré-treinadas apenas como extratoras de características com o ajuste fino da rede na detecção de defeitos externos, em um conjunto de 43.843 imagens, e relatam vantagem do ajuste fino quando há dados suficientes.
-
-\subsection{Aumento de dados e otimização}
-
-O aumento de dados (\textit{data augmentation}) gera variações plausíveis das imagens de treino, como rotações, espelhamentos, recortes e pequenas alterações de brilho, ampliando artificialmente o conjunto e reduzindo o sobreajuste \cite{shorten2019}. As transformações devem respeitar a física do problema: um fruto pode aparecer em qualquer orientação, então rotações livres são válidas; já alterações fortes de cor seriam inadequadas para um sistema que usa a cor como critério e opera com iluminação calibrada.
-
-O treinamento ajusta os pesos para minimizar uma função de perda, tipicamente a entropia cruzada, por descida de gradiente estocástica. O otimizador Adam \cite{kingma2015} adapta a taxa de aprendizado de cada peso a partir de estimativas dos momentos do gradiente; a variante AdamW \cite{loshchilov2019} aplica a penalização dos pesos (\textit{weight decay}) de forma desacoplada do gradiente, o que melhora a regularização. Em conjuntos desbalanceados, ponderar a perda de cada classe pelo inverso da sua frequência é uma forma usual de evitar que o classificador privilegie a classe majoritária \cite{he2009}.
+Para medir um objeto, cada um dos seus pixels é convertido em área (mm$^2$) com a escala da célula em que ele está, e o diâmetro equivalente é calculado a partir da área total. Assim, um objeto sobre a divisa entre células usa a escala de cada parte.
 
 % ----------------------------------------------------------
-\section{Avaliação de Classificadores com Poucos Dados}
+\section{Segmentação e Medição}
 % ----------------------------------------------------------
 
-Um classificador deve ser avaliado em dados que não participaram do treino. Com conjuntos pequenos, separar uma única parte para validação produz estimativas instáveis, que dependem de quais amostras caíram nessa parte. A validação cruzada em $k$ partes (\textit{k-fold}) treina $k$ modelos, cada um validado em uma parte diferente, e resume o desempenho pela média e pelo desvio padrão. \textcite{kohavi1995}, comparando métodos de estimativa em bases de dados reais, recomenda a validação cruzada estratificada, que mantém em cada parte a proporção das classes, com dez partes para a seleção de modelos; com poucas amostras da classe minoritária, porém, o número de partes fica limitado pela quantidade de exemplos dessa classe disponíveis para cada parte.
+A segmentação segue o método descrito na \autoref{cap:revisao}. Na imagem com balanço de branco, calcula-se, para cada pixel, o maior valor entre os canais R, G e B, o que mantém contrastados contra o fundo preto tanto os frutos vermelhos quanto os verdes. Essa imagem é suavizada com filtro gaussiano de 5 $\times$ 5 pixels e limiarizada pelo método de Otsu. Em seguida, aplicam-se abertura (elemento estruturante elíptico de 5 pixels) e fechamento (9 pixels), e os contornos externos encontrados são preenchidos. Um objeto só é aceito se a diferença entre o seu brilho médio e o do fundo for de pelo menos 30 níveis; sem essa verificação, em uma imagem sem tomate o limiar de Otsu dividiria o próprio ruído do fundo em duas classes.
 
-A independência entre treino e validação precisa ser garantida na unidade correta. Quando várias imagens provêm do mesmo fruto, elas são quase idênticas; se fotos do mesmo fruto aparecem em treino e validação, o modelo é avaliado em exemplos que praticamente já viu, e o desempenho é superestimado. \textcite{kapoor2023} identificam o vazamento de dados (\textit{data leakage}) como causa disseminada de resultados superestimados e irreprodutíveis em pesquisas baseadas em aprendizado de máquina. A solução é dividir os dados por grupo (no caso, por fruto), de modo que todas as imagens de um fruto fiquem do mesmo lado da divisão. Uma forma mais sutil de vazamento é escolher hiperparâmetros, como a época de parada do treinamento, com os mesmos dados usados para estimar o desempenho: a estimativa resultante é otimista \cite{cawley2010}, e uma estimativa não enviesada exige validação cruzada aninhada \cite{varma2006} ou um conjunto de teste independente.
+Para cada tomate segmentado, são calculados:
+\begin{alineas}
+	\item o diâmetro equivalente em milímetros, com a escala por região;
+	\item o comprimento e a largura, dados pelos lados do menor retângulo girado que contém o contorno, multiplicados pela escala efetiva do fruto (raiz da razão entre a área em mm$^2$ e a área em pixels);
+	\item a circularidade, $4\pi A/P^2$, em que $A$ é a área e $P$ o perímetro em pixels.
+\end{alineas}
 
-As métricas também devem considerar o desbalanceamento. Tomando ``com defeito'' como classe positiva, a sensibilidade (\textit{recall}) mede a fração dos frutos defeituosos que o sistema detecta, e a especificidade, a fração dos sadios corretamente aceitos. A acurácia simples pode enganar quando uma classe predomina; a acurácia balanceada, média entre sensibilidade e especificidade, evita esse viés \cite{brodersen2010}. Com poucas amostras, convém relatar intervalos de confiança. O intervalo de \textcite{wilson1927} para proporções tem boa cobertura mesmo com amostras pequenas e proporções próximas de 0 ou 1, ao contrário do intervalo normal usual \cite{brown2001}. Como esses intervalos supõem observações independentes, o tamanho efetivo da amostra é o número de frutos, e não o de imagens; com poucas dezenas de frutos, as barras de erro da validação cruzada são necessariamente largas \cite{varoquaux2018}.
-
-Por fim, redes neurais podem classificar com alta confiança exemplos muito diferentes dos vistos no treino \cite{nguyen2015}, e \textcite{hendrycks2017} mostram que a probabilidade da \textit{softmax}, embora útil como ponto de partida, é um indicador limitado para reconhecer essas entradas fora da distribuição de treino. Na prática, isso significa que o conjunto de treino precisa cobrir as variações que o sistema encontrará em operação (por exemplo, frutos em todos os estádios de maturação), e que o desempenho final deve ser medido em um conjunto de teste independente, coletado separadamente e avaliado uma única vez.
+A medição foi validada com uma moeda de R\$ 1,00, de diâmetro nominal 27,00 mm, fotografada 64 vezes em todas as células da grade, com e sem a correção por região.
 
 % ----------------------------------------------------------
-\section{Trabalhos Relacionados}
+\section{Conjuntos de Dados}
 % ----------------------------------------------------------
 
-A classificação automática de frutos por visão computacional é estudada há mais de duas décadas, com uma transição visível de características extraídas manualmente para o aprendizado profundo.
+Os tomates-cereja foram adquiridos em supermercado e fotografados na bancada com um programa de captura desenvolvido neste trabalho, que grava a foto e uma linha de rótulos em um arquivo CSV: número do tomate, defeitos presentes (rachado, podre ou mofado, dano mecânico e mancha) e estádio de maturação. Um tomate é considerado sadio quando não tem nenhum defeito marcado. Os rótulos foram atribuídos por inspeção visual do autor. Foram formados três conjuntos, sempre com tomates distintos entre si:
+% FIXME (autor): informar se algum defeito foi provocado (queda, pressão, imersão em água) ou se todos são naturais, e quantas compras/lotes foram usados.
 
-Entre as abordagens baseadas em características manuais, \textcite{blasco2003} desenvolveram um sistema de inspeção em linha para laranjas, pêssegos e maçãs que estimava cor, tamanho, posição do pedúnculo e manchas, com precisão e repetibilidade semelhantes às da classificação manual. Para tomates-cereja, o sistema de Zhang \textit{et al.} (2009 \textit{apud} HOU \textit{et al.}, 2024) fotografava cada fruto de três ângulos e classificava a maturação em três níveis com análise de componentes principais e análise discriminante linear, alcançando 94,9\% de acerto em 414 frutos. \textcite{ireri2019} propuseram um sistema de visão para discriminação de defeitos e classificação de tomates a partir de imagens RGB, no qual a combinação de características de cor e textura obteve os melhores resultados e a acurácia diminuía à medida que aumentava o número de categorias de classificação.
+\begin{alineas}
+	\item \textbf{conjunto de cor}: 51 fotos de 32 tomates com maturação informada (2 imaturos, 7 intermediários e 23 maduros), usado para gerar a LUT;
+	\item \textbf{conjunto de defeitos}: 259 fotos aproveitáveis de 97 tomates, 49 sadios (140 fotos) e 48 com defeito (119 fotos), usado no treinamento e na validação cruzada da CNN. Das 266 fotos capturadas, 5 (de dois tomates) não estavam disponíveis no repositório de dados e 2 (de um mesmo tomate) foram descartadas porque o fruto não ficou inteiro dentro da região de interesse. Cerca de 40\% dos tomates foram fotografados em várias posições, girando o fruto entre as fotos (até 11 fotos por tomate); os demais têm uma foto. Entre os tomates com defeito, 25 têm mancha, 19 dano mecânico, 12 podridão ou mofo e 3 rachadura; 9 têm mais de um defeito;
+	\item \textbf{conjunto de teste}: 22 tomates, uma foto cada, que não foram usados no treinamento de nenhum dos modelos: 9 sadios e 13 com defeito; 17 maduros, 4 intermediários e 1 imaturo.
+\end{alineas}
 
-Com o aprendizado profundo, \textcite{haggag2019} compararam CNN, redes neurais artificiais, mapas auto-organizáveis, quantização vetorial por aprendizado e máquinas de vetores de suporte, isoladas e combinadas, na separação de tomates imaturos, maduros e defeituosos; a combinação de CNN com rede neural artificial obteve o melhor resultado, com 90\% de acerto experimental entre maduros e defeituosos. \textcite{dacosta2020} construíram um conjunto de 43.843 imagens de tomates e treinaram classificadores ResNet para detectar defeitos externos, relatando que o modelo não confundia pedúnculo e cálice com defeitos. Mais recentemente, \textcite{hou2024} integraram, em um Raspberry Pi 4B com braço robótico, a medição de tamanho pelo contorno, a maturação por limiarização no espaço HSV (matiz, saturação e valor) e a detecção de defeitos com uma rede YOLOv8 (\textit{You Only Look Once}) modificada, relatando 99,1\% de acerto global na classificação de tomates de mesa em três graus (especial, primeiro e segundo) e capacidade de 1.350 tomates por hora.
+Nas primeiras sessões de captura, todos os tomates sadios foram fotografados antes dos defeituosos. Como a ordem de captura pode se confundir com a classe (por exemplo, pelo aquecimento da câmera ou por pequenas mudanças de posição), as sessões seguintes, que formam a maior parte do conjunto de defeitos, e o conjunto de teste alternaram tomates sadios e defeituosos.
 
-Desses trabalhos, três observações orientam o presente estudo. Primeiro, cor, tamanho e defeito tendem a ser tratados por métodos distintos, cada um adequado à natureza do atributo: regras ou classificadores de cor para a maturação, geometria do contorno para o tamanho e redes profundas para os defeitos. Segundo, a transferência de aprendizado com ResNet foi empregada com sucesso na detecção de defeitos de tomate em um conjunto grande \cite{dacosta2020}; sua eficácia com poucas dezenas de frutos, como neste trabalho, é justamente o que precisa ser verificado. Terceiro, os trabalhos relatam acurácias elevadas, mas nem sempre descrevem como os dados foram divididos: \textcite{hou2024}, por exemplo, treinam a detecção de defeitos com conjuntos públicos de imagens sem informar se a divisão entre treino e validação separa os frutos, aspecto decisivo quando há várias imagens por fruto \cite{kapoor2023}. O presente trabalho segue a linha de métodos especializados por atributo: classificação de cor por MLP convertida em LUT, medição de tamanho com escala calibrada por região e uma CNN ResNet-18 com transferência de aprendizado para defeitos, avaliada com divisão por fruto.
+% ----------------------------------------------------------
+\section{Classificação da Maturação por LUT}
+% ----------------------------------------------------------
+
+A LUT foi gerada em quatro etapas, conforme os fundamentos da \autoref{cap:revisao}:
+
+\begin{alineas}
+	\item \textbf{amostragem}: em cada foto do conjunto de cor, o tomate é segmentado e são sorteados até 4.000 pixels do seu interior (descartando uma faixa de 4 pixels junto à borda, onde a cor se mistura com o fundo) e 1.500 pixels do fundo;
+	\item \textbf{agrupamento}: os pixels de tomate, convertidos para L*a*b*, são agrupados em 8 grupos pelo \textit{k-means} com inicialização \textit{k-means++}. Um painel com a cor média e exemplos de cada grupo (\autoref{fig:grupos}) foi usado para dar nome a cada grupo entre verde, amarelado, rosado, vermelho e cálice;
+	\item \textbf{treinamento da MLP}: uma MLP com duas camadas ocultas de 32 neurônios recebe as coordenadas L*a*b* normalizadas do pixel e prevê sua classe (as cores nomeadas mais o fundo). Para evitar que as classes mais frequentes dominem, cada classe contribui com até 20.000 pixels. Os pixels de cerca de 20\% dos tomates de cada maturação com pelo menos três tomates foram reservados para validação (sorteio por tomate);
+	\item \textbf{geração da tabela}: a MLP é avaliada uma única vez para as $256^3$ cores possíveis, e o resultado é gravado em uma tabela de 16,7 milhões de posições (cerca de 16 MB).
+\end{alineas}
+
+\begin{figure}[htb]
+	\caption{\label{fig:grupos}Os oito grupos de cor do \textit{k-means}: cor média, fração dos pixels e exemplo de pixels de cada grupo.}
+	\centering
+	\includegraphics[height=0.55\textheight]{images/grupos_cor.png}
+	\fonte{Elaborado pelo autor (2026).}
+\end{figure}
+
+Os grupos foram nomeados como verde (grupos 1 e 2), amarelado (3), rosado (6) e vermelho (4, 5, 7 e 8). Nenhum grupo correspondeu ao cálice, porque a segmentação e a amostragem do interior do fruto raramente o incluem.
+
+Na operação, cada pixel do tomate é classificado por consulta à tabela, e a maturação é decidida pela proporção das cores, em uma adaptação dos estádios do USDA \cite{usda1991}:
+\begin{alineas}
+	\item \textbf{imaturo}: menos de 10\% da superfície colorida (amarelada, rosada ou vermelha), o que corresponde aos estádios verde e início de cor;
+	\item \textbf{maduro}: mais de 60\% da superfície vermelha, correspondendo aos estádios vermelho claro e vermelho;
+	\item \textbf{intermediário}: os demais casos (estádios virando e rosado).
+\end{alineas}
+Para o maduro, conta-se apenas o vermelho, e não qualquer cor, porque no padrão do USDA o amarelado caracteriza o início da mudança de cor; com a contagem de qualquer cor, um fruto inteiramente alaranjado seria classificado como maduro.
+
+% ----------------------------------------------------------
+\section{Detecção de Defeitos por CNN}
+% ----------------------------------------------------------
+
+\subsection{Entrada e arquitetura}
+
+A entrada da CNN é um recorte quadrado em torno do tomate segmentado, com margem de 15\% do seu maior lado, redimensionado para 224 $\times$ 224 pixels, na imagem com balanço de branco. O fundo do recorte não é mascarado, pois a borda do fruto, onde costumam estar rachaduras e danos, poderia ser cortada por uma máscara imperfeita. A rede é uma ResNet-18 \cite{he2016} com os pesos pré-treinados no ImageNet \cite{deng2009}, cuja camada final foi substituída por uma camada totalmente conectada de duas saídas (sadio e com defeito). A normalização da entrada pela média e pelo desvio padrão do ImageNet foi incorporada ao próprio modelo, para que o programa de operação não precise reproduzi-la.
+
+\subsection{Treinamento}
+
+Toda a rede foi ajustada (\textit{fine-tuning}) com o otimizador AdamW \cite{loshchilov2019}, taxa de aprendizado de $10^{-4}$, penalização dos pesos de $10^{-4}$ e lotes de 16 imagens, minimizando a entropia cruzada ponderada pelo inverso da frequência de cada classe \cite{he2009}. O aumento de dados aplicou, a cada época, rotação aleatória de até 180$^\circ$, espelhamentos horizontal e vertical, recorte aleatório de 80\% a 100\% da área e pequenas variações de brilho, contraste e saturação (até 15\%, 15\% e 10\%). A matiz não foi alterada, para preservar a cor do fruto.
+
+\subsection{Validação cruzada e modelo final}
+
+O desempenho esperado em tomates novos foi estimado por validação cruzada em 5 partes, com divisão \emph{por tomate} e estratificada por classe (\textit{StratifiedGroupKFold}): todas as fotos de um tomate ficam na mesma parte, evitando o vazamento descrito por \textcite{kapoor2023}. Em cada parte, uma rede nova foi treinada por até 30 épocas, e a época com a maior acurácia balanceada na validação (com desempate pela menor perda) foi registrada. Como essa escolha usa os próprios dados de validação, a estimativa resultante é otimista \cite{cawley2010}, razão pela qual o desempenho final é medido no conjunto de teste.
+
+O modelo final foi treinado com todos os tomates do conjunto de defeitos pelo número de épocas igual à mediana das melhores épocas das 5 partes. Separar tomates apenas para escolher a época retiraria exemplos de defeito, que são escassos. O modelo foi exportado no formato ONNX, com a função \textit{softmax} na saída, e é executado na operação pelo módulo de redes neurais do OpenCV, sem necessidade do PyTorch ou de placa de vídeo. Após a exportação, conferiu-se que as probabilidades calculadas pelo OpenCV coincidem com as do PyTorch em todas as imagens de treino (diferença máxima tolerada de 0,02). Um tomate é classificado como defeituoso quando a probabilidade de defeito é de pelo menos 0,5.
+
+O treinamento foi executado em um computador com placa de vídeo NVIDIA GeForce RTX 3050.
+
+% ----------------------------------------------------------
+\section{Interface de Operação}
+% ----------------------------------------------------------
+
+A interface homem-máquina (IHM) foi desenvolvida com a biblioteca Tkinter. Ela mostra o vídeo da câmera restrito à região de interesse e, ao comando do operador (botão ou barra de espaço) ou em modo contínuo, inspeciona a imagem: cada tomate é contornado na cor do seu destino e numerado, e um cartão lateral apresenta, para cada fruto, o destino, a maturação com as porcentagens de superfície colorida e vermelha, a probabilidade de defeito, o diâmetro, o comprimento, a largura e a circularidade. Contadores mostram quantos frutos foram enviados a cada destino, e cada inspeção é registrada em um arquivo CSV diário.
+
+O destino é decidido em duas etapas: um tomate com defeito vai para o descarte, qualquer que seja a sua cor; os demais são separados pela maturação (imaturo, intermediário ou maduro). Internamente, a inspeção completa de uma imagem é oferecida à interface por uma única classe (padrão de projeto \textit{Facade}), que encadeia balanço de branco, segmentação, medição, LUT e CNN; com isso, a mesma rotina é usada pela IHM e pela avaliação no conjunto de teste.
+
+% ----------------------------------------------------------
+\section{Protocolo de Avaliação}
+% ----------------------------------------------------------
+
+O conjunto de teste foi processado uma única vez, depois de concluídos a LUT e o modelo final da CNN, pela mesma rotina de inspeção da IHM, sem nenhum ajuste posterior de limiares ou modelos. Em cada foto, se mais de um objeto fosse segmentado, o maior seria tomado como o tomate. Foram calculados:
+
+\begin{alineas}
+	\item para a CNN, tomando ``com defeito'' como classe positiva: acurácia, sensibilidade, especificidade, acurácia balanceada, precisão e F1, além da matriz de confusão;
+	\item para a LUT: a acurácia da maturação nas três classes e a matriz de confusão, em todos os tomates, com ou sem defeito;
+	\item para o sistema completo: a acurácia do destino final, sendo esperado o descarte para os tomates com defeito e a classe de maturação rotulada para os sadios;
+	\item o tempo de processamento por imagem, desde o balanço de branco até a decisão do destino.
+\end{alineas}
+
+A unidade de análise é o tomate. Para as proporções (acurácia, sensibilidade e especificidade), foram calculados intervalos de confiança de 95\% pelo método de \textcite{wilson1927}. Os critérios de aceitação definidos no início do projeto foram: acurácia de pelo menos 90\% na maturação; F1 de pelo menos 0,85 na classe ``com defeito''; erro médio absoluto de até 1 mm no diâmetro e de até 0,5 mm na calibração da escala; e tempo de processamento de até 200 ms por tomate.

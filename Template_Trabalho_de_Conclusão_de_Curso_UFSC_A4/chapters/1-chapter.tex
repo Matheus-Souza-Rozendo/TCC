@@ -1,15 +1,16 @@
 % ----------------------------------------------------------
-\chapter{Introdução}
+\chapter{Introdução}\label{cap:introducao}
 % ----------------------------------------------------------
 
 
 \section{Justificativa}
 
-O agronegócio representa um dos pilares fundamentais da economia brasileira, desempenhando um papel estratégico no desenvolvimento regional. Contudo, a eficiência do setor é frequentemente comprometida pelo elevado índice de desperdício na cadeia de suprimentos de produtos perecíveis. Segundo estudos recentes sobre o fluxo de hortifrúti \cite{ciagro2020}, o Brasil, apesar de ser um dos maiores produtores mundiais, enfrenta gargalos severos podendo somar 50\% de desperdício em toda cadeia logística.
+O agronegócio é um dos pilares da economia brasileira e tem papel estratégico no desenvolvimento regional. Contudo, a eficiência do setor é comprometida pelas perdas na cadeia de suprimentos de produtos perecíveis. Em escala mundial, a \textcite{FAO2011} estima que cerca de um terço dos alimentos produzidos para consumo humano é perdido ou desperdiçado, e as frutas e hortaliças estão entre os produtos mais afetados. No Brasil, levantamentos em centrais de abastecimento, como o de \textcite{ciagro2020} no CEASA de Juazeiro-BA, registram perdas pós-colheita de hortifrútis associadas, entre outros fatores, ao manejo inadequado (ver \autoref{cap:revisao}).
 
-Esse cenário gera um impacto econômico direto no custo do produto. O transporte de vegetais, como o tomate-cereja e o pepino, sem uma triagem prévia adequada, resulta na movimentação de mercadorias fora dos padrões de comercialização. Transportar itens que serão inevitavelmente descartados eleva desnecessariamente os gastos com frete, embalagens e mão de obra, reduzindo a rentabilidade do produtor e a competitividade do setor. Portanto, a automação do processo de classificação na origem torna-se uma solução indispensável para otimizar a cadeia produtiva e garantir que apenas produtos aptos ao consumo sejam transportados.
+Esse cenário tem impacto econômico direto. O transporte de hortaliças como o tomate-cereja sem uma triagem prévia adequada movimenta mercadorias fora dos padrões de comercialização: transportar frutos que serão descartados no destino eleva os gastos com frete, embalagens e mão de obra, reduz a rentabilidade do produtor e a competitividade do setor. Além disso, frutos em estádios de maturação diferentes, enviados juntos, têm prazos de consumo diferentes, e os mais maduros se perdem antes da venda. A classificação na origem, por defeito e por maturação, ataca as duas causas.
 
-Apesar da eficácia dos sistemas de visão computacional na triagem de alimentos, as soluções industriais disponíveis no mercado possuem custos elevados, tornando-as inacessíveis para pequenos e médios produtores. O desenvolvimento de uma máquina de baixo custo justifica-se pela necessidade de democratizar o acesso a tecnologias de ponta no campo. Ao focar inicialmente no tomate-cereja, com flexibilidade para expansão a outras culturas como o pepino, este projeto busca oferecer uma alternativa viável e escalável que contribua diretamente para a redução do desperdício e a modernização da agricultura familiar e de pequena escala.
+A classificação manual é lenta, cansativa e subjetiva, e os sistemas de visão computacional vêm substituindo-a na inspeção de alimentos \cite{brosnan2004,cubero2011}. As soluções industriais, porém, têm custo elevado para pequenos e médios produtores. Por outro lado, câmeras de telefones celulares, computadores pessoais e redes neurais pré-treinadas de uso livre tornaram acessíveis os componentes de um sistema de visão. Este trabalho investiga se esses componentes de baixo custo permitem classificar tomates-cereja com desempenho útil. O tomate-cereja foi escolhido como primeira cultura, por ser um fruto pequeno, de alto valor e classificado por cor, tamanho e defeitos; o mesmo método pode ser estendido a outras culturas, como o pepino.
+
 % ----------------------------------------------------------
 \section{Objetivos}
 % ----------------------------------------------------------
@@ -32,3 +33,10 @@ Desenvolver e avaliar um protótipo de bancada de inspeção óptica de baixo cu
 \end{itemize}
 
 A separação física dos frutos por atuadores e a integração com uma esteira industrial estão fora do escopo deste trabalho e são indicadas como trabalhos futuros.
+
+% ----------------------------------------------------------
+\section{Estrutura do Trabalho}
+% ----------------------------------------------------------
+
+O \autoref{cap:revisao} apresenta a revisão bibliográfica: a classificação comercial do tomate, os fundamentos de visão computacional, a classificação de cor por tabela de consulta, as redes neurais convolucionais, a avaliação de classificadores com poucos dados e os trabalhos relacionados. O \autoref{cap:metodos} descreve a bancada, as calibrações, os conjuntos de dados, o treinamento da LUT e da CNN, a interface de operação e o protocolo de avaliação. O \autoref{cap:resultados} apresenta e discute os resultados, e o \autoref{cap:conclusao} traz as conclusões e as sugestões de trabalhos futuros.
+

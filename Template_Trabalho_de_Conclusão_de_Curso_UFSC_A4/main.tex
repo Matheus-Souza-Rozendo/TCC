@@ -92,12 +92,12 @@
 % Informações de dados para CAPA e FOLHA DE ROSTO
 % ---
 % FIXME Substituir 'Nome completo do autor' pelo seu nome.
-\autor{Nome completo do autor(a)}
+\autor{Matheus Souza Rozendo}
 % FIXME Substituir 'Título do trabalho' pelo título da trabalho.
-\titulo{Título do trabalho}
+\titulo{Bancada de visão computacional de baixo custo para classificação de tomates-cereja}
 % FIXME Substituir 'Subtítulo (se houver)' pelo subtítulo da trabalho.  
 % Caso não tenha substítulo, comente a linha a seguir.
-\subtitulo{Subtítulo (se houver)}
+\subtitulo{maturação por tabela de consulta de cores e defeitos por rede neural convolucional}
 % FIXME Substituir 'XXXXXX' pelo nome do seu
 % orientador.
 \orientador{Prof. XXXXXX, Dr.}
@@ -114,7 +114,7 @@
 % FIXME Se for coordenadora mulher, comente a linha acima e descomente a linha a seguir.
 % \coordenador[Coordenadora]{Nome da Coordenadora, Dra.}
 % FIXME Substituir '[ano da entrega]' pelo ano (ano) em que seu trabalho foi defendido.
-\ano{[ano da entrega]}
+\ano{2026}
 % FIXME Substituir '[dia] de [mês] de [ano]' pela data em que ocorreu sua defesa.
 \data{[dia] de [mês] de [ano]}
 % FIXME Substituir '[Cidade da defesa]' pela cidade em que ocorreu sua defesa.
@@ -166,13 +166,27 @@
 % ---
 
 % Declaração das siglas
-\siglalista{ABNT}{Associação Brasileira de Normas Técnicas}
-
-% Declaração dos simbolos
-\simbololista{C}{\ensuremath{C}}{Circunferência de um círculo}
-\simbololista{pi}{\ensuremath{\pi}}{Número pi} 
-\simbololista{r}{\ensuremath{r}}{Raio de um círculo}
-\simbololista{A}{\ensuremath{A}}{Área de um círculo}
+\siglalista{CEAGESP}{Companhia de Entrepostos e Armazéns Gerais de São Paulo}
+\siglalista{CEASA}{Central de Abastecimento}
+\siglalista{CIE}{Comissão Internacional de Iluminação}
+\siglalista{CNN}{Rede Neural Convolucional (\textit{Convolutional Neural Network})}
+\siglalista{CSV}{Valores Separados por Vírgula (\textit{Comma-Separated Values})}
+\siglalista{FAO}{Organização das Nações Unidas para a Alimentação e a Agricultura}
+\siglalista{HSV}{Matiz, Saturação e Valor (\textit{Hue, Saturation, Value})}
+\siglalista{IC}{Intervalo de Confiança}
+\siglalista{IHM}{Interface Homem-Máquina}
+\siglalista{LUT}{Tabela de Consulta (\textit{Look-Up Table})}
+\siglalista{MLP}{Perceptron Multicamadas (\textit{Multilayer Perceptron})}
+\siglalista{ONNX}{\textit{Open Neural Network Exchange}}
+\siglalista{PBMH}{Programa Brasileiro para a Modernização da Horticultura}
+\siglalista{ResNet}{Rede Residual (\textit{Residual Network})}
+\siglalista{RGB}{Vermelho, Verde e Azul (\textit{Red, Green, Blue})}
+\siglalista{RMSE}{Raiz do Erro Quadrático Médio (\textit{Root Mean Square Error})}
+\siglalista{USDA}{Departamento de Agricultura dos Estados Unidos (\textit{United States Department of Agriculture})}
+\siglalista{YOLO}{\textit{You Only Look Once}}
+\simbololista{A}{\ensuremath{A}}{Área do contorno do fruto, em pixels ou mm$^2$}
+\simbololista{P}{\ensuremath{P}}{Perímetro do contorno do fruto, em pixels}
+\simbololista{k}{\ensuremath{k}}{Número de grupos do \textit{k-means} ou de partes da validação cruzada}
 
 % compila a lista de abreviaturas e siglas e a lista de símbolos
 \makenoidxglossaries 
@@ -242,6 +256,7 @@
 % ---
 %\phantompart
 \include{chapters/4-chapter}
+\include{chapters/5-chapter}
 % ---
 
 % ----------------------------------------------------------
@@ -286,10 +301,8 @@
 % ---
 % Inicia os anexos
 % ---
-\begin{anexosenv}
-%	\partanexos*
-	\input{aftertext/anexo_a}
-\end{anexosenv}
+% Sem anexos neste trabalho.
+
 
 %---------------------------------------------------------------------
 % INDICE REMISSIVO

@@ -1,0 +1,29 @@
+% ----------------------------------------------------------
+\chapter{Conclusão}\label{cap:conclusao}
+% ----------------------------------------------------------
+
+Este trabalho desenvolveu e avaliou um protótipo de bancada de inspeção óptica de baixo custo que classifica tomates-cereja quanto à maturação, à presença de defeitos e ao tamanho, usando a câmera de um telefone celular, uma caixa escura e um computador pessoal. O objetivo geral foi atingido como prova de conceito: o sistema integra todas as etapas, da calibração à decisão do destino de cada fruto, em uma interface de operação, e foi avaliado em um conjunto de teste formado por tomates não usados no treinamento.
+
+Em relação aos objetivos específicos:
+\begin{alineas}
+	\item a bancada, o balanço de branco e a calibração de escala por região foram implementados; a correção por região reduziu quase pela metade a variação da medida com a posição do objeto, e o erro médio absoluto na medição de uma moeda foi de 0,45 mm, com um viés sistemático de $-0{,}45$ mm atribuído à diferença de plano entre o tabuleiro de calibração e o objeto;
+	\item a segmentação pelo maior canal de cor com limiar de Otsu isolou o tomate em todas as fotos de teste, e o sistema mede diâmetro, comprimento, largura e circularidade de cada fruto;
+	\item a classificação da maturação pela LUT gerada por uma MLP acertou 86,4\% dos tomates de teste, mas esse resultado deve-se aos frutos maduros, todos acertados; os estádios intermediário e imaturo não foram distinguidos com confiabilidade, e o critério de 90\% não foi atingido;
+	\item o conjunto de dados próprio, com 97 tomates e 259 fotos aproveitáveis, permitiu treinar a ResNet-18 por transferência de aprendizado, que obteve acurácia balanceada de 93,6\% $\pm$ 1,9\% na validação cruzada por tomate e, no teste, sensibilidade de 84,6\%, especificidade de 88,9\% e F1 de 0,88, acima do critério de 0,85;
+	\item a IHM exibe o resultado em tempo real, indica o destino de cada fruto e registra as inspeções;
+	\item o sistema completo acertou o destino de 81,8\% dos tomates de teste, com tempo de processamento de cerca de 54 ms por imagem, bem abaixo da meta de 200 ms.
+\end{alineas}
+
+O principal resultado é que a transferência de aprendizado com uma rede pequena, treinada com cerca de uma centena de frutos fotografados na própria bancada, foi suficiente para detectar a maioria dos defeitos externos, desde que a avaliação respeite a independência entre os frutos de treino e de teste. Já a classificação de cor por proporção de área, embora simples e rápida, mostrou-se sensível à iluminação e à quantidade de exemplos de cada estádio. Com 22 tomates de teste, os intervalos de confiança são largos (de 29 a 42 pontos percentuais), e os resultados devem ser entendidos como uma primeira evidência de viabilidade, e não como o desempenho definitivo do sistema.
+
+\section{Trabalhos Futuros}
+
+A partir dos resultados e das limitações identificadas, sugerem-se:
+\begin{alineas}
+	\item melhorar a iluminação da bancada, com luz difusa e mais intensa, de temperatura de cor neutra, para reduzir o ganho do canal vermelho e tornar visíveis defeitos pequenos;
+	\item ampliar o conjunto de cor com mais tomates imaturos e intermediários, rotulados por mais de um avaliador, e reavaliar os limiares de maturação;
+	\item refazer a calibração de escala com o tabuleiro exatamente no plano dos frutos e a câmera nivelada, e validar a medida dos tomates com paquímetro;
+	\item ampliar o conjunto de teste, em especial com frutos imaturos, intermediários e de formatos atípicos;
+	\item classificar o tipo de defeito, cujos rótulos já são registrados na captura;
+	\item integrar a bancada a uma esteira com atuadores para a separação física dos frutos e medir a capacidade de processamento em operação contínua.
+\end{alineas}

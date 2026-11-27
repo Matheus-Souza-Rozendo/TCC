@@ -1,58 +1,41 @@
 % ----------------------------------------------------------
-\chapter{Descrição}
+\chapter{Resultados por tomate no conjunto de teste}\label{ap:teste}
 % ----------------------------------------------------------
 
-Textos elaborados pelo autor, a fim de completar a sua argumentação. Deve ser precedido da palavra APÊNDICE, identificada por letras maiúsculas consecutivas, travessão e pelo respectivo título. Utilizam-se letras maiúsculas dobradas quando esgotadas as letras do alfabeto. 
+A \autoref{tab:portomate} detalha o resultado do sistema para cada um dos 22 tomates do conjunto de teste. Os dados completos, incluindo comprimento, largura, circularidade e tempo de processamento, e as imagens anotadas de cada tomate estão no repositório do projeto (pasta \texttt{Dataset-teste/avaliacao}).
 
-\begin{quadro}[htb]
+\begin{table}[htb]
+	\ABNTEXfontereduzida
 	\centering
-	\caption{\label{qua:Quadro_2}Modelo A.}	
-\begin{tabular}{|l|l|}
-\hline
-xxxx              & yyyyyyyyyyyyyyy    \\
-\hline
-xxxx              & yyyyyyyyyyyyyyy    \\
-\hline
-xxxx              & yyyyyyyyyyyyyyy    \\
-\hline
-xxxx              & yyyyyyyyyyyyyyy    \\
-\hline
-xxxx              & yyyyyyyyyyyyyyy    \\
-\hline
-xxxx              & yyyyyyyyyyyyyyy    \\
-\hline
-xxxx              & yyyyyyyyyyyyyyy    \\
-\hline
-rrrrrrrrrrrrrrrrr & eeeeeeeeeeeeeeeee  \\
-\hline
-xxxx              & yyyyyyyyyyyyyyy    \\
-\hline
-xxxx              & yyyyyyyyyyyyyyy    \\
-\hline
-rrrrrrrrrrrrrrrrr & eeeeeeeeeeeeeeeee  \\
-\hline
-xxxx              & yyyyyyyyyyyyyyy    \\
-\hline
-                  & ttttttttttttttttt  \\
-\hline
-rrrrrrrrrrrrrrrrr & eeeeeeeeeeeeeeeee  \\
-\hline
-ttttttttttttt     &                    \\
-\hline
-rrrrrrrrrrrrrrrrr & eeeeeeeeeeeeeeeee  \\
-\hline
-rrrrrrrrrrrrrrrrr & eeeeeeeeeeeeeeeee  \\
-\hline
-                  & gggggggggggggggggg \\
-\hline
-rrrrrrrrrrrrrrrrr & eeeeeeeeeeeeeeeee  \\
-\hline
-rrrrrrrrrrrrrrrrr & eeeeeeeeeeeeeeeee  \\
-\hline
-rrrrrrrrrrrrrrrrr & eeeeeeeeeeeeeeeee  \\
-\hline
-rrrrrrrrrrrrrrrrr & eeeeeeeeeeeeeeeee  \\
-\hline
-\end{tabular}
-\fonte{Elaborada pelo autor (2016).}
-\end{quadro}
+	\caption{\label{tab:portomate}Resultado por tomate no conjunto de teste. Os destinos errados estão marcados com asterisco.}
+	\begin{tabular}{clcclcllc}
+		\toprule
+		Tomate & Maturação & LUT & Vermelho & Defeitos & P(defeito) & Destino & Destino & Diâmetro \\
+		 & (rótulo) & & (\%) & (rótulo) & (CNN) & esperado & do sistema & (mm) \\
+		\midrule
+		1 & maduro & maduro & 100 & -- & 0,02 & Maduro & Maduro & 24,0 \\
+		2 & interm. & maduro & 91 & mancha & 0,88 & Descarte & Descarte & 27,3 \\
+		3 & imaturo & interm. & 25 & -- & 0,37 & Imaturo & Interm. * & 27,2 \\
+		4 & maduro & maduro & 96 & -- & 0,24 & Maduro & Maduro & 26,7 \\
+		5 & maduro & maduro & 98 & -- & 0,01 & Maduro & Maduro & 27,7 \\
+		6 & maduro & maduro & 76 & podre & 0,61 & Descarte & Descarte & 28,3 \\
+		7 & maduro & maduro & 96 & mancha & 0,03 & Descarte & Maduro * & 27,7 \\
+		8 & interm. & interm. & 55 & -- & 0,08 & Interm. & Interm. & 27,0 \\
+		9 & maduro & maduro & 96 & podre & 0,99 & Descarte & Descarte & 22,3 \\
+		10 & maduro & maduro & 95 & podre, mancha & 0,76 & Descarte & Descarte & 26,3 \\
+		11 & maduro & maduro & 85 & mancha & 1,00 & Descarte & Descarte & 21,0 \\
+		12 & maduro & maduro & 93 & podre, mancha & 1,00 & Descarte & Descarte & 18,9 \\
+		13 & maduro & maduro & 97 & dano mec. & 0,90 & Descarte & Descarte & 26,8 \\
+		14 & interm. & interm. & 60 & rachado, dano mec. & 0,89 & Descarte & Descarte & 25,3 \\
+		15 & maduro & maduro & 99 & dano mec., mancha & 0,98 & Descarte & Descarte & 24,6 \\
+		16 & maduro & maduro & 100 & -- & 0,72 & Maduro & Descarte * & 32,2 \\
+		17 & maduro & maduro & 96 & -- & 0,14 & Maduro & Maduro & 27,9 \\
+		18 & maduro & maduro & 100 & -- & 0,06 & Maduro & Maduro & 23,6 \\
+		19 & maduro & maduro & 100 & -- & 0,01 & Maduro & Maduro & 26,1 \\
+		20 & interm. & maduro & 91 & mancha & 0,61 & Descarte & Descarte & 24,8 \\
+		21 & maduro & maduro & 98 & podre & 0,99 & Descarte & Descarte & 20,8 \\
+		22 & maduro & maduro & 99 & dano mec. & 0,19 & Descarte & Maduro * & 23,1 \\
+		\bottomrule
+	\end{tabular}
+	\fonte{Elaborado pelo autor (2026).}
+\end{table}
